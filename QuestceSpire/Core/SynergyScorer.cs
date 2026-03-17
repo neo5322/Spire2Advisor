@@ -131,12 +131,47 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 				{
 					cardScore = adaptiveScorer.GetAdaptiveCardScore(character, card.Id, cardScore, deckAnalysis);
 				}
+
+				// v0.11.3: Card usage data — boost removal for rarely played cards
+				float usageBonus = 0f;
+				string usageReason = null;
+				try
+				{
+					var connStr = Plugin.RunDatabase?.ConnectionString;
+					if (connStr != null && character != null)
+					{
+						using var conn = new Microsoft.Data.Sqlite.SqliteConnection(connStr);
+						conn.Open();
+						using var cmd = conn.CreateCommand();
+						cmd.CommandText = "SELECT avg_plays_per_combat, effectiveness FROM card_usage_stats WHERE card_id=@id AND character=@char";
+						cmd.Parameters.AddWithValue("@id", card.Id);
+						cmd.Parameters.AddWithValue("@char", character);
+						using var reader = cmd.ExecuteReader();
+						if (reader.Read())
+						{
+							float avgPlays = reader.GetFloat(0);
+							float effectiveness = reader.GetFloat(1);
+							if (avgPlays < 0.5f)
+							{
+								usageBonus = 1.0f;
+								usageReason = $"사용률 {avgPlays:F1}회/전투 — 제거 1순위";
+							}
+							else if (effectiveness < 0.3f)
+							{
+								usageBonus = 0.5f;
+								usageReason = $"효율 {effectiveness:P0} — 제거 추천";
+							}
+						}
+					}
+				}
+				catch { }
+
 				// Invert: bad cards get high removal score (5 - score, so F=5→S removal, S=0→F removal)
-				score = Math.Max(0f, 5.0f - cardScore);
+				score = Math.Max(0f, 5.0f - cardScore + usageBonus);
 				grade = TierEngine.ScoreToGrade(score);
-				reason = cardScore < 2.0f ? "Weak card — strong removal candidate"
+				reason = usageReason ?? (cardScore < 2.0f ? "Weak card — strong removal candidate"
 					: cardScore < 3.0f ? "Below average — consider removing"
-					: "Decent card — probably keep";
+					: "Decent card — probably keep");
 			}
 
 			list.Add(new ScoredCard

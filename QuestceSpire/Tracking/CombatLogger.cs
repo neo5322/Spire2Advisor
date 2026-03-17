@@ -137,6 +137,21 @@ public class CombatLogger
 		}
 	}
 
+	/// <summary>
+	/// Direct record a turn from GamePatches hook (bypasses internal state machine).
+	/// </summary>
+	public void RecordTurn(CombatTurnRecord turn)
+	{
+		try
+		{
+			_db.SaveCombatTurn(turn);
+		}
+		catch (Exception ex)
+		{
+			Plugin.Log($"CombatLogger: RecordTurn error — {ex.Message}");
+		}
+	}
+
 	private void ResetTurnCounters()
 	{
 		_cardsPlayedThisTurn = new List<string>();

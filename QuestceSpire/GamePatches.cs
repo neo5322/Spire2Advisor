@@ -138,6 +138,9 @@ public static partial class GamePatches
 		catch (Exception ex) { Plugin.Log($"WARN: Upgrade screen patch failed: {ex.Message}"); }
 		PatchMethod(harmony, typeof(RunManager), "Launch", nameof(OnRunLaunched));
 		PatchMethod(harmony, typeof(RunManager), "OnEnded", nameof(OnRunEnded));
+
+		// v0.10: Combat, potion, and shop purchase patches
+		ApplyCombatPatches(harmony);
 	}
 
 	private static void PatchMethod(Harmony harmony, Type targetType, string methodName, string postfixName)

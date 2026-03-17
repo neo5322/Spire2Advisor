@@ -14,6 +14,50 @@ namespace QuestceSpire.Core;
 public static class BossAdvisor
 {
 	private static Dictionary<string, List<BossTemplate>> _bossesByAct;
+	private static Dictionary<string, MonsterCodexData> _monsterCodex = new();
+
+	/// <summary>
+	/// Load monster codex data for data-driven analysis.
+	/// </summary>
+	public static void LoadMonsterCodex(string dataFolder)
+	{
+		string path = System.IO.Path.Combine(dataFolder, "codex_monsters.json");
+		if (!System.IO.File.Exists(path)) return;
+		try
+		{
+			var list = JsonConvert.DeserializeObject<List<MonsterCodexData>>(System.IO.File.ReadAllText(path));
+			if (list == null) return;
+			foreach (var m in list)
+			{
+				if (m.Id != null)
+					_monsterCodex[m.Id.ToLowerInvariant()] = m;
+			}
+			Plugin.Log($"BossAdvisor: loaded {_monsterCodex.Count} monster codex entries.");
+		}
+		catch (Exception ex)
+		{
+			Plugin.Log($"BossAdvisor: codex load error — {ex.Message}");
+		}
+	}
+
+	/// <summary>
+	/// Get codex data for an enemy if available.
+	/// </summary>
+	public static MonsterCodexData GetMonsterData(string enemyId)
+	{
+		if (enemyId == null) return null;
+		_monsterCodex.TryGetValue(enemyId.ToLowerInvariant(), out var data);
+		return data;
+	}
+
+	public class MonsterCodexData
+	{
+		[JsonProperty("id")] public string Id { get; set; }
+		[JsonProperty("name")] public string Name { get; set; }
+		[JsonProperty("hp")] public int Hp { get; set; }
+		[JsonProperty("maxDamage")] public int MaxDamage { get; set; }
+		[JsonProperty("abilities")] public List<string> Abilities { get; set; }
+	}
 
 	public class BossCheckResult
 	{
@@ -185,6 +229,50 @@ public static class BossAdvisor
 		// ─── HP check ───
 		if (hpRatio < 0.3f) { score -= 15; result.Weaknesses.Add($"HP 위험 ({hp}/{maxHP})"); }
 		else if (hpRatio >= 0.7f) { score += 5; result.Strengths.Add("HP 여유"); }
+
+		// ─── Codex data-driven analysis ───
+		var codexData = GetMonsterData(boss.Name);
+		if (codexData != null)
+		{
+			if (codexData.MaxDamage > 30)
+			{
+				if (skills >= 5) result.Strengths.Add($"고딜 보스({codexData.MaxDamage}dmg) 대비 블록 충분");
+				else { score -= 5; result.Weaknesses.Add($"보스 최대딜 {codexData.MaxDamage} — 블록 강화 필요"); }
+			}
+			if (codexData.Hp > 300 && !boss.NeedsScaling)
+			{
+				if (powers < 1) { score -= 5; result.Weaknesses.Add($"보스 HP {codexData.Hp} — 스케일링 없이 딜 부족할 수 있음"); }
+			}
+		}
+
+		// ─── Combat history data-driven adjustment ───
+		try
+		{
+			var db = Plugin.RunDatabase;
+			if (db != null)
+			{
+				var connStr = db.ConnectionString;
+				if (connStr != null)
+				{
+					using var conn = new Microsoft.Data.Sqlite.SqliteConnection(connStr);
+					conn.Open();
+					using var cmd = conn.CreateCommand();
+					cmd.CommandText = @"SELECT AVG(damage_taken), AVG(turn_number)
+						FROM combat_turns WHERE enemy_id LIKE @eid
+						GROUP BY run_id ORDER BY rowid DESC LIMIT 5";
+					cmd.Parameters.AddWithValue("@eid", $"%{boss.Name.Split(' ')[0]}%");
+					using var reader = cmd.ExecuteReader();
+					if (reader.Read() && !reader.IsDBNull(0))
+					{
+						float avgDmgTaken = reader.GetFloat(0);
+						float avgTurns = reader.GetFloat(1);
+						if (avgDmgTaken > 20) result.Weaknesses.Add($"과거 전투 평균 피해: {avgDmgTaken:F0}/턴");
+						if (avgTurns > 8) result.Weaknesses.Add($"과거 전투 평균 {avgTurns:F0}턴 소요");
+					}
+				}
+			}
+		}
+		catch { }
 
 		// Clamp
 		score = Math.Clamp(score, 0, 100);

@@ -25,9 +25,20 @@ public class OverlaySettings
 	public bool CloudSyncEnabled { get; set; } = false;
 	public bool AutoUpdateData { get; set; } = true;
 
+	// v0.14.1: Pipeline & feature toggles
+	public bool ShowPotionAdvice { get; set; } = true;
+	public bool ShowRunHealth { get; set; } = true;
+	public bool ShowBossReadiness { get; set; } = true;
+	public bool ShowMetaArchetypes { get; set; } = true;
+	public bool EnablePipelineSync { get; set; } = true;
+	public bool ShowPatchChanges { get; set; } = true;
+	public bool ShowFloorTierInfo { get; set; } = true;
+	public bool ShowCoPickSynergy { get; set; } = true;
+	public bool ShowRunSummary { get; set; } = true;
+
 	// Bump this when defaults change to force migration on old saved files
 	public int SettingsVersion { get; set; } = 0;
-	private const int CurrentVersion = 5;
+	private const int CurrentVersion = 6;
 
 	private static string GetSettingsPath()
 	{
@@ -58,6 +69,19 @@ public class OverlaySettings
 						// v4 → v5: AutoUpdateData enabled by default
 						if (settings.SettingsVersion < 5)
 							settings.AutoUpdateData = true;
+						// v5 → v6: New pipeline/feature toggles
+						if (settings.SettingsVersion < 6)
+						{
+							settings.ShowPotionAdvice = true;
+							settings.ShowRunHealth = true;
+							settings.ShowBossReadiness = true;
+							settings.ShowMetaArchetypes = true;
+							settings.EnablePipelineSync = true;
+							settings.ShowPatchChanges = true;
+							settings.ShowFloorTierInfo = true;
+							settings.ShowCoPickSynergy = true;
+							settings.ShowRunSummary = true;
+						}
 						settings.SettingsVersion = CurrentVersion;
 						settings.Save();
 					}

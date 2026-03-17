@@ -62,6 +62,15 @@ public class PotionTracker
 	}
 
 	/// <summary>
+	/// Record a potion event directly from GamePatches hook.
+	/// </summary>
+	public void RecordEvent(PotionEvent evt)
+	{
+		if (evt == null) return;
+		_db.SavePotionEvent(evt);
+	}
+
+	/// <summary>
 	/// Get usage summary for a specific potion: average floor used, most common enemy, use rate.
 	/// </summary>
 	public PotionUsageSummary GetUsageSummary(string potionId)

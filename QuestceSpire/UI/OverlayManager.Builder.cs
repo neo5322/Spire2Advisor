@@ -207,6 +207,31 @@ public partial class OverlayManager
 		label.AddThemeColorOverride("font_outline_color", ClrOutline);
 		label.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
 		vBoxContainer.AddChild(label, forceReadableName: false, Node.InternalMode.Disabled);
+		// Patch change badge
+		string patchBadge = GetPatchChangeBadge("card", card.Id);
+		if (patchBadge != null)
+		{
+			Label patchLbl = new Label();
+			patchLbl.Text = patchBadge;
+			ApplyFont(patchLbl, _fontBody);
+			patchLbl.AddThemeFontSizeOverride("font_size", 11);
+			patchLbl.AddThemeColorOverride("font_color", ClrExpensive);
+			vBoxContainer.AddChild(patchLbl, forceReadableName: false, Node.InternalMode.Disabled);
+		}
+		// Floor tier info
+		if (_currentGameState != null && _currentCharacter != null)
+		{
+			string floorInfo = GetFloorTierInfo(card.Id, _currentCharacter, _currentGameState.ActNumber);
+			if (floorInfo != null)
+			{
+				Label floorLbl = new Label();
+				floorLbl.Text = floorInfo;
+				ApplyFont(floorLbl, _fontBody);
+				floorLbl.AddThemeFontSizeOverride("font_size", 11);
+				floorLbl.AddThemeColorOverride("font_color", ClrAqua);
+				vBoxContainer.AddChild(floorLbl, forceReadableName: false, Node.InternalMode.Disabled);
+			}
+		}
 		// Line 2: type • cost • one-line reason
 		string typeLower = card.Type?.ToLowerInvariant() ?? "";
 		string costStr = card.Cost == 0 ? "0 cost" : card.Cost == 1 ? "1 energy" : $"{card.Cost} energy";
@@ -332,6 +357,17 @@ public partial class OverlayManager
 		label.AddThemeColorOverride("font_outline_color", ClrOutline);
 		label.AutowrapMode = TextServer.AutowrapMode.WordSmart;
 		vBoxContainer.AddChild(label, forceReadableName: false, Node.InternalMode.Disabled);
+		// Patch change badge for relic
+		string relicPatchBadge = GetPatchChangeBadge("relic", relic.Id);
+		if (relicPatchBadge != null)
+		{
+			Label relicPatchLbl = new Label();
+			relicPatchLbl.Text = relicPatchBadge;
+			ApplyFont(relicPatchLbl, _fontBody);
+			relicPatchLbl.AddThemeFontSizeOverride("font_size", 11);
+			relicPatchLbl.AddThemeColorOverride("font_color", ClrExpensive);
+			vBoxContainer.AddChild(relicPatchLbl, forceReadableName: false, Node.InternalMode.Disabled);
+		}
 		// Meta: rarity • tenure • one-liner
 		string rarityLower = relic.Rarity?.ToLowerInvariant() ?? "";
 		string oneLiner = BuildOneLiner(relic.SynergyReasons, relic.AntiSynergyReasons, relic.BaseTier, relic.FinalGrade);
