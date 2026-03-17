@@ -33,6 +33,7 @@ QuestceSpire/                 # Main C# project
 │   ├── RunTracker.cs         # Current run tracking
 │   ├── LocalStatsComputer.cs # Win rate, card/relic usage stats
 │   ├── CloudSync.cs          # Community statistics sync
+│   ├── DataUpdater.cs        # Automatic data file updates (219 lines)
 │   └── GameDataImporter.cs   # Imports game history
 ├── UI/                       # Overlay UI (Godot controls)
 │   ├── OverlayManager.cs     # Core lifecycle, panel management, Rebuild (1,331 lines)
