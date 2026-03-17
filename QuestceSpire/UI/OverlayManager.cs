@@ -3119,7 +3119,7 @@ public class OverlayManager
 		HBoxContainer curveRow = new HBoxContainer();
 		curveRow.AddThemeConstantOverride("separation", 2);
 		curveRow.CustomMinimumSize = new Vector2(0, 18f);
-		int maxCount = analysis.EnergyCurve.Values.Max();
+		int maxCount = analysis.EnergyCurve.Count > 0 ? analysis.EnergyCurve.Values.Max() : 1;
 		Color[] costColors = {
 			new Color(0.3f, 0.8f, 0.4f),
 			new Color(0.4f, 0.8f, 0.9f),
@@ -3265,7 +3265,7 @@ public class OverlayManager
 			HBoxContainer curveRow = new HBoxContainer();
 			curveRow.AddThemeConstantOverride("separation", 2);
 			curveRow.CustomMinimumSize = new Vector2(0, 18f);
-			int maxCount = analysis.EnergyCurve.Values.Max();
+			int maxCount = analysis.EnergyCurve.Count > 0 ? analysis.EnergyCurve.Values.Max() : 1;
 			Color[] costColors = {
 				new Color(0.3f, 0.8f, 0.4f),   // 0: green
 				new Color(0.4f, 0.8f, 0.9f),   // 1: aqua

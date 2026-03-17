@@ -96,7 +96,7 @@ public class RunTracker
 		_currentEvents.Clear();
 		_relicAcquiredFloor.Clear();
 		_archetypeHistory.Clear();
-		Plugin.Log($"Run started: {_currentRun.RunId.Substring(0, 8)}... ({character}, A{ascensionLevel})");
+		Plugin.Log($"Run started: {(_currentRun.RunId.Length >= 8 ? _currentRun.RunId.Substring(0, 8) : _currentRun.RunId)}... ({character}, A{ascensionLevel})");
 	}
 
 	public void RecordDecision(DecisionEventType eventType, List<string> offeredIds, string chosenId, List<string> deckSnapshot, List<string> relicSnapshot, int hp, int maxHp, int gold, int act, int floor)
