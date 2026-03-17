@@ -91,6 +91,8 @@ public static class Plugin
 
 	public static MetaArchetypeComputer MetaArchetypeComputer { get; private set; }
 
+	public static PotionAdvisor PotionAdvisor { get; private set; }
+
 	public static OverlayManager Overlay { get; set; }
 
 	public static void Init()
@@ -133,6 +135,7 @@ public static class Plugin
 		AdaptiveScorer = new AdaptiveScorer(RunDatabase);
 		ArchetypeDefinitions.LoadFromJson(Path.Combine(dataPath, "archetypes.json"));
 		BossAdvisor.LoadFromJson(Path.Combine(dataPath, "BossData", "bosses.json"));
+		BossAdvisor.LoadMonsterCodex(dataPath);
 		EventAdvisor = new EventAdvisor(dataPath);
 		EnemyAdvisor = new EnemyAdvisor(dataPath);
 		CloudSync = new CloudSync(RunDatabase, RunTracker.PlayerId);
@@ -151,6 +154,7 @@ public static class Plugin
 		PotionTracker = new PotionTracker(RunDatabase);
 		AutoTierGenerator = new AutoTierGenerator(RunDatabase, dataPath);
 		MetaArchetypeComputer = new MetaArchetypeComputer(RunDatabase, dataPath);
+		PotionAdvisor = new PotionAdvisor(RunDatabase, dataPath);
 
 		var overlaySettings = OverlaySettings.Load();
 		PipelineOrchestrator = new PipelineOrchestrator(overlaySettings);
