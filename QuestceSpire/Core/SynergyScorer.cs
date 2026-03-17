@@ -56,11 +56,21 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 		if (offerings == null || offerings.Count == 0 || deckAnalysis == null || character == null)
 			return new List<ScoredCard>();
 
+		// Build deck card ID list for co-pick synergy lookup
+		List<string> deckCardIds = null;
+		try
+		{
+			var gs = GameStateReader.ReadCurrentState();
+			if (gs?.DeckCards != null && gs.DeckCards.Count > 0)
+				deckCardIds = gs.DeckCards.ConvertAll(c => c.Id);
+		}
+		catch { }
+
 		List<ScoredCard> list = new List<ScoredCard>();
 		foreach (CardInfo offering in offerings)
 		{
 			CardTierEntry cardTier = tierEngine?.GetCardTier(character, offering.Id);
-			ScoredCard item = ScoreCard(offering, cardTier, deckAnalysis, actNumber, floorNumber, character, adaptiveScorer);
+			ScoredCard item = ScoreCard(offering, cardTier, deckAnalysis, actNumber, floorNumber, character, adaptiveScorer, deckCardIds);
 			item.Price = offering.Price;
 			list.Add(item);
 		}
@@ -202,8 +212,17 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 			// Bonus for cards that have actual separate upgrade tier entries
 			bool hasSeparateUpgradeTier = tierEngine.GetCardTier(character, baseId + "+") != null;
 			float tierDeltaBonus = hasSeparateUpgradeTier ? delta * 2f : 0f;
-			// Final upgrade priority score: base strength + any real tier delta
-			float upgradePriority = Math.Min(5.5f, baseStrength + tierDeltaBonus);
+
+			// Bonus from DB upgrade value data (win-rate delta when upgraded)
+			float upgradeValueBonus = 0f;
+			var upgradeData = Plugin.RunDatabase?.GetUpgradeValue(baseId, character);
+			if (upgradeData != null && upgradeData.SampleSize >= 3 && upgradeData.UpgradeWinDelta > 0.02f)
+			{
+				upgradeValueBonus = Math.Min(0.5f, upgradeData.UpgradeWinDelta * 3f);
+			}
+
+			// Final upgrade priority score: base strength + any real tier delta + DB upgrade value
+			float upgradePriority = Math.Min(5.5f, baseStrength + tierDeltaBonus + upgradeValueBonus);
 
 			upgradedScored.UpgradeDelta = delta;
 			upgradedScored.Id = baseId;
@@ -213,6 +232,8 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 			upgradedScored.FinalGrade = TierEngine.ScoreToGrade(upgradedScored.FinalScore);
 			upgradedScored.ScoreSource = currentScored.ScoreSource;
 			upgradedScored.SynergyReasons.Insert(0, $"Base strength {baseStrength:F1} — upgrade your best cards first");
+			if (upgradeValueBonus > 0.01f)
+				upgradedScored.SynergyReasons.Add($"+{upgradeValueBonus:F2} upgrade win-rate boost (data: +{upgradeData.UpgradeWinDelta:P0})");
 			list.Add(upgradedScored);
 		}
 		list.Sort((a, b) => b.FinalScore.CompareTo(a.FinalScore));
@@ -286,7 +307,9 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 		return bestBonus;
 	}
 
-	private ScoredCard ScoreCard(CardInfo card, CardTierEntry tierEntry, DeckAnalysis deckAnalysis, int actNumber, int floorNumber, string character = null, AdaptiveScorer adaptiveScorer = null)
+	private const float CoPickBonusCap = 0.4f;
+
+	private ScoredCard ScoreCard(CardInfo card, CardTierEntry tierEntry, DeckAnalysis deckAnalysis, int actNumber, int floorNumber, string character = null, AdaptiveScorer adaptiveScorer = null, List<string> deckCardIds = null)
 	{
 		TierGrade tierGrade;
 		float rawScore;
@@ -379,6 +402,20 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 		float jobBonus = ComputeJobGapBonus(cardSynTags, deckAnalysis, synReasons);
 		num += jobBonus;
 		synergyDelta += jobBonus;
+
+		// === CO-PICK SYNERGY — bonus for cards that pair well with existing deck ===
+		float coPickBonus = 0f;
+		if (character != null && Plugin.CoPickSynergyComputer != null && deckCardIds != null && deckCardIds.Count >= 3)
+		{
+			coPickBonus = Plugin.CoPickSynergyComputer.GetCoPickBonus(card.Id, deckCardIds, character);
+			if (coPickBonus > 0.01f)
+			{
+				coPickBonus = Math.Min(CoPickBonusCap, coPickBonus);
+				num += coPickBonus;
+				synergyDelta += coPickBonus;
+				synReasons.Add($"+{coPickBonus:F2} co-pick synergy (high win-rate pair in deck)");
+			}
+		}
 
 		// === ENERGY CURVE — penalize expensive cards in expensive decks ===
 		float energyAdjust = 0f;

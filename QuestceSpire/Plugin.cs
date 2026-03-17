@@ -65,6 +65,32 @@ public static class Plugin
 
 	public static DataUpdater DataUpdater { get; private set; }
 
+	public static PipelineOrchestrator PipelineOrchestrator { get; private set; }
+
+	public static SpireCodexSync SpireCodexSync { get; private set; }
+
+	public static PatchNotesTracker PatchNotesTracker { get; private set; }
+
+	public static SteamLeaderboardSync SteamLeaderboardSync { get; private set; }
+
+	public static CoPickSynergyComputer CoPickSynergyComputer { get; private set; }
+
+	public static FloorTierComputer FloorTierComputer { get; private set; }
+
+	public static UpgradeValueComputer UpgradeValueComputer { get; private set; }
+
+	public static RunHealthComputer RunHealthComputer { get; private set; }
+
+	public static CombatLogger CombatLogger { get; private set; }
+
+	public static CardUsageTracker CardUsageTracker { get; private set; }
+
+	public static PotionTracker PotionTracker { get; private set; }
+
+	public static AutoTierGenerator AutoTierGenerator { get; private set; }
+
+	public static MetaArchetypeComputer MetaArchetypeComputer { get; private set; }
+
 	public static OverlayManager Overlay { get; set; }
 
 	public static void Init()
@@ -111,27 +137,31 @@ public static class Plugin
 		EnemyAdvisor = new EnemyAdvisor(dataPath);
 		CloudSync = new CloudSync(RunDatabase, RunTracker.PlayerId);
 		DataUpdater = new DataUpdater(dataPath);
+
+		// Initialize all data pipelines
+		SpireCodexSync = new SpireCodexSync(dataPath);
+		PatchNotesTracker = new PatchNotesTracker(RunDatabase);
+		SteamLeaderboardSync = new SteamLeaderboardSync(dataPath);
+		CoPickSynergyComputer = new CoPickSynergyComputer(RunDatabase);
+		FloorTierComputer = new FloorTierComputer(RunDatabase);
+		UpgradeValueComputer = new UpgradeValueComputer(RunDatabase);
+		RunHealthComputer = new RunHealthComputer(RunDatabase);
+		CombatLogger = new CombatLogger(RunDatabase);
+		CardUsageTracker = new CardUsageTracker(RunDatabase);
+		PotionTracker = new PotionTracker(RunDatabase);
+		AutoTierGenerator = new AutoTierGenerator(RunDatabase, dataPath);
+		MetaArchetypeComputer = new MetaArchetypeComputer(RunDatabase, dataPath);
+
 		var overlaySettings = OverlaySettings.Load();
-		// Background init: data update + cloud sync
+		PipelineOrchestrator = new PipelineOrchestrator(overlaySettings);
+
+		// Background init: run all pipelines via orchestrator
 		Task.Run(async () =>
 		{
 			try
 			{
-				// Auto-update tier/enemy/event data if enabled
-				if (overlaySettings.AutoUpdateData)
-				{
-					bool updated = await DataUpdater.CheckAndUpdate();
-					if (updated)
-						ReloadAllData();
-				}
-
-				// Download community stats
-				if (overlaySettings.CloudSyncEnabled)
-				{
-					await CloudSync.DownloadCommunityStats();
-					new GameDataImporter(RunDatabase).ImportAll();
-				}
-
+				await PipelineOrchestrator.RunAll();
+				RunHealthComputer.ComputeBenchmarks();
 				_backgroundInitDone = true;
 			}
 			catch (Exception ex)

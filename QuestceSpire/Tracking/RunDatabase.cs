@@ -55,6 +55,7 @@ public partial class RunDatabase : IRunDatabase
 		}
 		_initialized = true;
 		Plugin.Log("RunDatabase initialized.");
+		CreatePipelineTables();
 	}
 
 	public void SaveRun(RunLog run, List<DecisionEvent> decisions)

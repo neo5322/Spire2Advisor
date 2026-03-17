@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
+using QuestceSpire.Tracking;
 
 namespace QuestceSpire.Core;
 
@@ -15,6 +17,9 @@ public class TierEngine
 	private readonly Dictionary<string, Dictionary<string, CardTierEntry>> _cardIndex = new Dictionary<string, Dictionary<string, CardTierEntry>>();
 	private readonly Dictionary<string, Dictionary<string, RelicTierEntry>> _relicIndex = new Dictionary<string, Dictionary<string, RelicTierEntry>>();
 
+	// Auto-tier fallback: character -> normalizedId -> generated entry
+	private readonly Dictionary<string, Dictionary<string, CardTierEntry>> _autoTierIndex = new Dictionary<string, Dictionary<string, CardTierEntry>>();
+
 	private readonly string _dataPath;
 
 	public TierEngine(string dataPath)
@@ -22,6 +27,7 @@ public class TierEngine
 		_dataPath = dataPath;
 		LoadCardTiers(Path.Combine(dataPath, "CardTiers"));
 		LoadRelicTiers(Path.Combine(dataPath, "RelicTiers"));
+		LoadAutoTiers(Path.Combine(dataPath, "auto_tiers"));
 	}
 
 	/// <summary>
@@ -33,8 +39,10 @@ public class TierEngine
 		_relicTiers.Clear();
 		_cardIndex.Clear();
 		_relicIndex.Clear();
+		_autoTierIndex.Clear();
 		LoadCardTiers(Path.Combine(_dataPath, "CardTiers"));
 		LoadRelicTiers(Path.Combine(_dataPath, "RelicTiers"));
+		LoadAutoTiers(Path.Combine(_dataPath, "auto_tiers"));
 		Plugin.Log("TierEngine: reloaded all tier data.");
 	}
 
@@ -114,6 +122,48 @@ public class TierEngine
 		}
 	}
 
+	private void LoadAutoTiers(string folder)
+	{
+		if (!Directory.Exists(folder)) return;
+		string[] files = Directory.GetFiles(folder, "*.json");
+		int total = 0;
+		foreach (string file in files)
+		{
+			try
+			{
+				var json = JsonConvert.DeserializeObject<AutoTierFile>(File.ReadAllText(file));
+				if (json?.Cards == null || json.Character == null) continue;
+				string charKey = json.Character.ToLowerInvariant();
+				var index = new Dictionary<string, CardTierEntry>(StringComparer.OrdinalIgnoreCase);
+				foreach (var entry in json.Cards)
+				{
+					string normId = NormalizeId(entry.Id);
+					if (string.IsNullOrEmpty(normId)) continue;
+					index[normId] = new CardTierEntry
+					{
+						Id = entry.Id,
+						BaseTier = entry.BaseTier,
+						Notes = $"Auto-tier (score: {entry.Score:F2})"
+					};
+				}
+				_autoTierIndex[charKey] = index;
+				total += index.Count;
+			}
+			catch (Exception ex)
+			{
+				Plugin.Log($"Failed to load auto tiers from {file}: {ex.Message}");
+			}
+		}
+		if (total > 0)
+			Plugin.Log($"Loaded {total} auto-tier entries as fallback.");
+	}
+
+	private class AutoTierFile
+	{
+		[JsonProperty("character")] public string Character { get; set; }
+		[JsonProperty("cards")] public List<AutoTierEntry> Cards { get; set; }
+	}
+
 	private static string NormalizeId(string id)
 	{
 		if (string.IsNullOrEmpty(id))
@@ -134,6 +184,11 @@ public class TierEngine
 		if (_cardIndex.TryGetValue("colorless", out var colorlessIdx) && colorlessIdx.TryGetValue(normId, out var colorlessEntry))
 		{
 			return colorlessEntry;
+		}
+		// Fallback to auto-generated tiers from data pipelines
+		if (charKey != null && _autoTierIndex.TryGetValue(charKey, out var autoIdx) && autoIdx.TryGetValue(normId, out var autoEntry))
+		{
+			return autoEntry;
 		}
 		return null;
 	}

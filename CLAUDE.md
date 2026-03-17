@@ -29,12 +29,27 @@ QuestceSpire/                 # Main C# project
 │   ├── GameStateReader.cs    # Extracts game state (deck, hand, relics)
 │   └── CombatTracker.cs      # Combat-specific state tracking
 ├── Tracking/                 # Persistence & statistics
-│   ├── RunDatabase.cs        # SQLite run history (602 lines)
+│   ├── RunDatabase.cs        # SQLite run history core (262 lines)
+│   ├── RunDatabase.Pipelines.cs  # Pipeline DB tables & queries (500 lines)
 │   ├── RunTracker.cs         # Current run tracking
 │   ├── LocalStatsComputer.cs # Win rate, card/relic usage stats
 │   ├── CloudSync.cs          # Community statistics sync
 │   ├── DataUpdater.cs        # Automatic data file updates (219 lines)
-│   └── GameDataImporter.cs   # Imports game history
+│   ├── GameDataImporter.cs   # Imports game history
+│   ├── PipelineHttp.cs       # Shared HTTP client with rate-limit + retry
+│   ├── PipelineOrchestrator.cs  # Dependency-ordered pipeline runner
+│   ├── SpireCodexSync.cs     # Spire Codex API sync (cards/relics/potions)
+│   ├── PatchNotesTracker.cs  # Steam patch note parsing → balance changes
+│   ├── SteamLeaderboardSync.cs  # Global leaderboard stats cache
+│   ├── CoPickSynergyComputer.cs # Card pair co-occurrence win-rate analysis
+│   ├── FloorTierComputer.cs  # Per-act tier adjustment (Act 1 ≠ Act 3)
+│   ├── UpgradeValueComputer.cs  # Card upgrade delta win-rate comparison
+│   ├── RunHealthComputer.cs  # Run health score 0-100 vs winning benchmarks
+│   ├── CombatLogger.cs       # Per-turn card/damage/block recording
+│   ├── CardUsageTracker.cs   # Card play frequency → removal recommendations
+│   ├── PotionTracker.cs      # Potion acquire/use/discard event tracking
+│   ├── AutoTierGenerator.cs  # Multi-signal automated tier computation
+│   └── MetaArchetypeComputer.cs # Top-3 meta archetypes + core cards
 ├── UI/                       # Overlay UI (Godot controls)
 │   ├── OverlayManager.cs     # Core lifecycle, panel management, Rebuild (1,331 lines)
 │   ├── OverlayManager.Advice.cs   # Per-screen advice generation (909 lines)
@@ -76,6 +91,7 @@ cd QuestceSpire && dotnet build -c Release
 - `Plugin.TierEngine`, `Plugin.SynergyScorer`, `Plugin.DeckAnalyzer`, etc.
 - `Plugin.Overlay` (the UI manager)
 - `Plugin.RunDatabase`, `Plugin.RunTracker`, `Plugin.LocalStats`
+- `Plugin.PipelineOrchestrator` — runs all 14 data pipelines on background init
 
 ### Data Flow
 1. `GamePatches` intercepts game events via Harmony
@@ -119,4 +135,5 @@ The UI is split by concern into partial classes sharing the same field set:
 | `OverlayManager.Builder.cs` | 739 | UI element builders |
 | `OverlayManager.Stats.cs` | 721 | Statistics display |
 | `SynergyScorer.cs` | 621 | Complex scoring logic |
-| `RunDatabase.cs` | 602 | SQL + business logic mixed |
+| `RunDatabase.Pipelines.cs` | 500 | Pipeline DB tables (partial class of RunDatabase) |
+| `RunDatabase.cs` | 262 | Core SQL schema — pipeline tables split to RunDatabase.Pipelines.cs |

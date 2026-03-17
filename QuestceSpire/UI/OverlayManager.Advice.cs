@@ -755,8 +755,13 @@ public partial class OverlayManager
 			{
 				string cardName = c.Name ?? PrettifyId(c.Id);
 				string subGrade = TierEngine.ScoreToSubGrade(c.FinalScore);
+
+				// Check DB upgrade value data for data-driven reason
 				string reason;
-				if (c.UpgradeDelta >= 0.6f)
+				var upgradeData = Plugin.RunDatabase?.GetUpgradeValue(c.Id, character);
+				if (upgradeData != null && upgradeData.SampleSize >= 3 && upgradeData.UpgradeWinDelta > 0.02f)
+					reason = $" — upgrade win +{upgradeData.UpgradeWinDelta:P0} ({upgradeData.SampleSize} runs)";
+				else if (c.UpgradeDelta >= 0.6f)
 					reason = $" — big upgrade (+{c.UpgradeDelta:F1})";
 				else if (c.SynergyDelta > 0.4f)
 					reason = " — 핵심 시너지";

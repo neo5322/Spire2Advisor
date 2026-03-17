@@ -18,6 +18,11 @@ public class AdaptiveScorer : IAdaptiveScorer
 
 	public float GetAdaptiveCardScore(string character, string cardId, float staticScore, DeckAnalysis deckAnalysis)
 	{
+		return GetAdaptiveCardScore(character, cardId, staticScore, deckAnalysis, 0);
+	}
+
+	public float GetAdaptiveCardScore(string character, string cardId, float staticScore, DeckAnalysis deckAnalysis, int actNumber)
+	{
 		if (_db == null)
 		{
 			if (!_loggedUnavailable)
@@ -31,6 +36,9 @@ public class AdaptiveScorer : IAdaptiveScorer
 		CommunityCardStats communityCardStats = _db.GetCommunityCardStats(character, cardId);
 		if (communityCardStats == null || communityCardStats.SampleSize < Cfg.MinSampleSize)
 		{
+			// Even without community stats, apply floor adjustment if available
+			if (actNumber > 0)
+				num += GetFloorAdjustment(cardId, character, actNumber);
 			return num;
 		}
 		float num2 = WinRateToScore(communityCardStats.WinRateWhenPicked);
@@ -50,7 +58,27 @@ public class AdaptiveScorer : IAdaptiveScorer
 		num2 = Math.Max(0f, Math.Min(5f, num2));
 		float confidence = GetConfidence(communityCardStats.SampleSize);
 		float val2 = num * (1f - confidence) + num2 * confidence;
+
+		// Apply floor-based adjustment from FloorTierComputer
+		if (actNumber > 0)
+			val2 += GetFloorAdjustment(cardId, character, actNumber);
+
 		return Math.Max(0f, Math.Min(5f, val2));
+	}
+
+	/// <summary>
+	/// Get floor/act-specific tier adjustment from FloorTierComputer.
+	/// </summary>
+	private float GetFloorAdjustment(string cardId, string character, int act)
+	{
+		try
+		{
+			return Plugin.FloorTierComputer?.GetFloorAdjustment(cardId, character, act) ?? 0f;
+		}
+		catch
+		{
+			return 0f;
+		}
 	}
 
 	public float GetAdaptiveRelicScore(string character, string relicId, float staticScore)
