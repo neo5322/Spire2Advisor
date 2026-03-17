@@ -105,6 +105,8 @@ public static class Plugin
 		LocalStats.RecomputeAll();
 		new GameDataImporter(RunDatabase).ImportAll();
 		AdaptiveScorer = new AdaptiveScorer(RunDatabase);
+		ArchetypeDefinitions.LoadFromJson(Path.Combine(dataPath, "archetypes.json"));
+		BossAdvisor.LoadFromJson(Path.Combine(dataPath, "BossData", "bosses.json"));
 		EventAdvisor = new EventAdvisor(dataPath);
 		EnemyAdvisor = new EnemyAdvisor(dataPath);
 		CloudSync = new CloudSync(RunDatabase, RunTracker.PlayerId);
@@ -194,11 +196,12 @@ public static class Plugin
 	{
 		try
 		{
+			var dataPath = Path.Combine(PluginFolder, "Data");
 			TierEngine?.Reload();
 			EventAdvisor?.Reload();
 			EnemyAdvisor?.Reload();
-			var bossPath = Path.Combine(PluginFolder, "Data", "BossData", "bosses.json");
-			BossAdvisor.LoadFromJson(bossPath);
+			ArchetypeDefinitions.LoadFromJson(Path.Combine(dataPath, "archetypes.json"));
+			BossAdvisor.LoadFromJson(Path.Combine(dataPath, "BossData", "bosses.json"));
 			Log("All data reloaded after update.");
 		}
 		catch (Exception ex)
