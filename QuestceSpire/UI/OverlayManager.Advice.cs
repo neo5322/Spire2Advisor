@@ -949,9 +949,9 @@ public partial class OverlayManager
 		{
 			float archStr = deck?.DetectedArchetypes?.Count > 0 ? deck.DetectedArchetypes[0].Strength : 0f;
 			int bossReady = 50;
-			var bossResults = BossAdvisor.Diagnose(deck, act, character, hp, maxHP);
-			if (bossResults.Count > 0)
-				bossReady = (int)bossResults[0].ReadinessScore;
+			var bossHealthResults = BossAdvisor.Diagnose(deck, act, character, hp, maxHP);
+			if (bossHealthResults.Count > 0)
+				bossReady = (int)bossHealthResults[0].ReadinessScore;
 			int health = Plugin.RunHealthComputer.CalculateHealth(hp, maxHP, gold, deck?.TotalCards ?? 0, floor, archStr, bossReady);
 			string healthIcon = health >= 70 ? "\u2705" : health >= 45 ? "\u26a0" : "\u274c";
 			Color healthColor = health >= 70 ? ClrPositive : health >= 45 ? ClrExpensive : ClrNegative;

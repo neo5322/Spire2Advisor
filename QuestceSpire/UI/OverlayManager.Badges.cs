@@ -389,7 +389,7 @@ public partial class OverlayManager
 			}
 			// Context check: if more NGridCardHolder nodes appeared, a pile/overlay opened
 			var allHolders = new List<Control>();
-			var searchRoot = screenNode.GetTree()?.Root;
+			Node searchRoot = (Node)screenNode.GetTree()?.Root;
 			if (searchRoot == null)
 			{
 				Plugin.Log("OverlayManager: GetTree().Root is null, falling back to screenNode");
