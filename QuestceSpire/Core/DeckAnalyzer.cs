@@ -4,7 +4,7 @@ using QuestceSpire.GameBridge;
 
 namespace QuestceSpire.Core;
 
-public class DeckAnalyzer
+public class DeckAnalyzer : IDeckAnalyzer
 {
 	// Job definitions: each job maps to tags that indicate coverage, with a threshold
 	private static readonly Dictionary<string, (string[] Tags, int Threshold)> JobDefinitions = new()

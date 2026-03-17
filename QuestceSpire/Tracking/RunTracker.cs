@@ -7,7 +7,7 @@ using QuestceSpire.GameBridge;
 
 namespace QuestceSpire.Tracking;
 
-public class RunTracker
+public class RunTracker : IRunTracker
 {
 	private RunLog _currentRun;
 
