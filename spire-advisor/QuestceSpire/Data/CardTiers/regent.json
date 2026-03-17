@@ -1,0 +1,899 @@
+{
+  "character": "regent",
+  "source": "https://www.youtube.com/watch?v=dcGa6DklLBU",
+  "cards": [
+    {
+      "id": "Strike Regent",
+      "baseTier": "D",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "시작 스트라이크, 가능하면 교체"
+    },
+    {
+      "id": "Defend Regent",
+      "baseTier": "D",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "시작 디펜드, 가능하면 교체"
+    },
+    {
+      "id": "Falling Star",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "zero_cost",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Starter 0-코스트 공격. Creator says 'very very good' starter — combos with vuln and star payoffs"
+    },
+    {
+      "id": "Venerate",
+      "baseTier": "D",
+      "synergies": [
+        "stars",
+        "block",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Starter 스킬. Worse starter, generates two stars but much worse than other star generators"
+    },
+    {
+      "id": "Alignment",
+      "baseTier": "C",
+      "synergies": [
+        "stars",
+        "scaling",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Has its uses but very often kind of clunky. There's about one 카드 you can pick this with"
+    },
+    {
+      "id": "Arsenal",
+      "baseTier": "D",
+      "synergies": [
+        "forge",
+        "scaling",
+        "authority"
+      ],
+      "antiSynergies": [],
+      "notes": "Forge 레어, forge mechanic is not good on this character"
+    },
+    {
+      "id": "Astral Pulse",
+      "baseTier": "B",
+      "synergies": [
+        "aoe",
+        "zero_cost",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Top of B tier. Not amazing payoff for stars but 0-코스트 광역, can loop it"
+    },
+    {
+      "id": "Beat Into Shape",
+      "baseTier": "D",
+      "synergies": [
+        "forge",
+        "damage",
+        "authority"
+      ],
+      "antiSynergies": [],
+      "notes": "Usually pretty bad. Forge mechanic not great, hard to hit enemy enough times, mid as a 레어"
+    },
+    {
+      "id": "Begone",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "End of A tier. 좋은 초반 피해, adds Dive Bomb (13 dmg 소멸), targeted 소멸 for going infinite"
+    },
+    {
+      "id": "Big Bang",
+      "baseTier": "S",
+      "synergies": [
+        "exhaust",
+        "stellar",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "S tier. Basically adrenaline — 에너지 generation, 카드 generation, goes infinite easily with 소멸 removal"
+    },
+    {
+      "id": "Black Hole",
+      "baseTier": "C",
+      "synergies": [
+        "cosmic",
+        "aoe",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Pretty slow, never really want it. Doesn't scale with burst stars, just instances. Pick 에만 if desperate for 광역"
+    },
+    {
+      "id": "Bombardment",
+      "baseTier": "S",
+      "synergies": [
+        "aoe",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Extremely good. One 카드 solve — kills bosses while you 블록. Scary 초반 game makes this essential. Spot in the top"
+    },
+    {
+      "id": "Bulwark",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "forge",
+        "cosmic_block"
+      ],
+      "antiSynergies": [],
+      "notes": "Middle of the road. Two for 13 is good rate but forge mechanic bad, doesn't fit infinite gameplan"
+    },
+    {
+      "id": "Bundle Of Joy",
+      "baseTier": "D",
+      "synergies": [
+        "minion",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "Disgusting. Doesn't even cheat 에너지 코스트s. Terrible, don't take it"
+    },
+    {
+      "id": "Celestial Might",
+      "baseTier": "C",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Two 에너지 deal 18, not amazing. Multi-hit with vigor combos possible but just not great"
+    },
+    {
+      "id": "Charge",
+      "baseTier": "A",
+      "synergies": [
+        "exhaust",
+        "damage",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "One of the premium ways to 소멸 카드s. Cheap targeted 소멸, thins 덱, premium 유틸"
+    },
+    {
+      "id": "Child Of The Stars",
+      "baseTier": "S",
+      "synergies": [
+        "stars",
+        "block",
+        "stellar",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Best 카드 in the class. Mental fortress — gain 블록 whenever you spend stars. Tier of its own"
+    },
+    {
+      "id": "Cloak Of Stars",
+      "baseTier": "B",
+      "synergies": [
+        "stars",
+        "block",
+        "zero_cost",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Okay, decent 블록. Not the premium one but helps frontload 블록 while playing Glow"
+    },
+    {
+      "id": "Collision Course",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "zero_cost"
+      ],
+      "antiSynergies": [],
+      "notes": "Okay, decent 초반 game thing. Lets you push 피해 without 에너지. Don't really want it most of the time"
+    },
+    {
+      "id": "Comet",
+      "baseTier": "S",
+      "synergies": [
+        "cosmic",
+        "damage",
+        "zero_cost",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "One of the best payoffs for stars. 0-코스트, insane 스케일링 피해, 3 weak 3 vuln. Big loop payoff"
+    },
+    {
+      "id": "Conqueror",
+      "baseTier": "D",
+      "synergies": [
+        "forge",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Pretty bad, 에만 ever transformed into it. Sovereign Blade deals double but it's 3 에너지 deal 26, not great"
+    },
+    {
+      "id": "Convergence",
+      "baseTier": "S",
+      "synergies": [
+        "stars",
+        "draw",
+        "stellar",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Insanely strong. Main infinite enabler, cheats 에너지, retain hand is incredibly 파워ful. Basically Pyramid"
+    },
+    {
+      "id": "Cosmic Indifference",
+      "baseTier": "C",
+      "synergies": [
+        "block",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Basically headbutt but 블록. Okay — doesn't make stars but can line up combos"
+    },
+    {
+      "id": "Crash Landing",
+      "baseTier": "D",
+      "synergies": [
+        "damage",
+        "aoe"
+      ],
+      "antiSynergies": [],
+      "notes": "Basically hyperbeam. Awful — fills hand with debris statuses that 코스트 에너지 to remove"
+    },
+    {
+      "id": "Crescent Spear",
+      "baseTier": "D",
+      "synergies": [
+        "damage",
+        "forge"
+      ],
+      "antiSynergies": [],
+      "notes": "Pretty terrible. Costs one 에너지 you don't want to pay, star 코스트 is awkward for looping"
+    },
+    {
+      "id": "Crush Under",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "aoe",
+        "weak"
+      ],
+      "antiSynergies": [],
+      "notes": "Fine 일반. 광역 with 힘 loss for act one, but use case drops off after that"
+    },
+    {
+      "id": "Decisions Decisions",
+      "baseTier": "C",
+      "synergies": [
+        "draw",
+        "exhaust",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Six stars hard to get. Has 유틸 and can do something if you cheat the 코스트, but inconsistent"
+    },
+    {
+      "id": "Devastate",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "One of the worst star payoffs. Four stars is awkward number — starter 덱 doesn't make excess stars"
+    },
+    {
+      "id": "Dying Star",
+      "baseTier": "C",
+      "synergies": [
+        "cosmic",
+        "aoe",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Top of C tier. Pretty 상황적 — great in 광역 fights, bad in single target. Ethereal, 레어 slot competition"
+    },
+    {
+      "id": "Foregone Conclusion",
+      "baseTier": "A",
+      "synergies": [
+        "draw",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Seek delayed by one turn, quite good. Doesn't 소멸 so chains throughout fight. Lines up combos"
+    },
+    {
+      "id": "Furnace",
+      "baseTier": "C",
+      "synergies": [
+        "forge",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Forge package can solve bosses but is pretty freaking slow. One 카드 solve but 에만 when desperate"
+    },
+    {
+      "id": "Gamma Blast",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "zero_cost",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Definitely a very good 카드. One of the bigger payoffs for the loop — 0-코스트 with debuffs (weak + vuln)"
+    },
+    {
+      "id": "Gather Light",
+      "baseTier": "A",
+      "synergies": [
+        "stars",
+        "block",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Pretty good 카드, up here somewhere. Making stars is good, 블록ing is good, better than Cosmic Indifference"
+    },
+    {
+      "id": "Genesis",
+      "baseTier": "A",
+      "synergies": [
+        "stars",
+        "scaling",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Very solid 카드. Makes 2-3 stars a turn, pushes you over threshold to play expensive payoffs like Comet"
+    },
+    {
+      "id": "Glimmer",
+      "baseTier": "C",
+      "synergies": [
+        "draw",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Okay — 드로우 카드s is good but wildly inconsistent. Draw order dependent, top 덱 manipulation awkward"
+    },
+    {
+      "id": "Glitterstream",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Okay number, B tier area. Bit better than Bulwark as 일반 블록. 강력한 초반 game 블록"
+    },
+    {
+      "id": "Glow",
+      "baseTier": "S",
+      "synergies": [
+        "stars",
+        "block",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "S tier — equivalent to Defect's Coolheaded. 핵심 카드 on the class. Common you build entire 덱 around"
+    },
+    {
+      "id": "Guards",
+      "baseTier": "S",
+      "synergies": [
+        "exhaust",
+        "block",
+        "minion"
+      ],
+      "antiSynergies": [],
+      "notes": "Crazy 카드. Targeted Fiend Fire — 소멸 bad 카드s, keep good ones, 블록s while setting up infinite. Disgusting"
+    },
+    {
+      "id": "Guiding Star",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "draw",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "One of the better 일반s. Mini Predator — high 피해 + 드로우 3 next turn. Doesn't fall off 후반 game"
+    },
+    {
+      "id": "Hammer Time",
+      "baseTier": "D",
+      "synergies": [],
+      "antiSynergies": [],
+      "notes": "Multiplayer 카드, not relevant for solo play"
+    },
+    {
+      "id": "Heavenly Drill",
+      "baseTier": "D",
+      "synergies": [
+        "damage",
+        "zero_cost"
+      ],
+      "antiSynergies": [],
+      "notes": "Super 상황적. Not many ways to make 에너지, so X 코스트 is bad. Most runs you don't want it"
+    },
+    {
+      "id": "Hegemony",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Fine, B tier. Cheats 에너지 (refunds next turn). Early 피해 카드, but doesn't transition well to 후반 game"
+    },
+    {
+      "id": "Heirloom Hammer",
+      "baseTier": "D",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Never clicked this 카드. 17 피해 for two 에너지 not great, copy a colorless 카드 unclear payoff"
+    },
+    {
+      "id": "Hidden Cache",
+      "baseTier": "A",
+      "synergies": [
+        "stars",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "One of the better ways to make stars. Makes 4-5 stars — fully pays for Gamma Blast. Overall pretty strong"
+    },
+    {
+      "id": "I Am Invincible",
+      "baseTier": "C",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Fine, nine 블록 is quite good. But top 덱 manipulation isn't what this character does. Not happy to see this"
+    },
+    {
+      "id": "Kingly Kick",
+      "baseTier": "C",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Pretty bad. Four 에너지 deal 24, discounts when 드로우n. Not unpickable if desperate for 피해, but not great"
+    },
+    {
+      "id": "Kingly Punch",
+      "baseTier": "D",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Worse version of Kingly Kick. Worse rampage, doesn't frontload 피해. Just not that good"
+    },
+    {
+      "id": "Knockout Blow",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Early game this thing is disgusting. Kills elites, 업그레이드s to 38 피해 with vuln. Gives stars for follow-up plays"
+    },
+    {
+      "id": "Know Thy Place",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "weak"
+      ],
+      "antiSynergies": [],
+      "notes": "Pretty middling. Starter 카드 has same effect + deals 피해. Okay as pseudo-블록, just not great"
+    },
+    {
+      "id": "Largesse",
+      "baseTier": "C",
+      "synergies": [
+        "draw",
+        "stars",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Not discussed in tier list — resource generation 유틸, replaceable"
+    },
+    {
+      "id": "Lunar Blast",
+      "baseTier": "D",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Really bad. Not a great payoff for playing 스킬s. Inconsistent, bricks a lot"
+    },
+    {
+      "id": "Make It So",
+      "baseTier": "C",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "C tier for now. Kind of like Flurry of Blows but not helping combos. Mediocre 피해, not contributing past 초반 game"
+    },
+    {
+      "id": "Manifest Authority",
+      "baseTier": "C",
+      "synergies": [
+        "scaling",
+        "authority"
+      ],
+      "antiSynergies": [],
+      "notes": "Not discussed in tier list — creator hasn't seen or the 카드 may have been misidentified in transcript"
+    },
+    {
+      "id": "Meteor Shower",
+      "baseTier": "C",
+      "synergies": [
+        "aoe",
+        "zero_cost",
+        "stellar",
+        "weak"
+      ],
+      "antiSynergies": [],
+      "notes": "Creator hasn't seen this 카드 but says it looks like 'insane rate' and 'better Gamma Blast'. Uncertain placement"
+    },
+    {
+      "id": "Monarchs Gaze",
+      "baseTier": "D",
+      "synergies": [
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Horrible 카드. Way 비용 과다, doesn't do enough. After image for 공격s at 3 코스트 is terrible"
+    },
+    {
+      "id": "Monologue",
+      "baseTier": "C",
+      "synergies": [
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Not discussed in tier list — minor 유틸"
+    },
+    {
+      "id": "Neutron Aegis",
+      "baseTier": "D",
+      "synergies": [
+        "block",
+        "stellar",
+        "cosmic_block"
+      ],
+      "antiSynergies": [],
+      "notes": "Costs a lot, inconsistent. In the 레어 slot, often can't play it. Cards that need right 드로우 order are bad"
+    },
+    {
+      "id": "Orbit",
+      "baseTier": "C",
+      "synergies": [
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Not amazing. Basically a kind of bad 에너지 유물 that 코스트s two. Energy hasn't been the main limiting factor"
+    },
+    {
+      "id": "Pale Blue Dot",
+      "baseTier": "D",
+      "synergies": [
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Awful. Conditional 파워 that does nothing — can't play five 카드s, and if you can, you're already infinite"
+    },
+    {
+      "id": "Parry",
+      "baseTier": "D",
+      "synergies": [
+        "block",
+        "forge"
+      ],
+      "antiSynergies": [],
+      "notes": "Gain 6 블록 when playing Sovereign Blade. Not that much, and blade 덱 isn't good"
+    },
+    {
+      "id": "Particle Wall",
+      "baseTier": "S",
+      "synergies": [
+        "block",
+        "zero_cost",
+        "stellar",
+        "cosmic_block"
+      ],
+      "antiSynergies": [],
+      "notes": "Premium 블록 option on the character. Goes absolutely nuts 초반 game with Hidden Cache. Returns to hand for looping"
+    },
+    {
+      "id": "Patter",
+      "baseTier": "C",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Numbers are okay. Thrown in C tier — not significant 유틸, just a 블록 카드"
+    },
+    {
+      "id": "Photon Cut",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Overperforming. Upgrade is 13 피해 드로우 2 — basically Pommel Strike. Quite solid 피해 일반 that sets up next turn"
+    },
+    {
+      "id": "Pillar Of Creation",
+      "baseTier": "D",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Creation build just not that great. Not a strong enough 아키타입, not supported. Awkward"
+    },
+    {
+      "id": "Prophesize",
+      "baseTier": "D",
+      "synergies": [
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "At two 에너지, can never afford to play this. Drawing six 카드s but no 에너지 to play them. Feels really bad"
+    },
+    {
+      "id": "Quasar",
+      "baseTier": "D",
+      "synergies": [
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Paying two stars to randomly select a colorless 카드 feels really bad. Not discounted either"
+    },
+    {
+      "id": "Radiate",
+      "baseTier": "B",
+      "synergies": [
+        "aoe",
+        "zero_cost",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Just okay, B tier area. 광역 makes it decent 초반 game pickup. Chance to get broken with enchantments"
+    },
+    {
+      "id": "Refine Blade",
+      "baseTier": "D",
+      "synergies": [
+        "forge"
+      ],
+      "antiSynergies": [],
+      "notes": "Don't want this ever. Forge is not great, just bad"
+    },
+    {
+      "id": "Reflect",
+      "baseTier": "S",
+      "synergies": [
+        "block",
+        "damage",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Insanely high output 카드. Deals ridiculous amount of 피해 back, also deals 광역 in multi-enemy fights. Premium rate"
+    },
+    {
+      "id": "Resonance",
+      "baseTier": "C",
+      "synergies": [
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Bottom of C. Strength not what this character wants. Too many stars 코스트, doesn't feel good. Never drafted it"
+    },
+    {
+      "id": "Royal Gamble",
+      "baseTier": "A",
+      "synergies": [
+        "stars",
+        "exhaust",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Feels quite good, near Begone. Four stars net is insane. Zero 에너지, 업그레이드s to retain. Lines up well"
+    },
+    {
+      "id": "Royalties",
+      "baseTier": "B",
+      "synergies": [
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Gold meta-스케일링 is awkward. Shops worse in STS2, don't 초반 shop. B tier area — gold does something but limited"
+    },
+    {
+      "id": "Seeking Edge",
+      "baseTier": "C",
+      "synergies": [
+        "forge",
+        "damage",
+        "aoe"
+      ],
+      "antiSynergies": [],
+      "notes": "Just okay. Number is good and deals 광역, but it's the blade package which isn't great"
+    },
+    {
+      "id": "Seven Stars",
+      "baseTier": "B",
+      "synergies": [
+        "aoe",
+        "damage",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Star 코스트 hard to get but payoff worth it. Hits 7 times, wipes the field. Main 피해 engine in some runs"
+    },
+    {
+      "id": "Shining Strike",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "stars",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Kind of cracked. Draw every turn, make 2 stars. Makes all payoff 카드s work. Gives direction 초반"
+    },
+    {
+      "id": "Solar Strike",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "stars",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Decent 피해 일반, similar to Gather Light but 블록 is better than 피해. Tiny bit lower"
+    },
+    {
+      "id": "Spectrum Shift",
+      "baseTier": "D",
+      "synergies": [
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Really bad. Costs two, incredibly difficult to play and have it do anything. Way too slow"
+    },
+    {
+      "id": "Spoils Of Battle",
+      "baseTier": "D",
+      "synergies": [
+        "forge",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Awful. Forge 10 is just not great, don't want to be doing the forge thing"
+    },
+    {
+      "id": "Stardust",
+      "baseTier": "D",
+      "synergies": [
+        "damage",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Pretty bad 카드. X times star 코스트, don't often have excess stars. Hasn't gotten it to work"
+    },
+    {
+      "id": "Summon Forth",
+      "baseTier": "C",
+      "synergies": [
+        "forge",
+        "minion"
+      ],
+      "antiSynergies": [],
+      "notes": "Definitely one of the better forge 카드s, but still not enough to put it in good tier"
+    },
+    {
+      "id": "Supermassive",
+      "baseTier": "C",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Maybe will do something. Creation 아키타입 not strong enough yet, not going to be very high"
+    },
+    {
+      "id": "Sword Sage",
+      "baseTier": "D",
+      "synergies": [
+        "forge"
+      ],
+      "antiSynergies": [],
+      "notes": "Pretty awful. Sword needs to 코스트 less not more. Can't play blade the turn you play this"
+    },
+    {
+      "id": "Terraforming",
+      "baseTier": "D",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Doesn't do anything. Vigor packages nothing, just random 카드s that don't work"
+    },
+    {
+      "id": "The Sealed Throne",
+      "baseTier": "A",
+      "synergies": [
+        "stars",
+        "scaling",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "Boss exclusive but quite good. Goes infinite, really good standalone. Opportunity 코스트 of picking over boss 유물s"
+    },
+    {
+      "id": "The Smith",
+      "baseTier": "D",
+      "synergies": [
+        "forge"
+      ],
+      "antiSynergies": [],
+      "notes": "Seems terrible. Need stars AND forge, just awful. Only good from Skill Potion"
+    },
+    {
+      "id": "Tyranny",
+      "baseTier": "D",
+      "synergies": [
+        "draw",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "Really bad. Randomly 소멸ing stuff is rough, 레어s are just completely unpickable"
+    },
+    {
+      "id": "Void Form",
+      "baseTier": "S",
+      "synergies": [
+        "scaling",
+        "stellar"
+      ],
+      "antiSynergies": [],
+      "notes": "One of the best 카드s on the class. Like Echo Form — first two 카드s free (cheats star 코스트s too). You probably just win"
+    },
+    {
+      "id": "Wrought In War",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "forge"
+      ],
+      "antiSynergies": [],
+      "notes": "Does enough 피해 for 초반 game. Throw this up in B — not building forge around it but helps if dying to elites"
+    }
+  ]
+}

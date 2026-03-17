@@ -1,0 +1,939 @@
+{
+  "character": "defect",
+  "source": "https://www.youtube.com/watch?v=_SMfBDBTyo0",
+  "cards": [
+    {
+      "id": "Strike Defect",
+      "baseTier": "D",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "시작 스트라이크, 가능하면 교체"
+    },
+    {
+      "id": "Defend Defect",
+      "baseTier": "D",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "시작 디펜드, 가능하면 교체"
+    },
+    {
+      "id": "Dualcast",
+      "baseTier": "C",
+      "synergies": [
+        "evoke",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "Starter. Evoke front 오브 twice"
+    },
+    {
+      "id": "Zap",
+      "baseTier": "C",
+      "synergies": [
+        "lightning",
+        "channel",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "Starter. Channel 1 번개"
+    },
+    {
+      "id": "Adaptive Strike",
+      "baseTier": "B",
+      "synergies": [
+        "orb",
+        "damage",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 18 for 2, copies itself. Slow boss 스케일링. 좋은 act 1 but falls off"
+    },
+    {
+      "id": "All For One",
+      "baseTier": "C",
+      "synergies": [
+        "zero_cost",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Zero-코스트 아키타입 has fundamental paradox problems. Draw order reliance"
+    },
+    {
+      "id": "Ball Lightning",
+      "baseTier": "B",
+      "synergies": [
+        "lightning",
+        "channel",
+        "orb",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 7 + channel 번개. 좋은 초반, falls off. Less need to rush 피해 in STS2"
+    },
+    {
+      "id": "Barrage",
+      "baseTier": "A",
+      "synergies": [
+        "orb",
+        "multi_hit",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Upgraded from 4 to 5 피해 per 오브. Scales with enchantments. Much better in STS2"
+    },
+    {
+      "id": "Beam Cell",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "vulnerable"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트, 3 피해 + 1 취약. Vulnerable doesn't scale 오브 피해. 특수"
+    },
+    {
+      "id": "Biased Cognition",
+      "baseTier": "C",
+      "synergies": [
+        "focus",
+        "orb",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Ancient. Was best 카드 in STS1 but temp 집중 is plentiful now. No artifact to negate downside"
+    },
+    {
+      "id": "Boost Away",
+      "baseTier": "C",
+      "synergies": [
+        "block",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "Gain 6 블록 + daze in dis카드. Number not big enough. Status bridge doesn't work well"
+    },
+    {
+      "id": "Boot Sequence",
+      "baseTier": "A",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Innate 10 블록 for zero 에너지. Skip turn 1 decisions and set up freely. Easy A"
+    },
+    {
+      "id": "Buffer",
+      "baseTier": "A",
+      "synergies": [
+        "scaling",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "One-time 피해 prevention. Not as crazy without Heart but still solid"
+    },
+    {
+      "id": "Bulk Up",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "scaling",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "Lose 1 오브 slot, gain 2 힘 + 2 dex. 좋은 초반 but too slow once doing 오브 stuff"
+    },
+    {
+      "id": "Capacitor",
+      "baseTier": "S",
+      "synergies": [
+        "orb",
+        "channel",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "One copy solves endgame output. Orb slots + 집중 is multiplicative"
+    },
+    {
+      "id": "Chaos",
+      "baseTier": "C",
+      "synergies": [
+        "orb",
+        "channel"
+      ],
+      "antiSynergies": [],
+      "notes": "Channel 1 random 오브. Needs buffs. Almost never pick it"
+    },
+    {
+      "id": "Charge Battery",
+      "baseTier": "A",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Premium 블록 일반. 7 블록 + 1 에너지 next turn. Never falls off"
+    },
+    {
+      "id": "Chill",
+      "baseTier": "S",
+      "synergies": [
+        "frost",
+        "orb",
+        "block",
+        "aoe"
+      ],
+      "antiSynergies": [],
+      "notes": "Multi-enemy fights it 블록s a ton for zero 에너지. Upgrade removes 소멸. Disgusting 카드"
+    },
+    {
+      "id": "Claw",
+      "baseTier": "D",
+      "synergies": [
+        "zero_cost",
+        "scaling",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Meme 카드. Number too low. Zero-코스트 아키타입 problems"
+    },
+    {
+      "id": "Cold Snap",
+      "baseTier": "A",
+      "synergies": [
+        "frost",
+        "channel",
+        "orb",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 6 + channel 냉기. Reads 'deal 6, 블록 2 for rest of fight.' 훌륭한 일반"
+    },
+    {
+      "id": "Compact",
+      "baseTier": "B",
+      "synergies": [
+        "draw",
+        "orb",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Gain 6 블록 + transform statuses to fuel. Number not great but effect is strong"
+    },
+    {
+      "id": "Compile Driver",
+      "baseTier": "B",
+      "synergies": [
+        "draw",
+        "orb",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 7, 드로우 per unique 오브. More 오브 types in STS2. Usually 드로우s 2"
+    },
+    {
+      "id": "Consuming Shadow",
+      "baseTier": "C",
+      "synergies": [
+        "dark",
+        "orb",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 파워, channel 2 어둠 + evoke leftmost each turn. Awkward, doesn't enter 덱 often"
+    },
+    {
+      "id": "Coolant",
+      "baseTier": "A",
+      "synergies": [
+        "frost",
+        "orb",
+        "focus",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Power giving 블록 per unique 오브 each turn. Passive 스케일링 that never falls off"
+    },
+    {
+      "id": "Coolheaded",
+      "baseTier": "S",
+      "synergies": [
+        "frost",
+        "draw",
+        "channel",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "Best 일반. Frost + 드로우. Upgrade to 드로우 2 is insane. Main enabler for defect"
+    },
+    {
+      "id": "Creative Ai",
+      "baseTier": "A",
+      "synergies": [
+        "scaling",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Boss 스케일링 that solves endgame. Random 파워s are strong. More time to set up in STS2"
+    },
+    {
+      "id": "Darkness",
+      "baseTier": "S",
+      "synergies": [
+        "dark",
+        "channel",
+        "orb",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Darkness+ baseline from STS1. Insane 단일 대상 피해. Upgrade triggers 어둠 passive twice"
+    },
+    {
+      "id": "Defragment",
+      "baseTier": "S",
+      "synergies": [
+        "focus",
+        "orb",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Straight into S. One permanent 집중 outscales almost every fight. Upgrade to 2 is nuts"
+    },
+    {
+      "id": "Double Energy",
+      "baseTier": "A",
+      "synergies": [
+        "exhaust",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Cheat 에너지. Really nice with Coolheaded. 좋은 for 파워 setup turns"
+    },
+    {
+      "id": "Echo Form",
+      "baseTier": "S",
+      "synergies": [
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Probably the best 카드 in the class. Playing best 카드 twice is broken. Worth carrying as brick"
+    },
+    {
+      "id": "Energy Surge",
+      "baseTier": "D",
+      "synergies": [
+        "exhaust",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Multiplayer 카드, not relevant in solo"
+    },
+    {
+      "id": "Feral",
+      "baseTier": "D",
+      "synergies": [
+        "damage",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 파워 returning zero-코스트 공격s. Bad Echo Form. Output not enough"
+    },
+    {
+      "id": "Fight Through",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Gain 13 블록 + 2 wounds. 안정적인 초반 블록 but wounds brick future 드로우 cycles"
+    },
+    {
+      "id": "Flak Cannon",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "multi_hit",
+        "aoe"
+      ],
+      "antiSynergies": [],
+      "notes": "Exhaust all statuses, deal 8 피해 per. Status package needs more support"
+    },
+    {
+      "id": "Focused Strike",
+      "baseTier": "A",
+      "synergies": [
+        "focus",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Common. Deal 9 + 1 temp 집중. Upgrade: 11 + 2 집중. De facto 일반 that never falls off"
+    },
+    {
+      "id": "Ftl",
+      "baseTier": "A",
+      "synergies": [
+        "draw",
+        "zero_cost",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Zero 에너지, deal 5, 드로우 1 if <3 카드s played. Free 피해. Don't take with Echo Form"
+    },
+    {
+      "id": "Fusion",
+      "baseTier": "C",
+      "synergies": [
+        "orb",
+        "channel"
+      ],
+      "antiSynergies": [],
+      "notes": "Channel plasma for 2 에너지. Less needed. Better/easier ways to make 에너지"
+    },
+    {
+      "id": "Genetic Algorithm",
+      "baseTier": "S",
+      "synergies": [
+        "block",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Scales into insane 블록 over the game. Combos with Echo Form. Rare so comes pre-업그레이드d"
+    },
+    {
+      "id": "Glacier",
+      "baseTier": "S",
+      "synergies": [
+        "frost",
+        "block",
+        "channel",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "Nerfed 1 블록 from STS1, doesn't matter. Makes two 냉기, that's all you need to know"
+    },
+    {
+      "id": "Glasswork",
+      "baseTier": "A",
+      "synergies": [
+        "block",
+        "orb",
+        "aoe"
+      ],
+      "antiSynergies": [],
+      "notes": "Gain 5 블록, channel glass 오브. New 오브 type for 광역. Very easy to pick in act 1"
+    },
+    {
+      "id": "Go For The Eyes",
+      "baseTier": "A",
+      "synergies": [
+        "weak",
+        "zero_cost",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Zero 에너지, deal 3 + apply weak. Overperforming 카드. Standalone good"
+    },
+    {
+      "id": "Gunk Up",
+      "baseTier": "D",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 4x3 + add slab. Number too low vs ball 번개. Payoff not good enough"
+    },
+    {
+      "id": "Hailstorm",
+      "baseTier": "A",
+      "synergies": [
+        "frost",
+        "channel",
+        "orb",
+        "aoe"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: end of turn deal 6 광역 if you have 냉기. Condition basically always met. Doesn't fall off"
+    },
+    {
+      "id": "Helix Drill",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "zero_cost",
+        "multi_hit"
+      ],
+      "antiSynergies": [],
+      "notes": "Zero 에너지, 3 피해 per 에너지 spent. Usually does 9. As a 레어, numbers don't justify slot"
+    },
+    {
+      "id": "Hologram",
+      "baseTier": "A",
+      "synergies": [
+        "block",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Put 카드 from dis카드 to hand. Not as broken as people think. Could be top of B"
+    },
+    {
+      "id": "Hotfix",
+      "baseTier": "S",
+      "synergies": [
+        "focus",
+        "zero_cost",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "Best temp 집중 카드. Zero 에너지, gain 2 집중 this turn (업그레이드s to 3). Common rarity. Bonkers"
+    },
+    {
+      "id": "Hyperbeam",
+      "baseTier": "C",
+      "synergies": [
+        "aoe",
+        "damage"
+      ],
+      "antiSynergies": [
+        "focus"
+      ],
+      "notes": "Deal 26 광역, lose 3 집중. Better in STS2 but still a break in hard fights"
+    },
+    {
+      "id": "Ice Lance",
+      "baseTier": "A",
+      "synergies": [
+        "frost",
+        "damage",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "3 에너지, deal 19 + channel 3 냉기. Slightly over코스트ed but 냉기 is just that good"
+    },
+    {
+      "id": "Ignition",
+      "baseTier": "D",
+      "synergies": [
+        "damage",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "Multiplayer 카드, not relevant in solo"
+    },
+    {
+      "id": "Iteration",
+      "baseTier": "B",
+      "synergies": [
+        "draw",
+        "zero_cost",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "First status 드로우n each turn 드로우s 2. Average 카드, saves 드로우 cycles from bricking"
+    },
+    {
+      "id": "Leap",
+      "baseTier": "B",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Gain 9 블록 for 1 에너지. Not as good as Charge Battery but big number 초반"
+    },
+    {
+      "id": "Lightning Rod",
+      "baseTier": "A",
+      "synergies": [
+        "lightning",
+        "channel",
+        "orb",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Slow 블록 + channel 번개. Does 피해 while 블록ing in act 1"
+    },
+    {
+      "id": "Loop",
+      "baseTier": "A",
+      "synergies": [
+        "orb",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Trigger rightmost 오브 passive at start of turn. Worse than STS1 without permanent 집중 but still great"
+    },
+    {
+      "id": "Machine Learning",
+      "baseTier": "A",
+      "synergies": [
+        "draw",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Draw 1 extra per turn. Slightly better than STS1 due to needing to line up Hot Fix"
+    },
+    {
+      "id": "Meteor Strike",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "orb",
+        "channel"
+      ],
+      "antiSynergies": [],
+      "notes": "Was easy S in STS1 but payoff for playing it is worse. Can still go infinite with coolheaded"
+    },
+    {
+      "id": "Modded",
+      "baseTier": "S",
+      "synergies": [
+        "orb",
+        "draw",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Free 오브 slot, replaces itself, scales throughout the fight. No downside"
+    },
+    {
+      "id": "Momentum Strike",
+      "baseTier": "B",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 10, reduces to zero 코스트. Decent 초반 일반, nothing exceptional"
+    },
+    {
+      "id": "Multi Cast",
+      "baseTier": "C",
+      "synergies": [
+        "orb",
+        "evoke",
+        "dark"
+      ],
+      "antiSynergies": [],
+      "notes": "X 에너지 evoke rightmost X times. Less need for mega 어둠 오브. Energy harder to combine"
+    },
+    {
+      "id": "Null",
+      "baseTier": "A",
+      "synergies": [
+        "dark",
+        "orb",
+        "weak",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 10, apply 2 weak, channel 어둠. 약한ness + 어둠 오브. Very solid"
+    },
+    {
+      "id": "Overclock",
+      "baseTier": "C",
+      "synergies": [
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Draw 2 + burn. Burn bricks future cycles which matters more now with temp 집중"
+    },
+    {
+      "id": "Quadcast",
+      "baseTier": "A",
+      "synergies": [
+        "orb",
+        "evoke"
+      ],
+      "antiSynergies": [],
+      "notes": "Ancient. Evoke rightmost 오브 4 times. Block 20 from 냉기 evoke or one-shot boss with 어둠"
+    },
+    {
+      "id": "Rainbow",
+      "baseTier": "C",
+      "synergies": [
+        "orb",
+        "frost",
+        "lightning",
+        "dark",
+        "channel"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 channel 1 of each 오브 type. Jack of all trades, does nothing well"
+    },
+    {
+      "id": "Reboot",
+      "baseTier": "B",
+      "synergies": [
+        "draw",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "Shuffle all 카드s, 드로우 4, 소멸. Not doing anything crazy as a 레어 but has uses"
+    },
+    {
+      "id": "Refract",
+      "baseTier": "C",
+      "synergies": [
+        "frost",
+        "block",
+        "orb",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "3 에너지, deal 9x2 + channel 2 glass. Clunky, no 에너지 left to 블록"
+    },
+    {
+      "id": "Rocket Punch",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 13 드로우 1; goes to zero 코스트 when status created. Combos with turbo"
+    },
+    {
+      "id": "Scavenge",
+      "baseTier": "C",
+      "synergies": [
+        "draw",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "Exhaust a 카드, gain 2 에너지 next turn. Worse than STS1 recycle (delayed 에너지)"
+    },
+    {
+      "id": "Scrape",
+      "baseTier": "D",
+      "synergies": [
+        "zero_cost",
+        "draw",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 7 + 드로우 4 but dis카드 non-zero. Paradox: can't click first, can't build toward it"
+    },
+    {
+      "id": "Shadow Shield",
+      "baseTier": "A",
+      "synergies": [
+        "block",
+        "dark",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지, 11 블록 + channel 어둠. Keeps getting bumped up. 11 블록 is solid for setup character"
+    },
+    {
+      "id": "Shatter",
+      "baseTier": "A",
+      "synergies": [
+        "frost",
+        "aoe",
+        "damage",
+        "orb",
+        "evoke"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 11 광역 + evoke all 오브s. Evoking is often upside in STS2"
+    },
+    {
+      "id": "Signal Boost",
+      "baseTier": "C",
+      "synergies": [
+        "focus",
+        "orb",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "Next 파워 played twice, 소멸. Too 상황적. Less defrags to double"
+    },
+    {
+      "id": "Skim",
+      "baseTier": "A",
+      "synergies": [
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Draw 3 for 1 에너지. Cares about 드로우ing 파워s and hot fixes. Very clickable"
+    },
+    {
+      "id": "Smokestack",
+      "baseTier": "C",
+      "synergies": [
+        "exhaust",
+        "damage",
+        "aoe"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 5 광역 per status created. How often do you create statuses? Situational"
+    },
+    {
+      "id": "Spinner",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "scaling",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "Channel glass each turn. Early game 피해. Not exceptional but fills a role"
+    },
+    {
+      "id": "Storm",
+      "baseTier": "C",
+      "synergies": [
+        "lightning",
+        "channel",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "Channel 번개 per 파워 played. No heat sinks makes it worse. Situational"
+    },
+    {
+      "id": "Subroutine",
+      "baseTier": "B",
+      "synergies": [
+        "orb",
+        "channel",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Gain 1 에너지 per 파워 played. Less 파워 spam in STS2 so less needed"
+    },
+    {
+      "id": "Sunder",
+      "baseTier": "A",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 24; if kills, gain 3 에너지. Pseudo-광역. 좋은 in hallways, falls off vs bosses"
+    },
+    {
+      "id": "Supercritical",
+      "baseTier": "S",
+      "synergies": [
+        "scaling",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "Zero 에너지, gain 4 에너지, 소멸. Tons of acceleration. Lets you chain 드로우 and play all 파워s"
+    },
+    {
+      "id": "Sweeping Beam",
+      "baseTier": "B",
+      "synergies": [
+        "aoe",
+        "draw",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 6 광역 + 드로우 1. 광역 more needed in STS2. Self-cycles. Just fine"
+    },
+    {
+      "id": "Synchronize",
+      "baseTier": "S",
+      "synergies": [
+        "orb",
+        "focus",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Can make 4-8 집중 per turn based on unique 오브s. Upgrade removes 소멸. Loop for insane 스케일링"
+    },
+    {
+      "id": "Synthesis",
+      "baseTier": "C",
+      "synergies": [
+        "orb",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 12, next 파워 코스트s zero. Doesn't cheat much 에너지. Number too low"
+    },
+    {
+      "id": "Tempest",
+      "baseTier": "C",
+      "synergies": [
+        "lightning",
+        "channel",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "X 코스트 channel X 번개. Less 에너지, less 집중. Better ways to deal boss 피해"
+    },
+    {
+      "id": "Tesla Coil",
+      "baseTier": "B",
+      "synergies": [
+        "lightning",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Zero 에너지, deal 3 + trigger all 번개. 안정적인 초반 피해, scales with 집중"
+    },
+    {
+      "id": "Thunder",
+      "baseTier": "C",
+      "synergies": [
+        "lightning",
+        "orb",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Extra 6 피해 per 번개 evoke. Awkward to pick. Harder to evoke than let sit"
+    },
+    {
+      "id": "Trash To Treasure",
+      "baseTier": "C",
+      "synergies": [
+        "exhaust",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "Channel random 오브 per status created. Status 아키타입 too weak currently"
+    },
+    {
+      "id": "Turbo",
+      "baseTier": "A",
+      "synergies": [
+        "zero_cost",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Zero 에너지, gain 2 에너지 + void in dis카드. Bridges into status 카드s. Energy gen is great"
+    },
+    {
+      "id": "Uproar",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "orb"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 5x2 + play random 공격 from 드로우. Weird, random 카드s not desirable"
+    },
+    {
+      "id": "Voltaic",
+      "baseTier": "A",
+      "synergies": [
+        "lightning",
+        "channel",
+        "orb",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Channel 번개 equal to 번개 already channeled. Exponential 스케일링 for boss 피해"
+    },
+    {
+      "id": "White Noise",
+      "baseTier": "C",
+      "synergies": [
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "Random 파워 into hand, 소멸. Desperation pick 에만. Average 파워 quality too low"
+    }
+  ]
+}

@@ -1,0 +1,917 @@
+{
+  "character": "silent",
+  "source": "https://www.youtube.com/watch?v=ToKDj1lLeZ0",
+  "cards": [
+    {
+      "id": "Strike Silent",
+      "baseTier": "D",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "시작 스트라이크, 가능하면 교체"
+    },
+    {
+      "id": "Defend Silent",
+      "baseTier": "D",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "시작 디펜드, 가능하면 교체"
+    },
+    {
+      "id": "Neutralize",
+      "baseTier": "C",
+      "synergies": [
+        "poison",
+        "weak",
+        "zero_cost"
+      ],
+      "antiSynergies": [],
+      "notes": "Starter. 0-코스트 with weak application"
+    },
+    {
+      "id": "Survivor",
+      "baseTier": "C",
+      "synergies": [
+        "discard",
+        "discard_synergy",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Starter. Block + dis카드 trigger"
+    },
+    {
+      "id": "Acrobatics",
+      "baseTier": "S",
+      "synergies": [
+        "draw",
+        "discard",
+        "discard_synergy"
+      ],
+      "antiSynergies": [],
+      "notes": "Draw 3 dis카드 1, solid cycle"
+    },
+    {
+      "id": "Anticipate",
+      "baseTier": "C",
+      "synergies": [
+        "block",
+        "zero_cost"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 defensive 스킬, decent filler"
+    },
+    {
+      "id": "Backflip",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Block + 드로우 2, top 일반"
+    },
+    {
+      "id": "Blade Dance",
+      "baseTier": "B",
+      "synergies": [
+        "shiv",
+        "shiv_synergy",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "Shiv generation with 소멸, strong enabler"
+    },
+    {
+      "id": "Cloak And Dagger",
+      "baseTier": "C",
+      "synergies": [
+        "shiv",
+        "block",
+        "shiv_synergy"
+      ],
+      "antiSynergies": [],
+      "notes": "Block + 칼날 generation, always good"
+    },
+    {
+      "id": "Dagger Spray",
+      "baseTier": "C",
+      "synergies": [
+        "multi_hit",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "광역 다단 공격, okay 초반"
+    },
+    {
+      "id": "Dagger Throw",
+      "baseTier": "B",
+      "synergies": [
+        "draw",
+        "discard",
+        "discard_synergy",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Damage + 드로우 1 + dis카드 1"
+    },
+    {
+      "id": "Deadly Poison",
+      "baseTier": "D",
+      "synergies": [
+        "poison"
+      ],
+      "antiSynergies": [],
+      "notes": "안정적인 독 application"
+    },
+    {
+      "id": "Deflect",
+      "baseTier": "C",
+      "synergies": [
+        "block",
+        "zero_cost"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 블록, niche"
+    },
+    {
+      "id": "Dodge And Roll",
+      "baseTier": "D",
+      "synergies": [
+        "block",
+        "dexterity"
+      ],
+      "antiSynergies": [],
+      "notes": "Block now + 블록 next turn"
+    },
+    {
+      "id": "Flick Flack",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "shiv",
+        "shiv_synergy",
+        "multi_hit"
+      ],
+      "antiSynergies": [],
+      "notes": "광역 공격 with Sly, 블록-based 칼날 generation"
+    },
+    {
+      "id": "Leading Strike",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "shiv",
+        "shiv_synergy"
+      ],
+      "antiSynergies": [],
+      "notes": "Attack that generates 1 칼날"
+    },
+    {
+      "id": "Piercing Wail",
+      "baseTier": "S",
+      "synergies": [
+        "weak",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "광역 힘 down 6, 소멸, top 일반"
+    },
+    {
+      "id": "Poisoned Stab",
+      "baseTier": "C",
+      "synergies": [
+        "poison",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Damage + small 독, mediocre"
+    },
+    {
+      "id": "Prepared",
+      "baseTier": "S",
+      "synergies": [
+        "draw",
+        "discard",
+        "discard_synergy"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 cycle 카드"
+    },
+    {
+      "id": "Ricochet",
+      "baseTier": "B",
+      "synergies": [
+        "multi_hit",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 광역 다단 공격 with Sly"
+    },
+    {
+      "id": "Slice",
+      "baseTier": "C",
+      "synergies": [
+        "zero_cost",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 피해, filler"
+    },
+    {
+      "id": "Snakebite",
+      "baseTier": "F",
+      "synergies": [
+        "poison",
+        "damage",
+        "retain"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 with Retain + Sly, 독 application"
+    },
+    {
+      "id": "Sucker Punch",
+      "baseTier": "C",
+      "synergies": [
+        "weak",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Damage + weak application"
+    },
+    {
+      "id": "Untouchable",
+      "baseTier": "S",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 블록 with Sly, decent defense"
+    },
+    {
+      "id": "Accuracy",
+      "baseTier": "C",
+      "synergies": [
+        "shiv",
+        "shiv_synergy",
+        "scaling",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: 칼날 피해 boost, needs 칼날 덱"
+    },
+    {
+      "id": "Backstab",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "exhaust",
+        "zero_cost"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 Innate + Exhaust, strong turn 1 피해"
+    },
+    {
+      "id": "Blur",
+      "baseTier": "C",
+      "synergies": [
+        "block",
+        "dexterity"
+      ],
+      "antiSynergies": [],
+      "notes": "Block carries to next turn"
+    },
+    {
+      "id": "Bouncing Flask",
+      "baseTier": "C",
+      "synergies": [
+        "poison"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 random 독, hits 광역"
+    },
+    {
+      "id": "Bubble Bubble",
+      "baseTier": "D",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Targeted 블록 스킬"
+    },
+    {
+      "id": "Calculated Gamble",
+      "baseTier": "S",
+      "synergies": [
+        "discard",
+        "discard_synergy",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 dis카드 hand + re드로우, 소멸"
+    },
+    {
+      "id": "Dash",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "damage",
+        "dexterity"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 블록 + 피해, efficient un일반"
+    },
+    {
+      "id": "Escape Plan",
+      "baseTier": "A",
+      "synergies": [
+        "draw",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 드로우 + conditional 블록"
+    },
+    {
+      "id": "Expertise",
+      "baseTier": "C",
+      "synergies": [
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Draw up to 6, good hand refill"
+    },
+    {
+      "id": "Expose",
+      "baseTier": "A",
+      "synergies": [
+        "vulnerable",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 소멸, applies debuff 파워"
+    },
+    {
+      "id": "Finisher",
+      "baseTier": "D",
+      "synergies": [
+        "shiv",
+        "shiv_synergy",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Damage per 공격 played this turn, strong with 칼날s"
+    },
+    {
+      "id": "Flanking",
+      "baseTier": "D",
+      "synergies": [
+        "damage",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Multiplayer 카드, not relevant for solo play"
+    },
+    {
+      "id": "Flechettes",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Damage per 스킬 in hand, 상황적"
+    },
+    {
+      "id": "Follow Through",
+      "baseTier": "C",
+      "synergies": [
+        "draw",
+        "damage",
+        "multi_hit"
+      ],
+      "antiSynergies": [],
+      "notes": "광역 공격 with 드로우 시너지"
+    },
+    {
+      "id": "Footwork",
+      "baseTier": "A",
+      "synergies": [
+        "dexterity",
+        "block",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Permanent 민첩, scales all 블록 카드s"
+    },
+    {
+      "id": "Hand Trick",
+      "baseTier": "C",
+      "synergies": [
+        "draw",
+        "discard",
+        "discard_synergy"
+      ],
+      "antiSynergies": [],
+      "notes": "Hand manipulation, 드로우 + dis카드"
+    },
+    {
+      "id": "Haze",
+      "baseTier": "B",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "3-코스트 광역 블록 with Sly, expensive"
+    },
+    {
+      "id": "Hidden Daggers",
+      "baseTier": "C",
+      "synergies": [
+        "shiv",
+        "shiv_synergy",
+        "zero_cost"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트, generates 2 칼날s"
+    },
+    {
+      "id": "Infinite Blades",
+      "baseTier": "C",
+      "synergies": [
+        "shiv",
+        "shiv_synergy",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: 1 칼날 per turn passively"
+    },
+    {
+      "id": "Leg Sweep",
+      "baseTier": "A",
+      "synergies": [
+        "weak",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 블록 + weak, very reliable"
+    },
+    {
+      "id": "Memento Mori",
+      "baseTier": "C",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Un일반 targeted 공격"
+    },
+    {
+      "id": "Noxious Fumes",
+      "baseTier": "A",
+      "synergies": [
+        "poison",
+        "poison_scaling",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Passive 2 독/turn to all enemies, wins long fights"
+    },
+    {
+      "id": "Outbreak",
+      "baseTier": "D",
+      "synergies": [
+        "poison",
+        "poison_scaling",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: 독 시너지, burst 독 스케일링"
+    },
+    {
+      "id": "Phantom Blades",
+      "baseTier": "D",
+      "synergies": [
+        "shiv",
+        "shiv_synergy",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: phantom 칼날 generation"
+    },
+    {
+      "id": "Pinpoint",
+      "baseTier": "S",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "3-코스트 targeted 공격, expensive for un일반"
+    },
+    {
+      "id": "Pounce",
+      "baseTier": "C",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 targeted 공격"
+    },
+    {
+      "id": "Precise Cut",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "zero_cost"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 targeted 공격"
+    },
+    {
+      "id": "Predator",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 피해 + 드로우 2 next turn"
+    },
+    {
+      "id": "Reflex",
+      "baseTier": "S",
+      "synergies": [
+        "discard",
+        "discard_synergy",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "3-코스트 with Sly, 드로우 when dis카드ed"
+    },
+    {
+      "id": "Skewer",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "multi_hit",
+        "zero_cost"
+      ],
+      "antiSynergies": [],
+      "notes": "X-코스트 다단 공격 공격"
+    },
+    {
+      "id": "Speedster",
+      "baseTier": "C",
+      "synergies": [
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: speed 스케일링"
+    },
+    {
+      "id": "Strangle",
+      "baseTier": "C",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "Targeted 공격, solid un일반"
+    },
+    {
+      "id": "Tactician",
+      "baseTier": "A",
+      "synergies": [
+        "discard",
+        "discard_synergy"
+      ],
+      "antiSynergies": [],
+      "notes": "3-코스트 with Sly, 에너지 when dis카드ed"
+    },
+    {
+      "id": "Up My Sleeve",
+      "baseTier": "C",
+      "synergies": [
+        "shiv",
+        "shiv_synergy"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 칼날 generation"
+    },
+    {
+      "id": "Well Laid Plans",
+      "baseTier": "S",
+      "synergies": [
+        "retain",
+        "draw",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Retain a 카드 each turn, top 파워"
+    },
+    {
+      "id": "Abrasive",
+      "baseTier": "A",
+      "synergies": [
+        "scaling",
+        "shiv"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: 3-코스트 with Sly, abrasive 스케일링"
+    },
+    {
+      "id": "Accelerant",
+      "baseTier": "D",
+      "synergies": [
+        "poison",
+        "poison_scaling",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: accelerate 독, burst 스케일링"
+    },
+    {
+      "id": "Adrenaline",
+      "baseTier": "S",
+      "synergies": [
+        "draw",
+        "exhaust",
+        "zero_cost"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 드로우 2 + 에너지 + 소멸, best 스킬"
+    },
+    {
+      "id": "Afterimage",
+      "baseTier": "A",
+      "synergies": [
+        "block",
+        "shiv",
+        "shiv_synergy",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Block per 카드 played, insane with 칼날s"
+    },
+    {
+      "id": "Assassinate",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "exhaust",
+        "zero_cost"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 Innate + Exhaust, massive 단일 대상 피해"
+    },
+    {
+      "id": "Blade Of Ink",
+      "baseTier": "D",
+      "synergies": [
+        "shiv",
+        "shiv_synergy",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Shiv-themed ink blade"
+    },
+    {
+      "id": "Bullet Time",
+      "baseTier": "D",
+      "synergies": [
+        "zero_cost",
+        "draw",
+        "shiv"
+      ],
+      "antiSynergies": [],
+      "notes": "3-코스트, hand 코스트s 0, can't 드로우 more"
+    },
+    {
+      "id": "Burst",
+      "baseTier": "C",
+      "synergies": [
+        "poison",
+        "block",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Double next 스킬, incredible with 독 or 블록 스킬s"
+    },
+    {
+      "id": "Corrosive Wave",
+      "baseTier": "A",
+      "synergies": [
+        "poison",
+        "weak"
+      ],
+      "antiSynergies": [],
+      "notes": "광역 3 독 + debuffs"
+    },
+    {
+      "id": "Echoing Slash",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "multi_hit"
+      ],
+      "antiSynergies": [],
+      "notes": "광역 다단 공격 레어 공격"
+    },
+    {
+      "id": "Envenom",
+      "baseTier": "D",
+      "synergies": [
+        "poison",
+        "shiv",
+        "multi_hit",
+        "poison_scaling",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: 독 on un블록ed 피해, great with 칼날s"
+    },
+    {
+      "id": "Fan Of Knives",
+      "baseTier": "C",
+      "synergies": [
+        "shiv",
+        "shiv_synergy",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: generates 4 칼날s, strong 칼날 engine"
+    },
+    {
+      "id": "Grand Finale",
+      "baseTier": "C",
+      "synergies": [
+        "draw",
+        "discard",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 50 피해 if 드로우 pile empty, hard to setup"
+    },
+    {
+      "id": "Knife Trap",
+      "baseTier": "D",
+      "synergies": [
+        "shiv",
+        "block",
+        "shiv_synergy"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 targeted, generates 칼날s defensively"
+    },
+    {
+      "id": "Malaise",
+      "baseTier": "A",
+      "synergies": [
+        "weak",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "X-코스트 힘 down + weak, 소멸, top debuff"
+    },
+    {
+      "id": "Master Planner",
+      "baseTier": "B",
+      "synergies": [
+        "retain",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: retain and plan 카드s"
+    },
+    {
+      "id": "Mirage",
+      "baseTier": "D",
+      "synergies": [
+        "block",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "Illusory defense, 소멸 + Sly"
+    },
+    {
+      "id": "Murder",
+      "baseTier": "D",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "3-코스트 massive 단일 대상 피해"
+    },
+    {
+      "id": "Nightmare",
+      "baseTier": "C",
+      "synergies": [
+        "poison",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "3-코스트 소멸, triple a 카드 next turn"
+    },
+    {
+      "id": "Serpent Form",
+      "baseTier": "C",
+      "synergies": [
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: 3-코스트 serpent transformation, strong 스케일링"
+    },
+    {
+      "id": "Shadowmeld",
+      "baseTier": "D",
+      "synergies": [
+        "block",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "Shadow defense, conditional 블록"
+    },
+    {
+      "id": "Shadow Step",
+      "baseTier": "D",
+      "synergies": [
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Evasive 스킬, 덱 manipulation"
+    },
+    {
+      "id": "Sneaky",
+      "baseTier": "B",
+      "synergies": [
+        "shiv",
+        "shiv_synergy",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: 2-코스트 with Sly, sneaky 칼날 스케일링"
+    },
+    {
+      "id": "Storm Of Steel",
+      "baseTier": "D",
+      "synergies": [
+        "shiv",
+        "shiv_synergy",
+        "discard"
+      ],
+      "antiSynergies": [],
+      "notes": "Dis카드 hand, gain 칼날s"
+    },
+    {
+      "id": "The Hunt",
+      "baseTier": "S",
+      "synergies": [
+        "damage",
+        "vulnerable",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "Exhaust + Sly, apply 취약"
+    },
+    {
+      "id": "Tools Of The Trade",
+      "baseTier": "S",
+      "synergies": [
+        "draw",
+        "discard",
+        "discard_synergy"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: 드로우 + dis카드 each turn, top 레어"
+    },
+    {
+      "id": "Tracking",
+      "baseTier": "A",
+      "synergies": [
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: 2-코스트, track and 드로우 specific 카드s"
+    },
+    {
+      "id": "Wraith Form",
+      "baseTier": "S",
+      "synergies": [
+        "scaling",
+        "dexterity",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Ancient. Intangible, best defensive 카드 in the game"
+    },
+    {
+      "id": "Suppress",
+      "baseTier": "S",
+      "synergies": [
+        "damage",
+        "zero_cost"
+      ],
+      "antiSynergies": [],
+      "notes": "Ancient. 0-코스트 Innate + Sly, strong opener"
+    }
+  ]
+}

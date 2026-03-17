@@ -1,0 +1,870 @@
+{
+  "character": "ironclad",
+  "source": "https://www.youtube.com/watch?v=GFc8Bh2RYvI",
+  "cards": [
+    {
+      "id": "Strike Ironclad",
+      "baseTier": "D",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "시작 스트라이크, 가능하면 교체"
+    },
+    {
+      "id": "Defend Ironclad",
+      "baseTier": "D",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "시작 디펜드, 가능하면 교체"
+    },
+    {
+      "id": "Bash",
+      "baseTier": "C",
+      "synergies": [
+        "vulnerable"
+      ],
+      "antiSynergies": [],
+      "notes": "Starter. 2-코스트 is clunky but 취약 application is useful"
+    },
+    {
+      "id": "Aggression",
+      "baseTier": "C",
+      "synergies": [
+        "draw",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Rare 파워, slow 드로우/스케일링 engine. Not needed when infinite is so consistent"
+    },
+    {
+      "id": "Anger",
+      "baseTier": "B",
+      "synergies": [
+        "strength",
+        "damage",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 공격, strong act 1 pick. Pairs with Burning Pact as free 소멸 fodder"
+    },
+    {
+      "id": "Armaments",
+      "baseTier": "C",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 블록 + 업그레이드. 필수ly just a 디펜드, too slow in current meta"
+    },
+    {
+      "id": "Ashen Strike",
+      "baseTier": "C",
+      "synergies": [
+        "exhaust",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 slow 스케일링 피해. If you're 소멸ing enough for this to matter, better payoffs exist"
+    },
+    {
+      "id": "Barricade",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "3-코스트 파워, 블록 retention. Much worse than Spire 1 — no enablers for 블록 builds"
+    },
+    {
+      "id": "Battle Trance",
+      "baseTier": "A",
+      "synergies": [
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 드로우 3. Lines up combo pieces, great for finding 소멸 + 에너지 카드s"
+    },
+    {
+      "id": "Blood Wall",
+      "baseTier": "C",
+      "synergies": [
+        "self_damage",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 ~14 블록. Not needed when going infinite, doesn't help win fights faster"
+    },
+    {
+      "id": "Bloodletting",
+      "baseTier": "S",
+      "synergies": [
+        "self_damage",
+        "scaling",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 reusable 에너지 at COMMON. 핵심 infinite enabler. Lose 3 HP often a bonus. Pick on sight"
+    },
+    {
+      "id": "Bludgeon",
+      "baseTier": "B",
+      "synergies": [
+        "strength",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "3-코스트 32 피해, un일반. Big bonk for act 1, combos with Bloodletting 에너지. Skip once engine assembled"
+    },
+    {
+      "id": "Body Slam",
+      "baseTier": "D",
+      "synergies": [
+        "block",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 피해 = 블록. No enablers for 블록 builds in Spire 2, Feel No Pain much worse, no Power Through"
+    },
+    {
+      "id": "Brand",
+      "baseTier": "A",
+      "synergies": [
+        "exhaust",
+        "self_damage",
+        "strength"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 targeted 소멸 + 1 str, lose 1 HP. Rare hurts it but zero 코스트 소멸 is incredible"
+    },
+    {
+      "id": "Break",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "vulnerable"
+      ],
+      "antiSynergies": [],
+      "notes": "Ancient boon. 2-코스트 20 피해 + 5 vuln. Not needed when infinite by act 2, worse than other boon options"
+    },
+    {
+      "id": "Breakthrough",
+      "baseTier": "B",
+      "synergies": [
+        "aoe",
+        "damage",
+        "self_damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 광역 9 피해, lose 1 HP. Worst 광역 but 광역 is 광역. Act 1 survival 카드"
+    },
+    {
+      "id": "Bully",
+      "baseTier": "B",
+      "synergies": [
+        "vulnerable",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 공격. Energy plays more often on Clad due to Bash. Bottom of B, vuln 시너지 mostly irrelevant"
+    },
+    {
+      "id": "Burning Pact",
+      "baseTier": "S",
+      "synergies": [
+        "exhaust",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 소멸 + 드로우 2 (3 업그레이드d). #1 infinite enabler. Self-cycles, does both 소멸 and 드로우. Pick on sight"
+    },
+    {
+      "id": "Cascade",
+      "baseTier": "C",
+      "synergies": [
+        "exhaust",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "X-코스트 play top X 카드s. Awkward, can play wrong 카드s at wrong time. Doesn't enable infinite"
+    },
+    {
+      "id": "Cinder",
+      "baseTier": "C",
+      "synergies": [
+        "exhaust",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 17 피해, 소멸 top of 드로우 pile. No control over what gets 소멸ed, can brick your run"
+    },
+    {
+      "id": "Colossus",
+      "baseTier": "B",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 블록 + 50% less vuln 피해. Common but not needed when going infinite. Bottom of B"
+    },
+    {
+      "id": "Conflagration",
+      "baseTier": "C",
+      "synergies": [
+        "aoe",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 레어 광역. Bonus 피해 per 공격 played but outclassed by un일반 Stomp. Rarely enters 덱"
+    },
+    {
+      "id": "Corruption",
+      "baseTier": "B",
+      "synergies": [
+        "exhaust",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Ancient boon. Skills 코스트 0 and 소멸. Dark Embrace now 레어, Power Through gone. Much worse context"
+    },
+    {
+      "id": "Crimson Mantle",
+      "baseTier": "B",
+      "synergies": [
+        "self_damage",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 레어 파워, lose 1 HP gain 8 블록/turn. Doesn't 블록 turn played. Awkward, never justifiable 후반"
+    },
+    {
+      "id": "Cruelty",
+      "baseTier": "B",
+      "synergies": [
+        "vulnerable",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 파워, vuln enemies take 25% more. Crazy effect but irrelevant when playing infinite 공격s"
+    },
+    {
+      "id": "Dark Embrace",
+      "baseTier": "S",
+      "synergies": [
+        "exhaust",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 레어 파워, 드로우 1 on 소멸. Upgrades to 1-코스트. Insane acceleration, 드로우s entire 덱"
+    },
+    {
+      "id": "Demon Form",
+      "baseTier": "B",
+      "synergies": [
+        "strength",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "3-코스트 +2 str/turn. Curse in endgame when infinite. Only useful to kill act 1 boss/elites"
+    },
+    {
+      "id": "Demonic Shield",
+      "baseTier": "C",
+      "synergies": [
+        "block",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 블록 with 소멸. Multiplayer 집중ed but 소멸s for free"
+    },
+    {
+      "id": "Dismantle",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "vulnerable"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 8 피해, hits twice if vuln. Effectively 24 피해 with Bash vuln. 안정적인 act 1 카드"
+    },
+    {
+      "id": "Dominate",
+      "baseTier": "D",
+      "synergies": [
+        "vulnerable",
+        "strength"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 gain str per vuln on enemy, 소멸. Draw order reliant, you'd rather just play a 스트라이크"
+    },
+    {
+      "id": "Drum Of Battle",
+      "baseTier": "C",
+      "synergies": [
+        "draw",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 드로우 2 then 소멸 top each turn. Can brick infinite by 소멸ing key 카드s. Extremely niche"
+    },
+    {
+      "id": "Evil Eye",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 8 블록, 16 if 소멸ed this turn. Lines up with Burning Pact. Can stall to 소멸 down"
+    },
+    {
+      "id": "Expect A Fight",
+      "baseTier": "S",
+      "synergies": [
+        "block",
+        "strength",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 gain 에너지 per 공격 in hand. Makes 5-7 에너지/turn. Reusable. Disgusting 에너지 generation"
+    },
+    {
+      "id": "Feed",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 +3 max HP on kill, 소멸. 뛰어난 long-run value but doesn't enable engine. Less needed in Spire 2"
+    },
+    {
+      "id": "Feel No Pain",
+      "baseTier": "B",
+      "synergies": [
+        "exhaust",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 +3 블록 per 소멸. Biggest fall from grace — was easy S in Spire 1. Not needed when going infinite"
+    },
+    {
+      "id": "Fiend Fire",
+      "baseTier": "A",
+      "synergies": [
+        "exhaust",
+        "damage",
+        "strength"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 소멸 hand, deal 7 per 카드. Mass 소멸, often wins fight next turn. Dark Embrace now 레어 though"
+    },
+    {
+      "id": "Fight Me",
+      "baseTier": "D",
+      "synergies": [
+        "strength",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 deal 5x2, gain 2 str, enemy gains 1 str. Buffs enemy. Makes run harder. 절대 미선택"
+    },
+    {
+      "id": "Flame Barrier",
+      "baseTier": "B",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 12 블록 + 4 thorns. 좋은 초반 game, great vs multi-공격 enemies. Top of B"
+    },
+    {
+      "id": "Forgotten Ritual",
+      "baseTier": "S",
+      "synergies": [
+        "exhaust",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 gain 3 에너지 if 소멸ed this turn. Upgrades to 4 (net +3). Infinite 에너지 generation. Broken"
+    },
+    {
+      "id": "Grapple",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 deal 7 + 피해 per 블록 gained this turn. Numbers too small, you'd rather play Bash + 공격s"
+    },
+    {
+      "id": "Havoc",
+      "baseTier": "D",
+      "synergies": [
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 play + 소멸 top of 드로우 pile. All enablers from Spire 1 gone (Frozen Eye, more Dark Embrace)"
+    },
+    {
+      "id": "Headbutt",
+      "baseTier": "B",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 피해 + top 덱 from dis카드. Puts Bash/combos on top. Decent act 1 but doesn't contribute to infinite"
+    },
+    {
+      "id": "Hellraiser",
+      "baseTier": "B",
+      "synergies": [
+        "self_damage",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 레어 파워, 스트라이크s auto-play. Fun but soft-lock protection limits it. Doesn't help infinite plan"
+    },
+    {
+      "id": "Hemokinesis",
+      "baseTier": "B",
+      "synergies": [
+        "self_damage",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 lose 2 HP deal 14. Big 초반 피해, combos with Bash vuln. Not exceptional like Spire 1"
+    },
+    {
+      "id": "Howl From Beyond",
+      "baseTier": "C",
+      "synergies": [
+        "aoe",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "3-코스트 광역 16, plays from 소멸 pile. Awkward — needs manual 소멸, returns to 덱. Bottom of C"
+    },
+    {
+      "id": "Impervious",
+      "baseTier": "A",
+      "synergies": [
+        "block",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 30 블록, 소멸. Slam on sight in act 1, huge number. Don't pick once infinite is assembled"
+    },
+    {
+      "id": "Infernal Blade",
+      "baseTier": "C",
+      "synergies": [
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 random 공격 to hand, 소멸. Too random, less useful 공격s to cheat out. Desperation 에만"
+    },
+    {
+      "id": "Inferno",
+      "baseTier": "B",
+      "synergies": [
+        "self_damage",
+        "aoe"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: lose 1 HP/turn, deal 6 광역 on HP loss. Underrated. Power gets out of 덱. Decent act 1 광역 bridge"
+    },
+    {
+      "id": "Inflame",
+      "baseTier": "B",
+      "synergies": [
+        "strength",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 +2 str. Way worse in Spire 2 — 힘 irrelevant when playing infinite 공격s. Only for act 1"
+    },
+    {
+      "id": "Iron Wave",
+      "baseTier": "C",
+      "synergies": [
+        "block",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 5 블록 + 5 피해. Strike+디펜드 in one 카드. Prevents chip in hallways. Skip if possible"
+    },
+    {
+      "id": "Juggernaut",
+      "baseTier": "C",
+      "synergies": [
+        "block",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 deal 5 on 블록 gain. Clad not 블록ing frequently. No Feel No Pain combos anymore. Bad"
+    },
+    {
+      "id": "Juggling",
+      "baseTier": "D",
+      "synergies": [
+        "multi_hit"
+      ],
+      "antiSynergies": [
+        "exhaust"
+      ],
+      "notes": "1-코스트 파워, copies 3rd 공격 played. Actively bricks infinite. Almost never want. Complete brick"
+    },
+    {
+      "id": "Mangle",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "weak"
+      ],
+      "antiSynergies": [],
+      "notes": "3-코스트 레어, 15 피해 + enemy loses 10 str this turn. Costs all 에너지. Should 코스트 2. Top of C"
+    },
+    {
+      "id": "Molten Fist",
+      "baseTier": "C",
+      "synergies": [
+        "vulnerable",
+        "exhaust",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 10 피해, double enemy vuln, 소멸. Vuln stacking strategy doesn't work. Desperation pick"
+    },
+    {
+      "id": "Offering",
+      "baseTier": "S",
+      "synergies": [
+        "self_damage",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 lose 6 HP, +2 에너지, 드로우 3, 소멸. Top of S tier. Insane acceleration. Life loss irrelevant"
+    },
+    {
+      "id": "One Two Punch",
+      "baseTier": "D",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 next 공격 plays extra time. No big 공격s to double. Not good in Spire 1, not good here"
+    },
+    {
+      "id": "Pacts End",
+      "baseTier": "A",
+      "synergies": [
+        "exhaust",
+        "aoe",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 17 광역, needs 3+ 카드s in 소멸. Condition trivially easy. 뛰어난 payoff. Bottom of S / top of A"
+    },
+    {
+      "id": "Perfected Strike",
+      "baseTier": "C",
+      "synergies": [],
+      "antiSynergies": [
+        "exhaust"
+      ],
+      "notes": "2-코스트 scales with 스트라이크s. Falls off fast. Desperation pick. Strikes get removed at shops anyway"
+    },
+    {
+      "id": "Pillage",
+      "baseTier": "S",
+      "synergies": [
+        "damage",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 6 피해, 드로우 until non-공격. Can re드로우 entire 덱. Infinite enabler. 좋은 in act 1 AND endgame"
+    },
+    {
+      "id": "Pommel Strike",
+      "baseTier": "S",
+      "synergies": [
+        "draw",
+        "strength",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 9 피해 + 드로우 1 (드로우 2 업그레이드d). Main infinite enabler at COMMON. Goes infinite with Bloodletting"
+    },
+    {
+      "id": "Primal Force",
+      "baseTier": "B",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 transform 공격s into Giant Rock (16 피해). Carries act 1 single-handedly. Useless after"
+    },
+    {
+      "id": "Pyre",
+      "baseTier": "B",
+      "synergies": [
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 gain 1 에너지/turn. Gets you through 초반 game. Hard-capped, can't generate exponential 에너지"
+    },
+    {
+      "id": "Rage",
+      "baseTier": "B",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 +3 블록 per 공격 this turn. Top of B. Turns Pommels into 블록 카드s. 뛰어난 act 1, falls off"
+    },
+    {
+      "id": "Rampage",
+      "baseTier": "B",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [
+        "exhaust"
+      ],
+      "notes": "1-코스트 +5 피해 each play. Much improved from Spire 1 — better numbers, smaller 덱s. Kills act 1 bosses"
+    },
+    {
+      "id": "Rupture",
+      "baseTier": "C",
+      "synergies": [
+        "self_damage",
+        "strength"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 +1 str on HP loss. Strength just not needed when going infinite. Needs 업그레이드. Bottom of C"
+    },
+    {
+      "id": "Second Wind",
+      "baseTier": "S",
+      "synergies": [
+        "exhaust",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 소멸 all non-공격s, gain 블록 per 카드. Main enabler. Enables Pillage, clears statuses. Bottom of S"
+    },
+    {
+      "id": "Setup Strike",
+      "baseTier": "C",
+      "synergies": [
+        "strength",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 7 피해 + 2 temp str. Strength this turn doesn't pay off, Clad not spamming 0-코스트s"
+    },
+    {
+      "id": "Shrug It Off",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 8 블록 + 드로우 1. Act 1 카드. No sundial infinite needed, turns off Pillage. Much worse than Spire 1"
+    },
+    {
+      "id": "Spite",
+      "baseTier": "S",
+      "synergies": [
+        "damage",
+        "self_damage",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "0-코스트 6 피해, 드로우 1 on HP loss. Infinite with 2 Spites + Bloodletting. At worst it's Anger. Pick on sight"
+    },
+    {
+      "id": "Stampede",
+      "baseTier": "B",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 파워, random 공격 plays end of turn. Cheats 에너지. Decent act 1. Bottom of B"
+    },
+    {
+      "id": "Stoke",
+      "baseTier": "S",
+      "synergies": [
+        "exhaust",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 소멸 hand, 드로우 equal 카드s, 소멸. Fiend Fire + Dark Embrace on ONE 카드. Upgrades to 0-코스트. Insane"
+    },
+    {
+      "id": "Stomp",
+      "baseTier": "S",
+      "synergies": [
+        "aoe",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "3-코스트 12 광역, -1 코스트 per 공격 played. Often free. Best 광역 at un일반. 뛰어난 act 1 AND endgame. Bottom of S"
+    },
+    {
+      "id": "Stone Armor",
+      "baseTier": "C",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 +4 plating (decays 1/turn now). Much worse than metallicize. Blocks ~10 total. Top of C"
+    },
+    {
+      "id": "Sword Boomerang",
+      "baseTier": "D",
+      "synergies": [
+        "strength",
+        "multi_hit"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 3 피해 x3 random. Strength way worse, can't target, 광역 fights more prevalent. Complete crap"
+    },
+    {
+      "id": "Tank",
+      "baseTier": "C",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "Multiplayer-집중ed 레어 파워. Block generation, niche"
+    },
+    {
+      "id": "Taunt",
+      "baseTier": "A",
+      "synergies": [
+        "vulnerable",
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 7 블록 + 1 vuln. Extends Bash vuln, lets you 블록 and not rush. Combos with Vicious for 드로우"
+    },
+    {
+      "id": "Tear Asunder",
+      "baseTier": "D",
+      "synergies": [
+        "damage",
+        "self_damage"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 hits per HP lost this combat. If you lost HP enough for this, you already won via Bloodletting loops"
+    },
+    {
+      "id": "Thrash",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 레어, 4x2 피해 + 소멸 random 공격 from hand + add its 피해. 안정적인 스케일링, 소멸s 카드s"
+    },
+    {
+      "id": "Thunderclap",
+      "baseTier": "B",
+      "synergies": [
+        "aoe",
+        "vulnerable"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 4 광역 + 1 vuln all. Much better with Vicious in pool (드로우s per vuln). Combos with Stomp. Act 1 pick"
+    },
+    {
+      "id": "Tremble",
+      "baseTier": "C",
+      "synergies": [
+        "vulnerable"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 apply 2 vuln. Better vuln options exist. Bottom of C"
+    },
+    {
+      "id": "True Grit",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 7 블록 + random 소멸. Demands 업그레이드 for targeted 소멸. More pickable than Spire 1 due to 소멸 value"
+    },
+    {
+      "id": "Twin Strike",
+      "baseTier": "C",
+      "synergies": [
+        "strength",
+        "multi_hit",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 5 피해 x2. Middling, 힘 payoff worse in this game"
+    },
+    {
+      "id": "Unmovable",
+      "baseTier": "C",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 레어, double first 블록 gain each turn. Can kill a boss but completely useless in endgame"
+    },
+    {
+      "id": "Unrelenting",
+      "baseTier": "B",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 12 피해, next 공격 코스트s 0. Cheats 에너지, plays Bash free next turn. Decent hemo alternative"
+    },
+    {
+      "id": "Uppercut",
+      "baseTier": "B",
+      "synergies": [
+        "vulnerable",
+        "weak",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "2-코스트 13 피해 + weak + vuln. 약한 less important when not 블록ing. Kills act 1 boss 업그레이드d. Clunky"
+    },
+    {
+      "id": "Vicious",
+      "baseTier": "S",
+      "synergies": [
+        "vulnerable",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "1-코스트 파워, 드로우 1 per vuln applied (드로우 2 업그레이드d). Rushdown but better. Base 덱 드로우s 카드s. Enables infinite"
+    },
+    {
+      "id": "Whirlwind",
+      "baseTier": "C",
+      "synergies": [
+        "aoe",
+        "strength",
+        "multi_hit"
+      ],
+      "antiSynergies": [],
+      "notes": "X-코스트 광역. Mediocre without 힘/업그레이드. Needs 업그레이드 which is harder to get. Outclassed by Stomp"
+    }
+  ]
+}

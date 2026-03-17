@@ -1,0 +1,24 @@
+# Build artifacts
+bin/
+obj/
+*.pck
+
+# User-specific
+local.props
+*.user
+*.suo
+
+# IDE
+.vs/
+.idea/
+*.sln
+
+# Runtime data
+spire-advisor.log
+overlay_settings.json
+*.db
+*.db-journal
+
+# OS
+.DS_Store
+Thumbs.db

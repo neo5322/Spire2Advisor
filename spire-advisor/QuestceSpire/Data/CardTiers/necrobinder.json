@@ -1,0 +1,909 @@
+{
+  "character": "necrobinder",
+  "source": "https://www.youtube.com/watch?v=-1gZiFN7heQ",
+  "cards": [
+    {
+      "id": "Strike Necrobinder",
+      "baseTier": "D",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "시작 스트라이크, 가능하면 교체"
+    },
+    {
+      "id": "Defend Necrobinder",
+      "baseTier": "D",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "시작 디펜드, 가능하면 교체"
+    },
+    {
+      "id": "Bodyguard",
+      "baseTier": "C",
+      "synergies": [
+        "block",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "Starter summon 5 스킬. Built-in barricade via Aussie HP carrying over turns"
+    },
+    {
+      "id": "Unleash",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "Starter 공격, 피해 scales with Aussie HP. Blocking keeps Aussie alive = more 피해"
+    },
+    {
+      "id": "Afterlife",
+      "baseTier": "C",
+      "synergies": [
+        "block",
+        "summon",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "Summon 6 소멸 for 1 에너지. Basically a worse starter effect with 소멸. Never exciting"
+    },
+    {
+      "id": "Banshees Cry",
+      "baseTier": "S",
+      "synergies": [
+        "aoe",
+        "damage",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "33 광역 for 6 에너지, reduced by 2 per ethereal played. Often 33 to all for 0 since good 카드s happen to be ethereal. Wins long fights"
+    },
+    {
+      "id": "Blight Strike",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "doom"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 deal 피해 + apply doom equal to 피해. ~16 effective 피해. Better ways to get this effect; doom doesn't scale like 독"
+    },
+    {
+      "id": "Bone Shards",
+      "baseTier": "A",
+      "synergies": [
+        "aoe",
+        "damage",
+        "block",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 9 광역 + 9 블록 but Aussie dies. Bottom of A. Aussie dying is real downside when stacking HP, but 초반 game Aussie is often dead anyway. Upgrades to 12/12"
+    },
+    {
+      "id": "Borrowed Time",
+      "baseTier": "S",
+      "synergies": [
+        "energy",
+        "infinite"
+      ],
+      "antiSynergies": [],
+      "notes": "0 에너지 gain 1 에너지, apply 3 doom to self. Doom on self barely matters. Two-카드 infinite with Capture Spirit. Upgrade to 2 에너지 makes any 덱 infinite"
+    },
+    {
+      "id": "Bury",
+      "baseTier": "D",
+      "synergies": [
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "52 피해 for 4 에너지. Almost never playable — basically a curse. Clunky, doesn't 블록, payoff isn't worth the 드로우 reliance"
+    },
+    {
+      "id": "Calcify",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: Aussie 공격s deal 4 additional 피해. Aussie 공격 package is the weakest 아키타입. Mediocre, 레어ly needed"
+    },
+    {
+      "id": "Call Of The Void",
+      "baseTier": "A",
+      "synergies": [
+        "draw",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 레어 파워: add 1 random ethereal 카드 to hand each turn. Hello World that doesn't clog. One-카드 solve for long fights. Random gen is strong when you're 블록ing all the time"
+    },
+    {
+      "id": "Capture Spirit",
+      "baseTier": "S",
+      "synergies": [
+        "soul",
+        "damage",
+        "infinite"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지, enemy loses 3 HP, add 3 souls to 드로우 pile. Two-카드 infinite with Borrowed Time. 6 드로우 worth of stuff for 1 에너지. Completely overstated"
+    },
+    {
+      "id": "Cleanse",
+      "baseTier": "A",
+      "synergies": [
+        "block",
+        "exhaust",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 summon 3 + 소멸 1 카드 from 드로우 pile. Targeted 소멸 is incredibly strong for thinning to infinite. Also gives barricade 블록"
+    },
+    {
+      "id": "Countdown",
+      "baseTier": "B",
+      "synergies": [
+        "doom",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 파워: apply 6 doom to random enemy each turn. 필수ly 6 passive 피해/turn. Opens all doom synergies (Death's Door, etc). Well-designed bridge 카드. Could move up"
+    },
+    {
+      "id": "Danse Macabre",
+      "baseTier": "D",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 파워: gain 3 블록 when playing 2+ 코스트 카드. Can't proc more than once per turn. Worse than Metallicize. So much work for no payoff"
+    },
+    {
+      "id": "Deathbringer",
+      "baseTier": "A",
+      "synergies": [
+        "aoe",
+        "doom",
+        "debuff"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 apply 21 doom + 1 weak to all enemies. Top of A, could argue S. 약한 is crazy in this game. Big 광역 doom number. 뛰어난 초반 game pickup"
+    },
+    {
+      "id": "Death March",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "soul",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 deal 8 + 3 per 카드 드로우n this turn. 8 피해 floor is decent consolation. Scales huge with soul chains (24+ 피해). 안정적인 초반 피해 카드"
+    },
+    {
+      "id": "Deaths Door",
+      "baseTier": "A",
+      "synergies": [
+        "block",
+        "doom"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 gain 6 블록, if doom applied this turn gain 블록 2 additional times (=18 블록). Works great with Countdown. Massive 블록. Bottom of A"
+    },
+    {
+      "id": "Debilitate",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "debuff"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 deal 7, vuln+weak are 2x effective for 3 turns. 약한 now 블록s for half instead of 25%. Disgusting 카드. Invalidates enemy 피해 for 3 turns"
+    },
+    {
+      "id": "Defile",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 ethereal deal 13 (업그레이드s 17). Hemokinesis without downside. Ethereal is upside on this character. 안정적인 초반 피해"
+    },
+    {
+      "id": "Defy",
+      "baseTier": "S",
+      "synergies": [
+        "block",
+        "debuff",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 ethereal gain 6 블록 + 1 weak. Best 일반 in the class. Upgraded: 2 weak 7 블록 = effectively 블록 20 for 1 에너지. Ethereal is pure upside. Take multiple copies. Slam on sight"
+    },
+    {
+      "id": "Delay",
+      "baseTier": "C",
+      "synergies": [
+        "block",
+        "energy"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 gain 11 블록, next turn gain 1 에너지. OK 카드 but Defy exists at effectively 블록 20 for 1 에너지, making this unnecessary. No ethereal keyword"
+    },
+    {
+      "id": "Demesne",
+      "baseTier": "S",
+      "synergies": [
+        "energy",
+        "draw",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "3 에너지 ethereal 파워: gain 1 에너지 + 드로우 1 additional 카드 each turn. Upgrades to 2 에너지 코스트. Extra 에너지 and 드로우 every turn is broken. Both resources at once"
+    },
+    {
+      "id": "Devour Life",
+      "baseTier": "A",
+      "synergies": [
+        "soul",
+        "summon",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 파워: whenever you play a soul, summon 1 (업그레이드s to 2). Every soul = barricade 블록 that also scales starter 카드 피해. Top of A, needs soul 시너지 but payoff is massive"
+    },
+    {
+      "id": "Dirge",
+      "baseTier": "S",
+      "synergies": [
+        "soul",
+        "summon",
+        "infinite",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "X 코스트 summon 3 X times + add X souls to 드로우 pile. Main reason infinite is so easy. Scales 피해, 블록s, and adds 드로우 simultaneously. 'Durge slop' with Borrowed Time"
+    },
+    {
+      "id": "Drain Power",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 deal 10 + 업그레이드 2 random 카드s in dis카드. Janky 스케일링 solution. Too slow most of the time. Some 초반 game 피해 value"
+    },
+    {
+      "id": "Dredge",
+      "baseTier": "B",
+      "synergies": [
+        "draw",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 put 3 카드s from dis카드 into hand, 소멸. Top of B. Sets up combo pieces (Borrowed Time, souls, defy). Exhausts itself. 좋은 when fights go long"
+    },
+    {
+      "id": "Eidolon",
+      "baseTier": "B",
+      "synergies": [
+        "exhaust",
+        "infinite"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 소멸 hand, 9 카드s 소멸ed = intangible. Nine-카드 threshold 레어ly met without souls. But 소멸ing hand enables infinite faster. Exhaust statuses"
+    },
+    {
+      "id": "End Of Days",
+      "baseTier": "A",
+      "synergies": [
+        "aoe",
+        "doom",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "3 에너지 apply 29 doom to all + kill enemies with doom >= HP. Bottom of A. Enough to kill 초반/mid. Kills millipedes in act 2. Character struggles with that otherwise"
+    },
+    {
+      "id": "Enfeebling Touch",
+      "baseTier": "A",
+      "synergies": [
+        "debuff",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "Ethereal, enemy loses 8 힘 this turn. Could argue S tier. Massive 블록 output vs multi-공격ers. If you don't need it, it 소멸s itself via ethereal"
+    },
+    {
+      "id": "Eradicate",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "retain"
+      ],
+      "antiSynergies": [],
+      "notes": "X 코스트 retain, deal 11 피해 X times. Top of B. Incredibly buffed Skewer with retain. Hold for big turns. Rare rarity bumps it down"
+    },
+    {
+      "id": "Fear",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "debuff",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "Ethereal deal 7 + apply 1 vuln. Bottom of B. Ethereal keyword turns on Banshee's Cry. Upgrades to 2 vuln. Decent filler"
+    },
+    {
+      "id": "Fetch",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "draw",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "0 에너지 Aussie deals 3 피해, first time each turn 드로우 1 카드. Free 피해 + free 드로우. Like FTL but doesn't turn off. Bridges into Aussie 시너지"
+    },
+    {
+      "id": "Flatten",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 Aussie deals 12, 코스트s 0 if Aussie 공격ed this turn. Desperation 피해. 2 에너지 brick in bad 드로우 order. Aussie 공격 package is weakest"
+    },
+    {
+      "id": "Forbidden Grimoire",
+      "baseTier": "S",
+      "synergies": [
+        "exhaust",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Eternal 파워: at end of combat remove a 카드 from 덱. Removing 카드s is completely broken — just go infinite. Build-defining"
+    },
+    {
+      "id": "Friendship",
+      "baseTier": "S",
+      "synergies": [
+        "energy"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 파워: lose 2 힘, gain 1 에너지 each turn. Bottom of S. Strength loss doesn't matter since 피해 comes from Aussie/doom/effects. Basically free 에너지 every turn"
+    },
+    {
+      "id": "Glimpse Beyond",
+      "baseTier": "B",
+      "synergies": [
+        "draw",
+        "exhaust",
+        "soul"
+      ],
+      "antiSynergies": [],
+      "notes": "Multiplayer 카드, not rated in tier list"
+    },
+    {
+      "id": "Graveblast",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "draw",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 deal 4 피해, put 카드 from dis카드 to hand, 소멸. Damage hologram. Never felt the need to pick it"
+    },
+    {
+      "id": "Grave Warden",
+      "baseTier": "A",
+      "synergies": [
+        "block",
+        "soul",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 gain 8 블록 + add soul to 드로우 pile. Common. 8 블록 + 드로우 2 (via soul) is ridiculous value. Upgrades to soul+ (드로우 3) and 10 블록"
+    },
+    {
+      "id": "Hang",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 deal 10, double 피해 of all Hang 카드s. Claw but good. One-카드 solve for boss 피해. 10 baseline is solid. Rare"
+    },
+    {
+      "id": "Haunt",
+      "baseTier": "A",
+      "synergies": [
+        "soul",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 파워: whenever you play a soul, random enemy loses 6 HP. Infinite payoff but also good without. Capture Spirit = 18 free 피해"
+    },
+    {
+      "id": "High Five",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "aoe",
+        "debuff"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 deal 11 + apply 2 vuln to all. Bottom of B, maybe C. 광역 vuln is OK but 2 에너지 코스트 is high"
+    },
+    {
+      "id": "Invoke",
+      "baseTier": "B",
+      "synergies": [
+        "summon",
+        "energy"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지: next turn summon 2 + gain 2 에너지. Top of B, maybe bottom A. Like Outmaneuver but better. Extra 에너지 on barricade character is strong. Upgrade: summon 3, 3 에너지"
+    },
+    {
+      "id": "Legion Of Bone",
+      "baseTier": "A",
+      "synergies": [
+        "summon",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Multiplayer 카드, not rated in tier list"
+    },
+    {
+      "id": "Lethality",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "scaling",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 ethereal 파워: first 공격 each turn deals 50% additional 피해. Often 에만 playing one 공격 (starter). Stacks additively. Combos with Eradicate and Hang"
+    },
+    {
+      "id": "Melancholy",
+      "baseTier": "B",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "3 에너지 gain 13 블록, 코스트 reduces by 1 whenever anyone dies (including Aussie). Top of B. Can become 0-코스트 13 블록 through Aussie death loops"
+    },
+    {
+      "id": "Misery",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "debuff",
+        "aoe"
+      ],
+      "antiSynergies": [],
+      "notes": "0 에너지 deal 7 + apply enemy's debuffs to all others. Transfer doom/weak/힘 down to all. Free 피해. A or high B, may be slightly overrated"
+    },
+    {
+      "id": "Necro Mastery",
+      "baseTier": "B",
+      "synergies": [
+        "summon",
+        "aoe"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 레어 파워: summon 5, whenever Aussie loses HP all enemies lose that much HP. Bottom of B. Weird 광역 that never really popped off. Doesn't work with Bone Shards kill"
+    },
+    {
+      "id": "Negative Pulse",
+      "baseTier": "A",
+      "synergies": [
+        "block",
+        "doom",
+        "aoe"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 gain 5 블록 + apply 7 doom to all enemies. Common. Upgrades to 7 블록 / 11 doom. Block + 광역 피해 at 일반 rarity is insane"
+    },
+    {
+      "id": "Neurosurge",
+      "baseTier": "S",
+      "synergies": [
+        "draw",
+        "energy"
+      ],
+      "antiSynergies": [],
+      "notes": "0 에너지 드로우 2 + gain 3 에너지 next turn, apply 3 doom to self. 필수ly Offering/Adrenaline. Doom barely matters, sometimes even positive. Just ridiculous"
+    },
+    {
+      "id": "No Escape",
+      "baseTier": "B",
+      "synergies": [
+        "doom",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 apply 10 doom + 5 per 10 doom already on enemy. Un일반 that kills bosses. Bad frontload but scales. Tech 카드 for boss matchups"
+    },
+    {
+      "id": "Oblivion",
+      "baseTier": "C",
+      "synergies": [
+        "doom"
+      ],
+      "antiSynergies": [],
+      "notes": "0 에너지 whenever you play a 카드 apply 3 doom. C or D. Worse payoff than Haunt. Doom doesn't kill until next turn. Not a 파워 so it clogs"
+    },
+    {
+      "id": "Pagestorm",
+      "baseTier": "A",
+      "synergies": [
+        "draw",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 파워 (업그레이드s to 0): whenever you 드로우 ethereal 카드, 드로우 1 more. Fills hand constantly. At 0 코스트 very easy to carry. Consistency engine"
+    },
+    {
+      "id": "Parse",
+      "baseTier": "B",
+      "synergies": [
+        "draw",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 ethereal 드로우 3. Just Skim. Hard to justify when Grave Warden exists. 좋은 드로우 rate but wants 블록 stapled on"
+    },
+    {
+      "id": "Poke",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "0 에너지 Aussie deals 6 피해. Lets you deal 피해 while spending 에너지 on 블록ing. Bridges into Aussie 시너지. Simple honest 카드"
+    },
+    {
+      "id": "Protector",
+      "baseTier": "S",
+      "synergies": [
+        "damage",
+        "summon",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 Aussie deals 10 + additional 피해 equal to Aussie max HP. Disgusting 카드 in a vacuum. Ancient rarity so competes against boss 유물s"
+    },
+    {
+      "id": "Pull Aggro",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 summon 4 + gain 7 블록. Bottom of B. Block 11 total with some carrying over. Block 일반s have better rate"
+    },
+    {
+      "id": "Pull From Below",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 deal 5 per ethereal 카드 played this combat. Top of C. Slow 스케일링. Souls don't count (소멸 not ethereal). Better options exist"
+    },
+    {
+      "id": "Putrefy",
+      "baseTier": "A",
+      "synergies": [
+        "debuff",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 apply 2 weak + 2 vuln, 소멸. Upgrades to 3 of each. Debuffs are just good. 약한 invalidates enemies"
+    },
+    {
+      "id": "Rattle",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 Aussie deals 7, hits additional time per other Aussie 공격 this turn. Hard to get payoff. Defile exists at 13 with no condition"
+    },
+    {
+      "id": "Reanimate",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "3 에너지 summon 20, 소멸. Big barricade 블록 that carries over turns. Like Impervious with Barricade. Expensive. Honest middle-of-pack 카드"
+    },
+    {
+      "id": "Reap",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "retain"
+      ],
+      "antiSynergies": [],
+      "notes": "3 에너지 retain deal 27. Bottom of B. Retaining big 공격 for act 1 kills. Only 드로우 it once if you don't need it"
+    },
+    {
+      "id": "Reaper Form",
+      "baseTier": "A",
+      "synergies": [
+        "damage",
+        "doom",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "3 에너지 파워: 공격s also apply doom equal to 피해 dealt. Top of A, bottom of S. Doubles your 피해 output. Expensive but worth it in boss fights"
+    },
+    {
+      "id": "Reave",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "soul"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 deal 피해 + add soul to 드로우 pile. Honest 피해 일반 like Pommel Strike. Does the thing"
+    },
+    {
+      "id": "Right Hand",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "0 에너지 Aussie deals 4 피해, returns to hand when you play 2+ 코스트 카드. Strange, hard to get pieces working"
+    },
+    {
+      "id": "Sacrifice",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "summon",
+        "retain"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 retain: if Aussie alive he dies + gain 블록 equal to double his max HP. Bad 초반, strong 후반r. Upgrades to 0 에너지. Enables big 파워 plays"
+    },
+    {
+      "id": "Scourge",
+      "baseTier": "B",
+      "synergies": [
+        "doom",
+        "draw"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 apply 13 doom + 드로우 1 카드. Upgrades to 16 doom 드로우 2. Damage 일반 that 드로우s. Gets through shields. Fine"
+    },
+    {
+      "id": "Sculpting Strike",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "Deal 8 피해 + add ethereal to a 카드 in hand. Low 피해 number. Ethereal to hand doesn't work well with Page Storm. Weird 카드"
+    },
+    {
+      "id": "Seance",
+      "baseTier": "S",
+      "synergies": [
+        "soul",
+        "infinite",
+        "exhaust",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "0 에너지 ethereal: transform a 카드 in 드로우 pile into a soul. Immediately enables infinite. Exhausts itself when 덱 is empty. 'Don't know why this is in the game'"
+    },
+    {
+      "id": "Sentry Mode",
+      "baseTier": "D",
+      "synergies": [
+        "damage",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 레어 파워: add Sweeping Gaze (0 코스트 Aussie 10 피해) to hand each turn. Way worse than Countdown. 'Why is this 레어?'"
+    },
+    {
+      "id": "Severance",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "soul"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 deal 13 + add soul to hand, 드로우 pile, and dis카드 pile. Makes souls in multiple zones. Can enable loops"
+    },
+    {
+      "id": "Shared Fate",
+      "baseTier": "A",
+      "synergies": [
+        "debuff"
+      ],
+      "antiSynergies": [],
+      "notes": "0 에너지: lose 2 힘, enemy loses 2 힘, 소멸. Strength downside doesn't matter. Zero-코스트 Disarm. 뛰어난 블록 output increase"
+    },
+    {
+      "id": "Shroud",
+      "baseTier": "B",
+      "synergies": [
+        "block",
+        "doom"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: whenever you apply doom gain 2 블록 (업그레이드s to 3). Top of B, maybe A. 안정적인 with doom package. Depends on 덱 composition"
+    },
+    {
+      "id": "Sic Em",
+      "baseTier": "D",
+      "synergies": [
+        "damage",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 Aussie deals 5 + summon 2 whenever Aussie hits this enemy this turn. D or C. Aussie 공격 package is weakest. Never had a run where this worked"
+    },
+    {
+      "id": "Sleight Of Flesh",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "debuff"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 파워: whenever you apply debuff, enemy takes 9 피해. Expensive but 광역 with debuff 카드s. Doom counts as a debuff"
+    },
+    {
+      "id": "Snap",
+      "baseTier": "C",
+      "synergies": [
+        "damage",
+        "retain"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 deal 7 + add retain to a 카드 in hand. Retain is good but 7 피해 too low. Want to retain while 블록ing, not 공격ing"
+    },
+    {
+      "id": "Soul Storm",
+      "baseTier": "B",
+      "synergies": [
+        "soul",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 deal 9 + 2 per soul in 소멸 pile. Top of B. 9 피해 baseline is decent. Boss killing 카드. Rare"
+    },
+    {
+      "id": "Sow",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "aoe",
+        "retain"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 retain deal 8 to all enemies. Cleave with retain. 안정적인 act 1 광역 pickup"
+    },
+    {
+      "id": "Spirit Of Ash",
+      "baseTier": "A",
+      "synergies": [
+        "block",
+        "ethereal",
+        "scaling"
+      ],
+      "antiSynergies": [],
+      "notes": "Power: whenever you play ethereal gain 4 블록. Mental Fortress equivalent. Procs at least once per turn with Defy. With Defy = 블록ing ~25. Floor is very good"
+    },
+    {
+      "id": "Spur",
+      "baseTier": "A",
+      "synergies": [
+        "block",
+        "summon",
+        "retain"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 retain summon 3 + Aussie heals 5 HP. Bottom of A. Retain is great. Upgraded: summon 5 heal 7 = 12 barricade 블록 for 1 에너지"
+    },
+    {
+      "id": "Squeeze",
+      "baseTier": "D",
+      "synergies": [
+        "damage",
+        "summon"
+      ],
+      "antiSynergies": [],
+      "notes": "Aussie deals 25 + 5 per other Aussie 공격 this turn. D or C. Aussie 공격 package is weakest 아키타입. Bridge 카드s for this package aren't strong enough"
+    },
+    {
+      "id": "The Scythe",
+      "baseTier": "S",
+      "synergies": [
+        "damage",
+        "scaling",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 deal 13, permanently increases 피해 by 3, 소멸. Ritual Dagger but doesn't need lethal. Meta 스케일링 that snowballs. Need it 초반"
+    },
+    {
+      "id": "Times Up",
+      "baseTier": "C",
+      "synergies": [
+        "doom",
+        "damage"
+      ],
+      "antiSynergies": [],
+      "notes": "2 에너지 deal 피해 equal to enemy's doom, 소멸. Can kill bosses but hard to combo. Situational boss-kill 카드"
+    },
+    {
+      "id": "Transfigure",
+      "baseTier": "C",
+      "synergies": [
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 소멸: add replay to a 카드 in hand (코스트s extra 에너지). Top of C. Replay is strong but very 상황적. Needs miracle 드로우 orders"
+    },
+    {
+      "id": "Undeath",
+      "baseTier": "B",
+      "synergies": [
+        "block"
+      ],
+      "antiSynergies": [],
+      "notes": "0 에너지 gain 7 블록 + add copy to dis카드 pile. Decent frontload 블록. Rare. Needs targeted 소멸 to control cloning. Awkward in bosses"
+    },
+    {
+      "id": "Veilpiercer",
+      "baseTier": "B",
+      "synergies": [
+        "damage",
+        "energy",
+        "ethereal"
+      ],
+      "antiSynergies": [],
+      "notes": "1 에너지 deal 10 + next ethereal 카드 코스트s 0. 안정적인 피해 + 에너지 cheating. Can cheat Demesne into play. Decent 카드"
+    },
+    {
+      "id": "Wisp",
+      "baseTier": "D",
+      "synergies": [
+        "energy",
+        "exhaust"
+      ],
+      "antiSynergies": [],
+      "notes": "0 에너지 gain 1 에너지, 소멸. Upgrade doesn't go to 2 에너지. Low-impact. Too often a brick. Rather have reusable 에너지 like Borrowed Time"
+    }
+  ]
+}

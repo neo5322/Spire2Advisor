@@ -1,0 +1,110 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="local.props" Condition="Exists('local.props')" />
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<PlatformTarget>x64</PlatformTarget>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+
+		<ModName>SpireAdvisor</ModName>
+		<ModDisplayName>Spire Advisor</ModDisplayName>
+		<ModAuthor>Taka</ModAuthor>
+		<ModVersion>0.4.0</ModVersion>
+
+		<AssemblyName>$(ModName)</AssemblyName>
+		<Version>$(ModVersion)</Version>
+
+		<!-- Defaults if local.props missing -->
+		<STS2GamePath Condition="'$(STS2GamePath)' == ''">D:\SteamLibrary\steamapps\common\Slay the Spire 2</STS2GamePath>
+		<GodotExePath Condition="'$(GodotExePath)' == ''">C:\Godot\Godot_v4.5.1-stable_mono_win64.exe</GodotExePath>
+
+		<ModsOutputDir>$(STS2GamePath)\mods\$(ModName)</ModsOutputDir>
+		<GameDataDir>$(STS2GamePath)\data_sts2_windows_x86_64</GameDataDir>
+		<PackProject>$(ProjectDir)pack</PackProject>
+	</PropertyGroup>
+
+	<!-- Game DLLs from install folder -->
+	<ItemGroup>
+		<Reference Include="0Harmony">
+			<HintPath>$(GameDataDir)\0Harmony.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="GodotSharp">
+			<HintPath>$(GameDataDir)\GodotSharp.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="sts2">
+			<HintPath>$(GameDataDir)\sts2.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
+
+	<!-- NuGet packages -->
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
+	</ItemGroup>
+
+	<!-- Data files -->
+	<ItemGroup>
+		<None Include="Data\**\*.json" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="Data\**\*.tsv" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+
+	<!-- Generate project.godot -->
+	<Target Name="GenerateProjectGodot" BeforeTargets="BeforeBuild">
+		<PropertyGroup>
+			<ProjectGodotPath>$(PackProject)\project.godot</ProjectGodotPath>
+			<ProjectGodotContent>config_version=5
+
+[application]
+config/name="$(ModName)"
+config/features=PackedStringArray("4.5", "Forward Plus")
+
+[dotnet]
+project/assembly_name="$(ModName)"
+</ProjectGodotContent>
+		</PropertyGroup>
+		<WriteLinesToFile File="$(ProjectGodotPath)" Lines="$(ProjectGodotContent)" Overwrite="true" Encoding="UTF-8" />
+	</Target>
+
+	<!-- Generate mod_manifest.json -->
+	<Target Name="GenerateModManifest" BeforeTargets="BeforeBuild">
+		<PropertyGroup>
+			<ModManifestPath>$(PackProject)\mod_manifest.json</ModManifestPath>
+			<ModManifestContent>{
+  "pck_name": "$(ModName)",
+  "name": "$(ModDisplayName)",
+  "author": "$(ModAuthor)",
+  "version": "$(ModVersion)"
+}</ModManifestContent>
+		</PropertyGroup>
+		<WriteLinesToFile File="$(ModManifestPath)" Lines="$(ModManifestContent)" Overwrite="true" Encoding="UTF-8" />
+	</Target>
+
+	<!-- Build: copy DLL + NuGet deps + data, generate PCK, deploy to mods folder -->
+	<Target Name="PostBuild" AfterTargets="Build">
+		<MakeDir Directories="$(ModsOutputDir)" />
+		<!-- Copy mod DLL -->
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsOutputDir)" />
+		<!-- Copy ALL runtime DLLs (NuGet: Newtonsoft.Json, Microsoft.Data.Sqlite, etc.) -->
+		<ItemGroup>
+			<RuntimeDlls Include="$(OutputPath)*.dll" Exclude="$(OutputPath)$(AssemblyName).dll" />
+			<NativeDlls Include="$(OutputPath)runtimes\win-x64\native\*.dll" />
+		</ItemGroup>
+		<Copy SourceFiles="@(RuntimeDlls)" DestinationFolder="$(ModsOutputDir)" SkipUnchangedFiles="true" />
+		<Copy SourceFiles="@(NativeDlls)" DestinationFolder="$(ModsOutputDir)" SkipUnchangedFiles="true" />
+		<!-- Copy Data folder -->
+		<ItemGroup>
+			<DataFiles Include="$(OutputPath)Data\**\*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(DataFiles)" DestinationFolder="$(ModsOutputDir)\Data\%(RecursiveDir)" />
+		<!-- Generate PCK -->
+		<Exec Command="&quot;$(GodotExePath)&quot; --headless --path &quot;$(PackProject)&quot; --export-pack &quot;Windows Desktop&quot; &quot;$(ModsOutputDir)\$(ModName).pck&quot;" />
+		<Message Text="Deployed to $(ModsOutputDir)" Importance="high" />
+	</Target>
+</Project>

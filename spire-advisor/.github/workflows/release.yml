@@ -1,0 +1,85 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Download Godot 4.5.1 Mono
+        shell: pwsh
+        run: |
+          $url = "https://github.com/godotengine/godot/releases/download/4.5.1-stable/Godot_v4.5.1-stable_mono_win64.zip"
+          Invoke-WebRequest -Uri $url -OutFile godot.zip
+          Expand-Archive godot.zip -DestinationPath C:\Godot
+          $exe = Get-ChildItem -Path C:\Godot -Recurse -Filter "Godot_v*mono_win64.exe" | Select-Object -First 1
+          echo "GODOT_EXE=$($exe.FullName)" >> $env:GITHUB_ENV
+
+      - name: Create local.props
+        shell: pwsh
+        run: |
+          @"
+          <Project>
+            <PropertyGroup>
+              <STS2GamePath>${{ github.workspace }}\game_stub</STS2GamePath>
+              <GodotExePath>${{ env.GODOT_EXE }}</GodotExePath>
+            </PropertyGroup>
+          </Project>
+          "@ | Out-File -FilePath QuestceSpire\local.props -Encoding utf8
+
+      - name: Create game stub (DLL references)
+        shell: pwsh
+        run: |
+          # For CI build we need the game DLLs. These must be provided as secrets or artifacts.
+          # For now, skip PCK generation and just build the DLL.
+          mkdir game_stub\data_sts2_windows_x86_64 -Force
+          echo "NOTE: Game DLLs required for full build. See README."
+
+      - name: Build
+        shell: pwsh
+        run: |
+          cd QuestceSpire
+          dotnet build -c Release
+        continue-on-error: true
+
+      - name: Package Release
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}"
+          $outDir = "SpireAdvisor-$version"
+          mkdir $outDir\Data -Force
+          
+          # Copy build output
+          $dll = "QuestceSpire\bin\Release\net9.0\SpireAdvisor.dll"
+          if (Test-Path $dll) { Copy-Item $dll $outDir\ }
+          
+          # Copy NuGet runtime DLLs
+          Get-ChildItem "QuestceSpire\bin\Release\net9.0\*.dll" -Exclude "SpireAdvisor.dll" | Copy-Item -Destination $outDir\
+          
+          # Copy native DLLs (e_sqlite3 etc)
+          $nativeDir = "QuestceSpire\bin\Release\net9.0\runtimes\win-x64\native"
+          if (Test-Path $nativeDir) { Get-ChildItem "$nativeDir\*.dll" | Copy-Item -Destination $outDir\ }
+          
+          # Copy Data
+          Copy-Item -Recurse QuestceSpire\Data\* $outDir\Data\
+          
+          # Zip
+          Compress-Archive -Path $outDir -DestinationPath "$outDir.zip"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: SpireAdvisor-*.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
