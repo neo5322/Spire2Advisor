@@ -72,7 +72,7 @@ public class CoPickSynergyComputer
 				{
 					var key = (sorted[i], sorted[j], character);
 					var prev = pairs.TryGetValue(key, out var v) ? v : (0, 0);
-					pairs[key] = (prev.wins + (isWin ? 1 : 0), prev.total + 1);
+					pairs[key] = (prev.Item1 + (isWin ? 1 : 0), prev.Item2 + 1);
 				}
 			}
 			runCount++;

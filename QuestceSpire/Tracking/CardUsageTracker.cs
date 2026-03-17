@@ -74,7 +74,7 @@ public class CardUsageTracker
 			{
 				var key = (cardId, character);
 				var prev = usage.TryGetValue(key, out var v) ? v : (0, 0);
-				usage[key] = (prev.plays + 1, prev.combats + (newCombat ? 1 : 0));
+				usage[key] = (prev.Item1 + 1, prev.Item2 + (newCombat ? 1 : 0));
 			}
 
 			// Also mark all cards in the combat (even unplayed) for denominator
