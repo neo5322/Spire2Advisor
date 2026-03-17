@@ -63,11 +63,22 @@ public static class StatsExporter
 		// Reset to local-only stats first to avoid double-counting on repeated imports
 		Plugin.LocalStats?.RecomputeAll();
 
-		if (payload.CardStats != null && payload.CardStats.Count > 0)
-			db.MergeCommunityCardStats(payload.CardStats);
+		// Merge community stats atomically — rollback on any failure to avoid partial state
+		try
+		{
+			if (payload.CardStats != null && payload.CardStats.Count > 0)
+				db.MergeCommunityCardStats(payload.CardStats);
 
-		if (payload.RelicStats != null && payload.RelicStats.Count > 0)
-			db.MergeCommunityRelicStats(payload.RelicStats);
+			if (payload.RelicStats != null && payload.RelicStats.Count > 0)
+				db.MergeCommunityRelicStats(payload.RelicStats);
+		}
+		catch (Exception ex)
+		{
+			// Recompute local-only stats to restore consistent state after failed merge
+			Plugin.Log($"StatsExporter: merge failed, restoring local-only stats: {ex.Message}");
+			Plugin.LocalStats?.RecomputeAll();
+			throw;
+		}
 
 		// Update CloudSync cache so run-end remerge uses the imported data
 		if (Plugin.CloudSync != null)
