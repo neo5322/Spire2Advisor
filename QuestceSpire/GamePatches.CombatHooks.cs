@@ -2,9 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Players;
 using QuestceSpire.GameBridge;
 using QuestceSpire.Tracking;
 
@@ -67,12 +64,12 @@ public static partial class GamePatches
 		catch (Exception ex) { Plugin.Log($"OnTurnEnd error: {ex.Message}"); }
 	}
 
-	public static void OnCardPlayed(CardModel card)
+	public static void OnCardPlayed(object card)
 	{
 		try
 		{
 			RecordHook("OnCardPlayed");
-			string cardId = card?.Definition?.Id ?? "unknown";
+			string cardId = ExtractCardId(card);
 			_turnCardsPlayed.Add(cardId);
 		}
 		catch (Exception ex) { Plugin.Log($"OnCardPlayed error: {ex.Message}"); }
@@ -175,6 +172,25 @@ public static partial class GamePatches
 		catch (Exception ex) { Plugin.Log($"OnPotionDiscarded error: {ex.Message}"); }
 	}
 
+	private static string ExtractCardId(object card)
+	{
+		if (card == null) return "unknown";
+		try
+		{
+			var defProp = card.GetType().GetProperty("Definition");
+			if (defProp != null)
+			{
+				var def = defProp.GetValue(card);
+				var idProp = def?.GetType().GetProperty("Id");
+				if (idProp != null) return idProp.GetValue(def)?.ToString() ?? "unknown";
+			}
+			var directId = card.GetType().GetProperty("Id");
+			if (directId != null) return directId.GetValue(card)?.ToString() ?? "unknown";
+			return card.ToString();
+		}
+		catch { return "unknown"; }
+	}
+
 	private static string ExtractPotionId(object potion)
 	{
 		if (potion == null) return null;
@@ -198,12 +214,12 @@ public static partial class GamePatches
 
 	// ─── Shop Purchase Tracking (v0.10.3) ───
 
-	public static void OnShopCardPurchased(CardModel card)
+	public static void OnShopCardPurchased(object card)
 	{
 		try
 		{
 			RecordHook("OnShopCardPurchased");
-			string cardId = card?.Definition?.Id ?? "unknown";
+			string cardId = ExtractCardId(card);
 			var gs = GameStateReader.ReadCurrentState();
 			Plugin.RunTracker?.RecordDecision(
 				DecisionEventType.ShopCard,
