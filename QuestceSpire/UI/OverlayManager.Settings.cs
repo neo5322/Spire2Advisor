@@ -77,6 +77,27 @@ public partial class OverlayManager
 		AddSettingsToggle(menuVBox, "클라우드 동기화", _settings.CloudSyncEnabled, () => { _settings.CloudSyncEnabled = !_settings.CloudSyncEnabled; _settings.Save(); RefreshSettingsMenu(); });
 		AddSettingsToggle(menuVBox, "데이터 자동 업데이트", _settings.AutoUpdateData, () => { _settings.AutoUpdateData = !_settings.AutoUpdateData; _settings.Save(); RefreshSettingsMenu(); });
 
+		// v0.14.1: Pipeline & feature toggles
+		HSeparator pipeSep = new HSeparator();
+		pipeSep.AddThemeStyleboxOverride("separator", new StyleBoxLine { Color = new Color(ClrBorder, 0.3f), Thickness = 1 });
+		menuVBox.AddChild(pipeSep, forceReadableName: false, Node.InternalMode.Disabled);
+		Label pipeHeader = new Label();
+		pipeHeader.Text = "기능 토글";
+		ApplyFont(pipeHeader, _fontBold);
+		pipeHeader.AddThemeFontSizeOverride("font_size", 13);
+		pipeHeader.AddThemeColorOverride("font_color", ClrAccent);
+		menuVBox.AddChild(pipeHeader, forceReadableName: false, Node.InternalMode.Disabled);
+
+		AddSettingsToggle(menuVBox, "포션 조언", _settings.ShowPotionAdvice, () => { _settings.ShowPotionAdvice = !_settings.ShowPotionAdvice; _settings.Save(); RegenerateAdvice(); RefreshSettingsMenu(); });
+		AddSettingsToggle(menuVBox, "런 건강도", _settings.ShowRunHealth, () => { _settings.ShowRunHealth = !_settings.ShowRunHealth; _settings.Save(); RegenerateAdvice(); RefreshSettingsMenu(); });
+		AddSettingsToggle(menuVBox, "보스 대비", _settings.ShowBossReadiness, () => { _settings.ShowBossReadiness = !_settings.ShowBossReadiness; _settings.Save(); RegenerateAdvice(); RefreshSettingsMenu(); });
+		AddSettingsToggle(menuVBox, "메타 아키타입", _settings.ShowMetaArchetypes, () => { _settings.ShowMetaArchetypes = !_settings.ShowMetaArchetypes; _settings.Save(); RegenerateAdvice(); RefreshSettingsMenu(); });
+		AddSettingsToggle(menuVBox, "패치 변경 표시", _settings.ShowPatchChanges, () => { _settings.ShowPatchChanges = !_settings.ShowPatchChanges; _settings.Save(); Rebuild(); RefreshSettingsMenu(); });
+		AddSettingsToggle(menuVBox, "층별 티어 정보", _settings.ShowFloorTierInfo, () => { _settings.ShowFloorTierInfo = !_settings.ShowFloorTierInfo; _settings.Save(); Rebuild(); RefreshSettingsMenu(); });
+		AddSettingsToggle(menuVBox, "카드 조합 시너지", _settings.ShowCoPickSynergy, () => { _settings.ShowCoPickSynergy = !_settings.ShowCoPickSynergy; _settings.Save(); Rebuild(); RefreshSettingsMenu(); });
+		AddSettingsToggle(menuVBox, "런 요약", _settings.ShowRunSummary, () => { _settings.ShowRunSummary = !_settings.ShowRunSummary; _settings.Save(); RefreshSettingsMenu(); });
+		AddSettingsToggle(menuVBox, "파이프라인 동기화", _settings.EnablePipelineSync, () => { _settings.EnablePipelineSync = !_settings.EnablePipelineSync; _settings.Save(); RefreshSettingsMenu(); });
+
 		// Opacity section
 		HSeparator sep2 = new HSeparator();
 		sep2.AddThemeStyleboxOverride("separator", new StyleBoxLine { Color = new Color(ClrBorder, 0.3f), Thickness = 1 });

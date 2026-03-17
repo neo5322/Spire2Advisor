@@ -29,6 +29,8 @@ public class RunTracker : IRunTracker
 
 	public string CurrentCharacter => _currentRun?.Character;
 
+	public string CurrentRunId => _currentRun?.RunId;
+
 	public IReadOnlyList<DecisionEvent> GetCurrentRunEvents() => _currentEvents.AsReadOnly();
 
 	public IReadOnlyDictionary<int, List<(string archetypeId, float strength)>> GetArchetypeHistory() => _archetypeHistory;

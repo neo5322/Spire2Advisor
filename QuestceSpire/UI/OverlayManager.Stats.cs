@@ -590,12 +590,12 @@ public partial class OverlayManager
 				return;
 			}
 			string character = Plugin.RunTracker?.CurrentCharacter ?? _currentCharacter ?? "unknown";
+			string runId = Plugin.RunTracker?.CurrentRunId;
 			_currentCards = null;
 			_currentRelics = null;
 			_currentDeckAnalysis = null;
 			_currentScreen = outcome == RunOutcome.Win ? "RUN WON!" : "RUN LOST";
 			_mapAdvice = null;
-			// Force win rate label to refresh next time
 			_lastWinRateCharacter = null;
 			if (!EnsureOverlay()) return;
 			if (_screenLabel != null && GodotObject.IsInstanceValid(_screenLabel))
@@ -619,18 +619,106 @@ public partial class OverlayManager
 					child.QueueFree();
 				}
 			}
-			// Section: RUN SUMMARY
+
 			Color outcomeColor = outcome == RunOutcome.Win ? ClrPositive : ClrNegative;
 			AddSectionHeader($"RUN SUMMARY \u2014 {outcome.ToString().ToUpper()} (Floor {finalFloor})");
-			// Find controversial picks
+
+			// Generate RunSummaryData from DB
+			RunSummaryData summaryData = null;
+			if (!string.IsNullOrEmpty(runId) && Plugin.RunDatabase != null)
+			{
+				try
+				{
+					var runSummary = new RunSummary(Plugin.RunDatabase);
+					summaryData = runSummary.Generate(runId, character, outcome.ToString());
+				}
+				catch (Exception ex)
+				{
+					Plugin.Log($"RunSummary generation failed: {ex.Message}");
+				}
+			}
+
+			// ─── Combat Efficiency ───
+			if (summaryData != null && summaryData.TotalTurns > 0)
+			{
+				AddSectionHeader("전투 효율");
+				float dpt = (float)summaryData.TotalDamageDealt / summaryData.TotalTurns;
+				float dtpt = (float)summaryData.TotalDamageTaken / summaryData.TotalTurns;
+				float bpt = (float)summaryData.TotalBlockGenerated / summaryData.TotalTurns;
+
+				AddStatRow("총 딜량", $"{summaryData.TotalDamageDealt}", ClrPositive);
+				AddStatRow("턴당 딜", $"{dpt:F1}", dpt >= 15 ? ClrPositive : ClrSub);
+				AddStatRow("받은 피해", $"{summaryData.TotalDamageTaken}", dtpt > 10 ? ClrNegative : ClrSub);
+				AddStatRow("생성 블록", $"{summaryData.TotalBlockGenerated}", bpt >= 8 ? ClrPositive : ClrSub);
+				AddStatRow("총 턴 수", $"{summaryData.TotalTurns}", ClrSub);
+			}
+
+			// ─── Most/Least Played Cards ───
+			if (summaryData?.MostPlayedCards?.Count > 0)
+			{
+				AddSectionHeader("가장 많이 사용한 카드");
+				foreach (var card in summaryData.MostPlayedCards)
+				{
+					string name = PrettifyId(card.CardId);
+					AddStatRow(name, $"{card.PlayCount}회", ClrAccent);
+				}
+			}
+			if (summaryData?.LeastPlayedCards?.Count > 0)
+			{
+				AddSectionHeader("거의 사용하지 않은 카드");
+				foreach (var card in summaryData.LeastPlayedCards)
+				{
+					string name = PrettifyId(card.CardId);
+					AddStatRow(name, $"{card.PlayCount}회", ClrNegative);
+				}
+			}
+
+			// ─── Decision Review (Community Comparison) ───
+			if (summaryData?.Decisions?.Count > 0)
+			{
+				var reviewed = summaryData.Decisions.Where(d => d.Feedback != null).ToList();
+				if (reviewed.Count > 0)
+				{
+					AddSectionHeader("커뮤니티 데이터 대비 결정 분석");
+					int good = summaryData.GoodDecisions;
+					int bad = summaryData.BadDecisions;
+					AddStatRow("좋은 선택", $"{good}", ClrPositive);
+					AddStatRow("아쉬운 선택", $"{bad}", bad > 0 ? ClrNegative : ClrSub);
+
+					foreach (var d in reviewed.Where(d => !d.WasBetterChoice.GetValueOrDefault(true)).Take(5))
+					{
+						PanelContainer dPanel = new PanelContainer();
+						StyleBoxFlat dStyle = new StyleBoxFlat();
+						dStyle.BgColor = new Color(ClrNegative, 0.08f);
+						dStyle.CornerRadiusTopRight = 6;
+						dStyle.CornerRadiusBottomRight = 6;
+						dStyle.BorderWidthLeft = 3;
+						dStyle.BorderColor = ClrNegative;
+						dStyle.ContentMarginLeft = 10f;
+						dStyle.ContentMarginRight = 8f;
+						dStyle.ContentMarginTop = 4f;
+						dStyle.ContentMarginBottom = 4f;
+						dPanel.AddThemeStyleboxOverride("panel", dStyle);
+
+						Label dLbl = new Label();
+						dLbl.Text = $"F{d.Floor} [{d.EventType}]: {d.Feedback}";
+						ApplyFont(dLbl, _fontBody);
+						dLbl.AddThemeColorOverride("font_color", ClrCream);
+						dLbl.AddThemeFontSizeOverride("font_size", 13);
+						dLbl.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+						dPanel.AddChild(dLbl, forceReadableName: false, Node.InternalMode.Disabled);
+						_content.AddChild(dPanel, forceReadableName: false, Node.InternalMode.Disabled);
+					}
+				}
+			}
+
+			// ─── Controversial Picks (tier-based) ───
 			var controversial = new List<(DecisionEvent evt, TierGrade chosenGrade, TierGrade bestGrade)>();
-			// Check if choice tracking is working (if most choices are null, ID extraction failed)
 			int nullChoices = events.Count(e => e.ChosenId == null && e.OfferedIds?.Count > 0);
 			bool choiceTrackingBroken = nullChoices > events.Count * 0.7f;
 			foreach (var evt in events)
 			{
 				if (evt.OfferedIds == null || evt.OfferedIds.Count == 0) continue;
-				// Find best available grade
 				TierGrade bestGrade = TierGrade.F;
 				foreach (string id in evt.OfferedIds)
 				{
@@ -639,7 +727,6 @@ public partial class OverlayManager
 				}
 				if (evt.ChosenId == null)
 				{
-					// Only flag skips if choice tracking is working
 					if (!choiceTrackingBroken && bestGrade >= TierGrade.A)
 						controversial.Add((evt, TierGrade.F, bestGrade));
 				}
@@ -653,17 +740,12 @@ public partial class OverlayManager
 			}
 			if (controversial.Count > 0)
 			{
-				Label contrHeader = new Label();
-				contrHeader.Text = "논란 선택";
-				ApplyFont(contrHeader, _fontBold);
-				contrHeader.AddThemeColorOverride("font_color", ClrExpensive);
-				contrHeader.AddThemeFontSizeOverride("font_size", 14);
-				_content.AddChild(contrHeader, forceReadableName: false, Node.InternalMode.Disabled);
+				AddSectionHeader("논란 선택");
 				foreach (var (evt, chosenGrade, bestGrade) in controversial.Take(8))
 				{
 					string chosen = evt.ChosenId != null ? PrettifyId(evt.ChosenId) : "스킵";
 					string bestId = evt.OfferedIds?.OrderByDescending(id => (int)LookupGrade(id, character)).FirstOrDefault();
-					string bestName = bestId ?? "?";
+					string bestName = bestId != null ? PrettifyId(bestId) : "?";
 					int gap = (int)bestGrade - (int)chosenGrade;
 					PanelContainer cPanel = new PanelContainer();
 					StyleBoxFlat cStyle = new StyleBoxFlat();
@@ -678,10 +760,10 @@ public partial class OverlayManager
 					cStyle.ContentMarginBottom = 4f;
 					cPanel.AddThemeStyleboxOverride("panel", cStyle);
 					Label cLbl = new Label();
-					cLbl.Text = $"F{evt.Floor}: Chose {chosen} [{chosenGrade}] \u2014 Best: {bestName} [{bestGrade}] ({gap} grades below)";
+					cLbl.Text = $"F{evt.Floor}: {chosen} [{chosenGrade}] \u2014 Best: {bestName} [{bestGrade}] ({gap} grades)";
 					ApplyFont(cLbl, _fontBody);
-					cLbl.AddThemeColorOverride("font_color", outcome == RunOutcome.Win ? ClrPositive : ClrNegative);
-					cLbl.AddThemeFontSizeOverride("font_size", 17);
+					cLbl.AddThemeColorOverride("font_color", outcomeColor);
+					cLbl.AddThemeFontSizeOverride("font_size", 13);
 					cLbl.AutowrapMode = TextServer.AutowrapMode.WordSmart;
 					cPanel.AddChild(cLbl, forceReadableName: false, Node.InternalMode.Disabled);
 					_content.AddChild(cPanel, forceReadableName: false, Node.InternalMode.Disabled);
@@ -696,6 +778,19 @@ public partial class OverlayManager
 				noContr.AddThemeFontSizeOverride("font_size", 14);
 				_content.AddChild(noContr, forceReadableName: false, Node.InternalMode.Disabled);
 			}
+
+			// ─── Gold ───
+			if (summaryData != null && summaryData.PeakGold > 0)
+			{
+				AddStatRow("최고 골드", $"{summaryData.PeakGold}G", ClrExpensive);
+			}
+
+			// ─── Decision Replay (v0.12.2) ───
+			AddDecisionReplay(events, character);
+
+			// ─── Global Stats Comparison (v0.14.3) ───
+			AddGlobalStatsComparison(character);
+
 			// Stats line
 			Label statsLbl = new Label();
 			statsLbl.Text = $"Decisions: {events.Count} | Controversial: {controversial.Count}";
@@ -704,7 +799,7 @@ public partial class OverlayManager
 			statsLbl.AddThemeFontSizeOverride("font_size", 14);
 			_content.AddChild(statsLbl, forceReadableName: false, Node.InternalMode.Disabled);
 			ResizePanelToContent();
-			// V2: Fade in the summary
+
 			if (_content != null && GodotObject.IsInstanceValid(_content))
 			{
 				_content.Modulate = new Color(1, 1, 1, 0);
@@ -716,6 +811,215 @@ public partial class OverlayManager
 		{
 			Plugin.Log($"ShowRunSummary error: {ex}");
 			Clear();
+		}
+	}
+
+	private void AddStatRow(string label, string value, Color valueColor)
+	{
+		HBoxContainer row = new HBoxContainer();
+		row.AddThemeConstantOverride("separation", 8);
+		Label lbl = new Label();
+		lbl.Text = label;
+		ApplyFont(lbl, _fontBody);
+		lbl.AddThemeColorOverride("font_color", ClrSub);
+		lbl.AddThemeFontSizeOverride("font_size", 13);
+		lbl.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+		row.AddChild(lbl, forceReadableName: false, Node.InternalMode.Disabled);
+		Label val = new Label();
+		val.Text = value;
+		ApplyFont(val, _fontBold);
+		val.AddThemeColorOverride("font_color", valueColor);
+		val.AddThemeFontSizeOverride("font_size", 13);
+		row.AddChild(val, forceReadableName: false, Node.InternalMode.Disabled);
+		_content.AddChild(row, forceReadableName: false, Node.InternalMode.Disabled);
+	}
+
+	/// <summary>
+	/// v0.12.2: Decision replay — scrollable per-decision review with community win-rate.
+	/// </summary>
+	private void AddDecisionReplay(IReadOnlyList<DecisionEvent> events, string character)
+	{
+		if (events == null || events.Count == 0) return;
+		var meaningful = events.Where(e => e.OfferedIds?.Count > 0).ToList();
+		if (meaningful.Count == 0) return;
+
+		AddSectionHeader("결정 리플레이");
+
+		ScrollContainer scroll = new ScrollContainer();
+		scroll.HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled;
+		scroll.MouseFilter = Control.MouseFilterEnum.Stop;
+		float maxH = Math.Min(meaningful.Count * 60f, 300f);
+		scroll.CustomMinimumSize = new Vector2(0, maxH);
+		scroll.SizeFlagsVertical = Control.SizeFlags.Fill;
+
+		VBoxContainer scrollContent = new VBoxContainer();
+		scrollContent.AddThemeConstantOverride("separation", 4);
+		scrollContent.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+		scroll.AddChild(scrollContent, forceReadableName: false, Node.InternalMode.Disabled);
+
+		foreach (var evt in meaningful)
+		{
+			PanelContainer entry = new PanelContainer();
+			StyleBoxFlat style = new StyleBoxFlat();
+			style.BgColor = new Color(0.04f, 0.06f, 0.1f, 0.5f);
+			style.CornerRadiusTopRight = 6;
+			style.CornerRadiusBottomRight = 6;
+			style.BorderWidthLeft = 3;
+			style.ContentMarginLeft = 10f;
+			style.ContentMarginRight = 8f;
+			style.ContentMarginTop = 3f;
+			style.ContentMarginBottom = 3f;
+
+			// Color border by decision quality
+			Color borderClr = ClrSub;
+			if (evt.ChosenId != null)
+			{
+				TierGrade chosen = LookupGrade(evt.ChosenId, character);
+				TierGrade best = evt.OfferedIds.Max(id => LookupGrade(id, character));
+				int gap = (int)best - (int)chosen;
+				borderClr = gap == 0 ? ClrPositive : gap == 1 ? ClrAccent : ClrNegative;
+			}
+			style.BorderColor = borderClr;
+			entry.AddThemeStyleboxOverride("panel", style);
+
+			VBoxContainer vbox = new VBoxContainer();
+			vbox.AddThemeConstantOverride("separation", 1);
+			entry.AddChild(vbox, forceReadableName: false, Node.InternalMode.Disabled);
+
+			// Line 1: Floor + event type + chosen
+			string typeIcon = evt.EventType switch
+			{
+				DecisionEventType.CardReward => "\u2694",
+				DecisionEventType.RelicReward or DecisionEventType.BossRelic => "\u2B50",
+				DecisionEventType.Shop => "\uD83D\uDCB0",
+				DecisionEventType.CardRemove => "\u2702",
+				_ => "\u2022"
+			};
+			string chosenName = evt.ChosenId != null ? PrettifyId(evt.ChosenId) : "스킵";
+			TierGrade chosenGrade = evt.ChosenId != null ? LookupGrade(evt.ChosenId, character) : TierGrade.F;
+
+			Label mainLine = new Label();
+			mainLine.Text = $"{typeIcon} F{evt.Floor}: {chosenName} [{chosenGrade}]";
+			ApplyFont(mainLine, _fontBold);
+			mainLine.AddThemeColorOverride("font_color", borderClr);
+			mainLine.AddThemeFontSizeOverride("font_size", 13);
+			mainLine.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
+			vbox.AddChild(mainLine, forceReadableName: false, Node.InternalMode.Disabled);
+
+			// Line 2: All offered options with grades + community win-rate
+			var parts = new List<string>();
+			foreach (string id in evt.OfferedIds)
+			{
+				TierGrade g = LookupGrade(id, character);
+				string name = PrettifyId(id);
+				string marker = id == evt.ChosenId ? "\u25B6" : " ";
+				// Try to get community win rate
+				string wrStr = "";
+				try
+				{
+					var stats = Plugin.RunDatabase?.GetCommunityCardStats(character, id);
+					if (stats != null && stats.SampleSize >= 5)
+						wrStr = $" {stats.WinRateWhenPicked:P0}";
+				}
+				catch { }
+				parts.Add($"{marker}{name}[{g}]{wrStr}");
+			}
+			Label offeredLine = new Label();
+			offeredLine.Text = string.Join("  ", parts);
+			ApplyFont(offeredLine, _fontBody);
+			offeredLine.AddThemeColorOverride("font_color", ClrSub);
+			offeredLine.AddThemeFontSizeOverride("font_size", 11);
+			offeredLine.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
+			vbox.AddChild(offeredLine, forceReadableName: false, Node.InternalMode.Disabled);
+
+			scrollContent.AddChild(entry, forceReadableName: false, Node.InternalMode.Disabled);
+		}
+
+		_content.AddChild(scroll, forceReadableName: false, Node.InternalMode.Disabled);
+	}
+
+	/// <summary>
+	/// v0.14.3: Global stats comparison — player performance vs leaderboard averages.
+	/// </summary>
+	private void AddGlobalStatsComparison(string character)
+	{
+		if (Plugin.SteamLeaderboardSync?.Cache == null) return;
+		var cache = Plugin.SteamLeaderboardSync.Cache;
+		if (cache.Leaderboards == null || cache.Leaderboards.Count == 0) return;
+		if (Plugin.RunDatabase == null || string.IsNullOrEmpty(character)) return;
+
+		AddSectionHeader("글로벌 통계 비교");
+
+		try
+		{
+			// Player stats
+			var (wins, total) = Plugin.RunDatabase.GetCharacterWinRate(character);
+			if (total == 0) return;
+			float playerWinRate = (float)wins / total;
+
+			// Show player win rate
+			string charName = char.ToUpper(character[0]) + character.Substring(1);
+			AddStatRow($"{charName} 승률", $"{playerWinRate:P0} ({wins}/{total})",
+				playerWinRate >= 0.5f ? ClrPositive : playerWinRate >= 0.3f ? ClrAccent : ClrNegative);
+
+			// Leaderboard summary
+			int totalPlayers = 0;
+			foreach (var board in cache.Leaderboards)
+			{
+				if (board.EntryCount > totalPlayers)
+					totalPlayers = board.EntryCount;
+			}
+			if (totalPlayers > 0)
+			{
+				AddStatRow("글로벌 참가자", $"{totalPlayers:N0}명", ClrSub);
+			}
+
+			// Show top leaderboards
+			int shown = 0;
+			foreach (var board in cache.Leaderboards)
+			{
+				if (shown >= 5) break;
+				if (board.EntryCount < 10) continue;
+				AddStatRow(board.Name, $"{board.EntryCount:N0}명", ClrSub);
+				shown++;
+			}
+
+			// Pipeline status summary
+			var orchestrator = Plugin.PipelineOrchestrator;
+			if (orchestrator != null)
+			{
+				var history = orchestrator.GetRunHistory();
+				if (history.Count > 0)
+				{
+					int success = 0, failed = 0;
+					long totalMs = 0;
+					foreach (var info in history)
+					{
+						if (info.Status == PipelineStatus.Success) success++;
+						else if (info.Status == PipelineStatus.Failed) failed++;
+						totalMs += info.DurationMs;
+					}
+					AddStatRow("파이프라인", $"{success}/{history.Count} 성공 ({totalMs}ms)",
+						failed == 0 ? ClrPositive : ClrNegative);
+				}
+			}
+
+			// Last updated
+			if (!string.IsNullOrEmpty(cache.LastUpdated))
+			{
+				if (DateTime.TryParse(cache.LastUpdated, out var lastUpdate))
+				{
+					var age = DateTime.UtcNow - lastUpdate;
+					string ageStr = age.TotalHours < 1 ? $"{age.TotalMinutes:F0}분 전" :
+						age.TotalDays < 1 ? $"{age.TotalHours:F0}시간 전" :
+						$"{age.TotalDays:F0}일 전";
+					AddStatRow("마지막 업데이트", ageStr, ClrSub);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Plugin.Log($"AddGlobalStatsComparison error: {ex.Message}");
 		}
 	}
 }

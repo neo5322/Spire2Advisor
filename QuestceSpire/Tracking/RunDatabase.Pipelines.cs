@@ -98,9 +98,20 @@ public partial class RunDatabase
 				timestamp TEXT NOT NULL
 			);
 
+			CREATE TABLE IF NOT EXISTS relic_card_cross (
+				relic_id TEXT NOT NULL,
+				card_id TEXT NOT NULL,
+				character TEXT NOT NULL,
+				co_occurrence INTEGER NOT NULL DEFAULT 0,
+				win_rate REAL NOT NULL DEFAULT 0,
+				sample_size INTEGER NOT NULL DEFAULT 0,
+				PRIMARY KEY (relic_id, card_id, character)
+			);
+
 			CREATE INDEX IF NOT EXISTS idx_combat_turns_run ON combat_turns(run_id, floor);
 			CREATE INDEX IF NOT EXISTS idx_potion_events_run ON potion_events(run_id);
 			CREATE INDEX IF NOT EXISTS idx_patch_changes_entity ON patch_changes(entity_type, entity_id);
+			CREATE INDEX IF NOT EXISTS idx_relic_card_cross_relic ON relic_card_cross(relic_id, character);
 		";
 		cmd.ExecuteNonQuery();
 		Plugin.Log("Pipeline tables created/verified.");
@@ -420,9 +431,78 @@ public partial class RunDatabase
 		}
 		return list;
 	}
+
+	// --- Relic-Card Cross Reference ---
+
+	public void SaveRelicCardCrossStats(List<RelicCardCrossStat> stats)
+	{
+		if (!EnsureInitialized() || stats == null) return;
+		using var conn = new SqliteConnection(_connectionString);
+		conn.Open();
+		using var tx = conn.BeginTransaction();
+		using var del = conn.CreateCommand();
+		del.CommandText = "DELETE FROM relic_card_cross";
+		del.ExecuteNonQuery();
+		using var cmd = conn.CreateCommand();
+		cmd.CommandText = "INSERT INTO relic_card_cross (relic_id, card_id, character, co_occurrence, win_rate, sample_size) VALUES (@r, @c, @char, @co, @wr, @ss)";
+		var pR = cmd.Parameters.Add("@r", SqliteType.Text);
+		var pC = cmd.Parameters.Add("@c", SqliteType.Text);
+		var pChar = cmd.Parameters.Add("@char", SqliteType.Text);
+		var pCo = cmd.Parameters.Add("@co", SqliteType.Integer);
+		var pWr = cmd.Parameters.Add("@wr", SqliteType.Real);
+		var pSs = cmd.Parameters.Add("@ss", SqliteType.Integer);
+		foreach (var s in stats)
+		{
+			pR.Value = s.RelicId;
+			pC.Value = s.CardId;
+			pChar.Value = s.Character;
+			pCo.Value = s.CoOccurrence;
+			pWr.Value = s.WinRate;
+			pSs.Value = s.SampleSize;
+			cmd.ExecuteNonQuery();
+		}
+		tx.Commit();
+		Plugin.Log($"Saved {stats.Count} relic-card cross stats.");
+	}
+
+	public List<RelicCardCrossStat> GetRelicCardCrossStats(string character, string relicId)
+	{
+		var list = new List<RelicCardCrossStat>();
+		if (!EnsureInitialized() || relicId == null) return list;
+		using var conn = new SqliteConnection(_connectionString);
+		conn.Open();
+		using var cmd = conn.CreateCommand();
+		cmd.CommandText = "SELECT card_id, co_occurrence, win_rate, sample_size FROM relic_card_cross WHERE relic_id = @r AND character = @c AND sample_size >= 5 ORDER BY win_rate DESC LIMIT 10";
+		cmd.Parameters.AddWithValue("@r", relicId);
+		cmd.Parameters.AddWithValue("@c", character);
+		using var reader = cmd.ExecuteReader();
+		while (reader.Read())
+		{
+			list.Add(new RelicCardCrossStat
+			{
+				RelicId = relicId,
+				CardId = reader.GetString(0),
+				Character = character,
+				CoOccurrence = reader.GetInt32(1),
+				WinRate = reader.GetFloat(2),
+				SampleSize = reader.GetInt32(3)
+			});
+		}
+		return list;
+	}
 }
 
 // --- Data Classes ---
+
+public class RelicCardCrossStat
+{
+	public string RelicId { get; set; }
+	public string CardId { get; set; }
+	public string Character { get; set; }
+	public int CoOccurrence { get; set; }
+	public float WinRate { get; set; }
+	public int SampleSize { get; set; }
+}
 
 public class CardPairStat
 {
