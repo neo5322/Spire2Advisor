@@ -1,0 +1,180 @@
+{
+  "ironclad": [
+    {
+      "Id": "strength",
+      "DisplayName": "힘",
+      "CoreTags": ["strength", "scaling"],
+      "SupportTags": ["multi_hit", "vulnerable"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    },
+    {
+      "Id": "exhaust",
+      "DisplayName": "소멸",
+      "CoreTags": ["exhaust"],
+      "SupportTags": ["draw", "self_damage"],
+      "CoreThreshold": 4,
+      "SupportThreshold": 2
+    },
+    {
+      "Id": "block",
+      "DisplayName": "바리케이드 / 방어",
+      "CoreTags": ["block", "dexterity"],
+      "SupportTags": ["scaling", "weak"],
+      "CoreThreshold": 4,
+      "SupportThreshold": 1
+    },
+    {
+      "Id": "self_damage",
+      "DisplayName": "자해 / 부패",
+      "CoreTags": ["self_damage"],
+      "SupportTags": ["strength", "exhaust"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    }
+  ],
+  "silent": [
+    {
+      "Id": "poison",
+      "DisplayName": "독",
+      "CoreTags": ["poison", "poison_scaling"],
+      "SupportTags": ["weak", "scaling"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 1
+    },
+    {
+      "Id": "shiv",
+      "DisplayName": "칼날",
+      "CoreTags": ["shiv", "shiv_synergy"],
+      "SupportTags": ["dexterity", "draw"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    },
+    {
+      "Id": "discard",
+      "DisplayName": "버리기",
+      "CoreTags": ["discard", "discard_synergy"],
+      "SupportTags": ["draw", "retain"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    },
+    {
+      "Id": "dexterity",
+      "DisplayName": "민첩 / 방어",
+      "CoreTags": ["dexterity", "block"],
+      "SupportTags": ["weak", "draw"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    }
+  ],
+  "defect": [
+    {
+      "Id": "lightning",
+      "DisplayName": "번개 오브",
+      "CoreTags": ["lightning", "orb"],
+      "SupportTags": ["focus", "evoke"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    },
+    {
+      "Id": "frost",
+      "DisplayName": "냉기 / 집중",
+      "CoreTags": ["frost", "focus"],
+      "SupportTags": ["orb", "block"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    },
+    {
+      "Id": "dark",
+      "DisplayName": "어둠 오브",
+      "CoreTags": ["dark", "orb"],
+      "SupportTags": ["focus", "evoke"],
+      "CoreThreshold": 2,
+      "SupportThreshold": 2
+    },
+    {
+      "Id": "all_orbs",
+      "DisplayName": "전체 오브 / 집중",
+      "CoreTags": ["focus", "orb"],
+      "SupportTags": ["lightning", "frost", "dark", "channel"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 3
+    },
+    {
+      "Id": "zero_cost",
+      "DisplayName": "0코스트",
+      "CoreTags": ["zero_cost"],
+      "SupportTags": ["draw", "scaling"],
+      "CoreThreshold": 4,
+      "SupportThreshold": 1
+    }
+  ],
+  "regent": [
+    {
+      "Id": "stellar",
+      "DisplayName": "항성 / 별",
+      "CoreTags": ["stellar", "stars"],
+      "SupportTags": ["draw", "scaling", "zero_cost"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    },
+    {
+      "Id": "authority",
+      "DisplayName": "권위 / 대장간",
+      "CoreTags": ["authority", "forge"],
+      "SupportTags": ["scaling", "damage"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    },
+    {
+      "Id": "minion",
+      "DisplayName": "소환수",
+      "CoreTags": ["minion"],
+      "SupportTags": ["damage", "scaling", "block"],
+      "CoreThreshold": 2,
+      "SupportThreshold": 2
+    },
+    {
+      "Id": "cosmic",
+      "DisplayName": "우주 피해",
+      "CoreTags": ["cosmic", "aoe"],
+      "SupportTags": ["stellar", "stars", "scaling"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    }
+  ],
+  "necrobinder": [
+    {
+      "Id": "doom",
+      "DisplayName": "파멸 / 디버프",
+      "CoreTags": ["doom", "debuff"],
+      "SupportTags": ["block", "scaling"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    },
+    {
+      "Id": "soul",
+      "DisplayName": "영혼 / 소멸 순환",
+      "CoreTags": ["soul", "exhaust"],
+      "SupportTags": ["draw", "scaling"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    },
+    {
+      "Id": "minion",
+      "DisplayName": "소환수",
+      "CoreTags": ["minion", "summon"],
+      "SupportTags": ["damage", "scaling"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    },
+    {
+      "Id": "death",
+      "DisplayName": "죽음 / 사신",
+      "CoreTags": ["death", "exhaust"],
+      "SupportTags": ["aoe", "damage"],
+      "CoreThreshold": 3,
+      "SupportThreshold": 2
+    }
+  ]
+}

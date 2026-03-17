@@ -4,28 +4,32 @@ using QuestceSpire.Tracking;
 
 namespace QuestceSpire.Core;
 
-public class AdaptiveScorer
+public class AdaptiveScorer : IAdaptiveScorer
 {
-	private const int MinSampleSize = 5;
-
-	private const int FullConfidenceSampleSize = 50;
-
-	private const float WinRateForS = 0.58f;
-
-	private const float WinRateForF = 0.35f;
-
 	private readonly RunDatabase _db;
+	private bool _loggedUnavailable;
 
 	public AdaptiveScorer(RunDatabase db)
 	{
 		_db = db;
 	}
 
+	private ScoringConfig Cfg => ScoringConfig.Instance;
+
 	public float GetAdaptiveCardScore(string character, string cardId, float staticScore, DeckAnalysis deckAnalysis)
 	{
+		if (_db == null)
+		{
+			if (!_loggedUnavailable)
+			{
+				Plugin.Log("AdaptiveScorer: database unavailable, falling back to static scores.");
+				_loggedUnavailable = true;
+			}
+			return staticScore;
+		}
 		float num = staticScore;
-		CommunityCardStats communityCardStats = _db?.GetCommunityCardStats(character, cardId);
-		if (communityCardStats == null || communityCardStats.SampleSize < 5)
+		CommunityCardStats communityCardStats = _db.GetCommunityCardStats(character, cardId);
+		if (communityCardStats == null || communityCardStats.SampleSize < Cfg.MinSampleSize)
 		{
 			return num;
 		}
@@ -49,11 +53,25 @@ public class AdaptiveScorer
 		return Math.Max(0f, Math.Min(5f, val2));
 	}
 
+	public float GetAdaptiveRelicScore(string character, string relicId, float staticScore)
+	{
+		return GetAdaptiveRelicScore(character, relicId, staticScore, null);
+	}
+
 	public float GetAdaptiveRelicScore(string character, string relicId, float staticScore, DeckAnalysis deckAnalysis)
 	{
+		if (_db == null)
+		{
+			if (!_loggedUnavailable)
+			{
+				Plugin.Log("AdaptiveScorer: database unavailable, falling back to static scores.");
+				_loggedUnavailable = true;
+			}
+			return staticScore;
+		}
 		float num = staticScore;
-		CommunityRelicStats communityRelicStats = _db?.GetCommunityRelicStats(character, relicId);
-		if (communityRelicStats == null || communityRelicStats.SampleSize < 5)
+		CommunityRelicStats communityRelicStats = _db.GetCommunityRelicStats(character, relicId);
+		if (communityRelicStats == null || communityRelicStats.SampleSize < Cfg.MinSampleSize)
 		{
 			return num;
 		}
@@ -74,21 +92,24 @@ public class AdaptiveScorer
 
 	private float GetConfidence(int sampleSize)
 	{
-		if (sampleSize < MinSampleSize)
+		if (sampleSize < Cfg.MinSampleSize)
 		{
 			return 0f;
 		}
-		if (sampleSize >= FullConfidenceSampleSize)
+		if (sampleSize >= Cfg.FullConfidenceSampleSize)
 		{
 			return 1f;
 		}
-		return (float)(sampleSize - MinSampleSize) / (float)(FullConfidenceSampleSize - MinSampleSize);
+		return (float)(sampleSize - Cfg.MinSampleSize) / (float)(Cfg.FullConfidenceSampleSize - Cfg.MinSampleSize);
 	}
 
 	private float WinRateToScore(float winRate)
 	{
-		float num = (winRate - WinRateForF) / (WinRateForS - WinRateForF);
-		return Math.Max(0f, Math.Min(5f, num * 5f));
+		float normalized = (winRate - Cfg.WinRateForF) / (Cfg.WinRateForS - Cfg.WinRateForF);
+		normalized = Math.Max(0f, Math.Min(1f, normalized));
+		// Sigmoid curve for more natural distribution
+		float sigmoid = 1f / (1f + (float)Math.Exp(-6f * (normalized - 0.5f)));
+		return sigmoid * 5f;
 	}
 
 	private float GetContextScore(Dictionary<string, float> contextStats, DeckAnalysis deckAnalysis)
@@ -97,37 +118,72 @@ public class AdaptiveScorer
 		{
 			return -1f;
 		}
-		float result = -1f;
+
+		// Fix #1: Find the single best matching archetype FIRST, then extract context score.
+		// Previously the inner loop overwrote bestStrength per tag match.
 		float bestStrength = 0f;
+		ArchetypeMatch bestArch = null;
+
 		foreach (ArchetypeMatch detectedArchetype in deckAnalysis.DetectedArchetypes)
 		{
+			// Check if any core tag has a matching context key
+			bool hasContextMatch = false;
 			foreach (string coreTag in detectedArchetype.Archetype.CoreTags)
 			{
-				// Match the context key with the highest count for this core tag
-				// e.g., if deck has 7 poison cards, prefer "poison_7+" over "poison_3+"
-				float bestWinRate = -1f;
-				int bestCount = 0;
 				foreach (var kvp in contextStats)
 				{
-					if (!kvp.Key.StartsWith(coreTag + "_", StringComparison.OrdinalIgnoreCase))
-						continue;
-					// Parse count from key like "poison_5+"
-					int count = 0;
-					string suffix = kvp.Key.Substring(coreTag.Length + 1).TrimEnd('+');
-					int.TryParse(suffix, out count);
-					if (count > bestCount)
+					if (kvp.Key.StartsWith(coreTag + "_", StringComparison.OrdinalIgnoreCase))
 					{
-						bestCount = count;
-						bestWinRate = kvp.Value;
+						hasContextMatch = true;
+						break;
 					}
 				}
-				if (bestWinRate >= 0f && detectedArchetype.Strength > bestStrength)
-				{
-					result = WinRateToScore(bestWinRate);
-					bestStrength = detectedArchetype.Strength;
-				}
+				if (hasContextMatch) break;
+			}
+
+			if (hasContextMatch && detectedArchetype.Strength > bestStrength)
+			{
+				bestStrength = detectedArchetype.Strength;
+				bestArch = detectedArchetype;
 			}
 		}
-		return result;
+
+		if (bestArch == null)
+		{
+			return -1f;
+		}
+
+		// Now extract the best context score from the winning archetype
+		float bestWinRate = -1f;
+		foreach (string coreTag in bestArch.Archetype.CoreTags)
+		{
+			int bestCount = 0;
+			float candidateWinRate = -1f;
+			foreach (var kvp in contextStats)
+			{
+				if (!kvp.Key.StartsWith(coreTag + "_", StringComparison.OrdinalIgnoreCase))
+					continue;
+
+				// Validate context key format (e.g., "poison_5+")
+				string suffix = kvp.Key.Substring(coreTag.Length + 1).TrimEnd('+');
+				if (!int.TryParse(suffix, out int count))
+				{
+					Plugin.Log($"AdaptiveScorer: malformed context key '{kvp.Key}' — expected format '<tag>_<number>+'");
+					continue;
+				}
+
+				if (count > bestCount)
+				{
+					bestCount = count;
+					candidateWinRate = kvp.Value;
+				}
+			}
+			if (candidateWinRate > bestWinRate)
+			{
+				bestWinRate = candidateWinRate;
+			}
+		}
+
+		return bestWinRate >= 0f ? WinRateToScore(bestWinRate) : -1f;
 	}
 }

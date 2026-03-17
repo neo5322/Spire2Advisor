@@ -21,6 +21,8 @@ public class RunTracker
 
 	private readonly Dictionary<int, List<(string archetypeId, float strength)>> _archetypeHistory = new();
 
+	private readonly object _decisionLock = new();
+
 	public string PlayerId => _playerId;
 
 	public bool IsRunActive => _currentRun != null;
@@ -116,7 +118,13 @@ public class RunTracker
 			{
 				Plugin.Log($"RecordDecision: failed to infer game state for auto-start: {ex.Message}");
 			}
+			Plugin.Log("WARN: Auto-starting run without proper initialization. Character may be unknown.");
 			StartRun(character, "", ascensionLevel);
+		}
+		if (!string.IsNullOrEmpty(chosenId) && offeredIds != null && offeredIds.Count > 0
+			&& !offeredIds.Contains(chosenId))
+		{
+			Plugin.Log($"WARN: Chosen ID '{chosenId}' not in offered list");
 		}
 		DecisionEvent item = new DecisionEvent
 		{
@@ -171,34 +179,40 @@ public class RunTracker
 
 	public void UpdateLastDecisionChoice(string chosenId)
 	{
-		if (_currentEvents.Count > 0)
+		lock (_decisionLock)
 		{
-			_currentEvents[_currentEvents.Count - 1].ChosenId = chosenId;
-			Plugin.Log("Updated last decision with choice: " + chosenId);
+			if (_currentEvents.Count > 0)
+			{
+				_currentEvents[_currentEvents.Count - 1].ChosenId = chosenId;
+				Plugin.Log("Updated last decision with choice: " + chosenId);
+			}
 		}
 	}
 
 	public void EndRun(RunOutcome outcome, int finalFloor, int finalAct)
 	{
-		if (_currentRun == null)
+		lock (_decisionLock)
 		{
-			Plugin.Log("EndRun called with no active run. Ignoring.");
-			return;
+			if (_currentRun == null)
+			{
+				Plugin.Log("EndRun called with no active run. Ignoring.");
+				return;
+			}
+			_currentRun.EndTime = DateTime.UtcNow;
+			_currentRun.Outcome = outcome;
+			_currentRun.FinalFloor = finalFloor;
+			_currentRun.FinalAct = finalAct;
+			try
+			{
+				_db.SaveRun(_currentRun, _currentEvents);
+				Plugin.Log($"Run ended: {outcome} on floor {finalFloor} (act {finalAct}). {_currentEvents.Count} decisions saved.");
+			}
+			catch (Exception ex)
+			{
+				Plugin.Log("Failed to save run to database: " + ex.Message);
+			}
+			_currentRun = null;
+			_currentEvents.Clear();
 		}
-		_currentRun.EndTime = DateTime.UtcNow;
-		_currentRun.Outcome = outcome;
-		_currentRun.FinalFloor = finalFloor;
-		_currentRun.FinalAct = finalAct;
-		try
-		{
-			_db.SaveRun(_currentRun, _currentEvents);
-			Plugin.Log($"Run ended: {outcome} on floor {finalFloor} (act {finalAct}). {_currentEvents.Count} decisions saved.");
-		}
-		catch (Exception ex)
-		{
-			Plugin.Log("Failed to save run to database: " + ex.Message);
-		}
-		_currentRun = null;
-		_currentEvents.Clear();
 	}
 }

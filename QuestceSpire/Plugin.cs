@@ -27,7 +27,11 @@ public static class Plugin
 
 	private static volatile bool _backgroundInitDone;
 
+	private static volatile bool _backgroundInitFailed;
+
 	public static bool IsBackgroundInitDone => _backgroundInitDone;
+
+	public static bool IsBackgroundInitFailed => _backgroundInitFailed;
 
 	public static string PluginFolder { get; private set; }
 
@@ -114,13 +118,12 @@ public static class Plugin
 					await CloudSync.DownloadCommunityStats();
 					// Re-apply game history import after cloud merge
 					new GameDataImporter(RunDatabase).ImportAll();
+					_backgroundInitDone = true;
 				}
 				catch (Exception ex)
 				{
 					Log("Background cloud sync error: " + ex.Message);
-				}
-				finally
-				{
+					_backgroundInitFailed = true;
 					_backgroundInitDone = true;
 				}
 			});
@@ -217,8 +220,10 @@ public static class Plugin
 				_logWriter.WriteLine(text);
 			}
 		}
-		catch
+		catch (Exception ex)
 		{
+			// Last resort: log to Godot console since file logging failed
+			Godot.GD.PrintErr($"[SpireAdvisor] Log write failed: {ex.Message}");
 		}
 	}
 }

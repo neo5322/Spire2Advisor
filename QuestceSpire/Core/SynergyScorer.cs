@@ -5,36 +5,16 @@ using QuestceSpire.GameBridge;
 
 namespace QuestceSpire.Core;
 
-public class SynergyScorer
+public class SynergyScorer : ICardScorer, IRelicScorer
 {
-	// --- Synergy scoring (graduated, replaces flat 0.5/0.8) ---
-	// Base synergy value = 0.3 + archetype.Strength * 0.5 (ranges 0.3–0.8)
-	// Diminishing per match: 1st=100%, 2nd=60%, 3rd=30%
-	private static readonly float[] SynergyDiminishing = { 1.0f, 0.6f, 0.3f };
+	private ScoringConfig Cfg => ScoringConfig.Instance;
 
-	// Saturation: reduce synergy bonus when deck already has many cards with the tag
-	// <4 cards = full, 4-6 = 70%, 7+ = 40%
-	private const int SaturationSoftCap = 4;
-	private const int SaturationHardCap = 7;
 	private const float SaturationSoftMult = 0.7f;
 	private const float SaturationHardMult = 0.4f;
 
 	private const float AntiSynergyPenalty = 0.6f;
 
 	private const float AntiSynergyCap = -1.2f;
-
-	private const float EarlyFloorDamageBonus = 0.3f;
-
-	private const float MidFloorBlockBonus = 0.2f;
-
-	private const float LateFloorScalingBonus = 0.4f;
-
-	private const float MissingPieceBonus = 0.5f;
-
-	// Deck size thresholds (aligned with community consensus: 20-25 ideal)
-	private const int ThinDeckThreshold = 18;
-
-	private const int BloatedDeckThreshold = 25;
 
 	private const float ThinDeckPenalty = -0.2f;
 
@@ -46,9 +26,6 @@ public class SynergyScorer
 	private const float ExpensiveCardPenalty = -0.3f;
 	private const float VeryExpensiveCardPenalty = -0.5f;
 	private const float CheapCardBonus = 0.15f;
-
-	// Job gap: bonus for filling a missing functional role
-	private const float JobGapMaxBonus = 0.4f;
 
 	// Card type balance
 	private const float PowerGapBonus = 0.2f;
@@ -67,12 +44,22 @@ public class SynergyScorer
 
 	private static readonly HashSet<string> ScalingTags = new HashSet<string> { "strength", "dexterity", "focus", "poison_scaling", "scaling", "orb", "shiv_synergy" };
 
+	// --- ICardScorer implementation ---
+	public List<ScoredCard> ScoreOfferings(List<CardInfo> offerings, DeckAnalysis deckAnalysis, string character, int actNumber, int floorNumber)
+	{
+		return ScoreOfferings(offerings, deckAnalysis, character, actNumber, floorNumber, null, null);
+	}
+
 	public List<ScoredCard> ScoreOfferings(List<CardInfo> offerings, DeckAnalysis deckAnalysis, string character, int actNumber, int floorNumber, TierEngine tierEngine, AdaptiveScorer adaptiveScorer = null)
 	{
+		// Input validation (#7)
+		if (offerings == null || offerings.Count == 0 || deckAnalysis == null || character == null)
+			return new List<ScoredCard>();
+
 		List<ScoredCard> list = new List<ScoredCard>();
 		foreach (CardInfo offering in offerings)
 		{
-			CardTierEntry cardTier = tierEngine.GetCardTier(character, offering.Id);
+			CardTierEntry cardTier = tierEngine?.GetCardTier(character, offering.Id);
 			ScoredCard item = ScoreCard(offering, cardTier, deckAnalysis, actNumber, floorNumber, character, adaptiveScorer);
 			item.Price = offering.Price;
 			list.Add(item);
@@ -234,12 +221,18 @@ public class SynergyScorer
 		return list;
 	}
 
+	// --- IRelicScorer implementation ---
+	public List<ScoredRelic> ScoreRelicOfferings(List<RelicInfo> offerings, DeckAnalysis deckAnalysis, string character)
+	{
+		return ScoreRelicOfferings(offerings, deckAnalysis, character, 1, 1, null, null);
+	}
+
 	public List<ScoredRelic> ScoreRelicOfferings(List<RelicInfo> offerings, DeckAnalysis deckAnalysis, string character, int actNumber, int floorNumber, TierEngine tierEngine, AdaptiveScorer adaptiveScorer = null)
 	{
 		List<ScoredRelic> list = new List<ScoredRelic>();
 		foreach (RelicInfo offering in offerings)
 		{
-			RelicTierEntry relicTier = tierEngine.GetRelicTier(character, offering.Id);
+			RelicTierEntry relicTier = tierEngine?.GetRelicTier(character, offering.Id);
 			ScoredRelic item = ScoreRelic(offering, relicTier, deckAnalysis, actNumber, floorNumber, character, adaptiveScorer);
 			item.Price = offering.Price;
 			list.Add(item);
@@ -259,16 +252,16 @@ public class SynergyScorer
 	}
 
 	/// <summary>Returns saturation multiplier based on how many cards already have this tag.</summary>
-	private static float GetSaturationMult(DeckAnalysis deck, string tag)
+	private float GetSaturationMult(DeckAnalysis deck, string tag)
 	{
 		if (!deck.TagCounts.TryGetValue(tag, out int count)) return 1f;
-		if (count >= SaturationHardCap) return SaturationHardMult;
-		if (count >= SaturationSoftCap) return SaturationSoftMult;
+		if (count >= Cfg.SaturationHardCap) return SaturationHardMult;
+		if (count >= Cfg.SaturationSoftCap) return SaturationSoftMult;
 		return 1f;
 	}
 
 	/// <summary>Checks if a card's synergy tags fill any of the 5 functional "jobs".</summary>
-	private static float ComputeJobGapBonus(List<string> cardSynTags, DeckAnalysis deck, List<string> reasons)
+	private float ComputeJobGapBonus(List<string> cardSynTags, DeckAnalysis deck, List<string> reasons)
 	{
 		float bestBonus = 0f;
 		string bestJob = null;
@@ -282,7 +275,8 @@ public class SynergyScorer
 			if (!fills) continue;
 			float gap = deck.JobGap(jobName);
 			if (gap <= 0.1f) continue; // job already covered
-			float bonus = gap * JobGapMaxBonus;
+			// Non-linear curve: reward filling critical gaps more (#5)
+			float bonus = gap * Cfg.JobGapMaxBonus * (2f - gap);
 			if (bonus > bestBonus) { bestBonus = bonus; bestJob = jobName; }
 		}
 		if (bestBonus > 0.05f && bestJob != null)
@@ -337,15 +331,15 @@ public class SynergyScorer
 		int matchCount = 0;
 		foreach (ArchetypeMatch arch in deckAnalysis.DetectedArchetypes)
 		{
-			if (matchCount >= SynergyDiminishing.Length) break;
+			if (matchCount >= Cfg.SynergyDiminishing.Length) break;
 			foreach (string tag in cardSynTags)
 			{
-				if (arch.Archetype.CoreTags.Contains(tag) || arch.Archetype.SupportTags.Contains(tag) || arch.Archetype.Id == tag)
+				if (ArchetypeUtils.MatchesAnyTag(arch.Archetype, tag) || arch.Archetype.Id == tag)
 				{
 					// Graduated: scales continuously with archetype strength (0.3 at 0.0 → 0.8 at 1.0)
 					float baseBoost = 0.3f + arch.Strength * 0.5f;
 					// Diminishing per match
-					float dimMult = matchCount < SynergyDiminishing.Length ? SynergyDiminishing[matchCount] : 0f;
+					float dimMult = matchCount < Cfg.SynergyDiminishing.Length ? Cfg.SynergyDiminishing[matchCount] : 0f;
 					// Saturation: reduce if deck already has many of this tag
 					float satMult = GetSaturationMult(deckAnalysis, tag);
 					float boost = baseBoost * dimMult * satMult;
@@ -364,7 +358,7 @@ public class SynergyScorer
 		{
 			foreach (string tag in cardAntiTags)
 			{
-				if (arch.Archetype.CoreTags.Contains(tag) || arch.Archetype.SupportTags.Contains(tag) || arch.Archetype.Id == tag)
+				if (ArchetypeUtils.MatchesAnyTag(arch.Archetype, tag) || arch.Archetype.Id == tag)
 				{
 					num -= AntiSynergyPenalty;
 					synergyDelta -= AntiSynergyPenalty;
@@ -437,37 +431,46 @@ public class SynergyScorer
 			}
 		}
 
-		// === FLOOR-AWARE SCORING ===
+		// === FLOOR-AWARE SCORING — explicit non-overlapping ranges (#4) ===
 		bool hasScaling = cardSynTags.Any((string s) => ScalingTags.Contains(s));
 		bool hasDefense = cardSynTags.Any((string s) => s == "block" || s == "dexterity" || s == "weak");
-		if (floorNumber <= 6 && deckAnalysis.IsUndefined)
+		if (floorNumber >= 1 && floorNumber <= 6 && deckAnalysis.IsUndefined)
 		{
+			// Early: floors 1-6
 			if (cardSynTags.Count >= 2)
 			{
-				num += EarlyFloorDamageBonus;
-				floorAdjust += EarlyFloorDamageBonus;
-				synReasons.Add($"+{EarlyFloorDamageBonus:F1} flexible (early floors)");
+				num += Cfg.EarlyFloorDamageBonus;
+				floorAdjust += Cfg.EarlyFloorDamageBonus;
+				synReasons.Add($"+{Cfg.EarlyFloorDamageBonus:F1} flexible (early floors)");
 			}
 		}
-		else if (floorNumber >= 19 && hasScaling)
+		else if (floorNumber >= 7 && floorNumber <= 18)
 		{
-			num += LateFloorScalingBonus;
-			floorAdjust += LateFloorScalingBonus;
-			synReasons.Add($"+{LateFloorScalingBonus:F1} scaling (late floors)");
+			// Mid: floors 7-18
+			if (!deckAnalysis.IsUndefined && hasDefense)
+			{
+				num += Cfg.MidFloorBlockBonus;
+				floorAdjust += Cfg.MidFloorBlockBonus;
+				synReasons.Add($"+{Cfg.MidFloorBlockBonus:F1} defense (mid floors)");
+			}
 		}
-		if (floorNumber >= 7 && !deckAnalysis.IsUndefined && hasDefense && !(floorNumber >= 19 && hasScaling))
+		else if (floorNumber >= 19)
 		{
-			num += MidFloorBlockBonus;
-			floorAdjust += MidFloorBlockBonus;
-			synReasons.Add($"+{MidFloorBlockBonus:F1} defense (mid floors)");
+			// Late: floors 19+
+			if (hasScaling)
+			{
+				num += Cfg.LateFloorScalingBonus;
+				floorAdjust += Cfg.LateFloorScalingBonus;
+				synReasons.Add($"+{Cfg.LateFloorScalingBonus:F1} scaling (late floors)");
+			}
 		}
 
-		// === MISSING PIECE BONUS ===
+		// === MISSING PIECE BONUS (#6: clearer condition) ===
 		bool foundMissing = false;
 		foreach (ArchetypeMatch arch in deckAnalysis.DetectedArchetypes)
 		{
 			if (foundMissing) break;
-			if (!(arch.Strength > 0.3f) || !(arch.Strength < 0.7f)) continue;
+			if (arch.Strength <= 0.3f || arch.Strength >= 0.7f) continue;
 			foreach (string tag in cardSynTags)
 			{
 				if (arch.Archetype.SupportTags.Contains(tag))
@@ -475,9 +478,9 @@ public class SynergyScorer
 					string key = tag.ToLowerInvariant();
 					if (!deckAnalysis.TagCounts.TryGetValue(key, out var val) || val == 0)
 					{
-						num += MissingPieceBonus;
-						synergyDelta += MissingPieceBonus;
-						synReasons.Add($"+{MissingPieceBonus:F1} fills gap: {tag}");
+						num += Cfg.MissingPieceBonus;
+						synergyDelta += Cfg.MissingPieceBonus;
+						synReasons.Add($"+{Cfg.MissingPieceBonus:F1} fills gap: {tag}");
 						foundMissing = true;
 						break;
 					}
@@ -487,13 +490,13 @@ public class SynergyScorer
 
 		// === DECK SIZE (tighter thresholds: 18 thin, 25 bloated) ===
 		int deckSize = deckAnalysis.TotalCards;
-		if (deckSize <= ThinDeckThreshold && num < 2.5f)
+		if (deckSize <= Cfg.ThinDeckThreshold && num < 2.5f)
 		{
 			num += ThinDeckPenalty;
 			deckSizeAdjust += ThinDeckPenalty;
 			antiReasons.Add($"{ThinDeckPenalty:F1} be selective (thin deck)");
 		}
-		else if (deckSize >= BloatedDeckThreshold && num < 3.5f)
+		else if (deckSize >= Cfg.BloatedDeckThreshold && num < 3.5f)
 		{
 			num += BloatedDeckPenalty;
 			deckSizeAdjust += BloatedDeckPenalty;
@@ -545,21 +548,24 @@ public class SynergyScorer
 		List<string> antiReasons = new List<string>();
 		List<string> relicSynTags = tierEntry?.Synergies ?? new List<string>();
 		List<string> relicAntiTags = tierEntry?.AntiSynergies ?? new List<string>();
-		// Graduated synergy with diminishing returns (same as cards)
+		// Graduated synergy with diminishing returns + saturation (same as cards) (#3)
 		int matchCount = 0;
 		foreach (ArchetypeMatch arch in deckAnalysis.DetectedArchetypes)
 		{
-			if (matchCount >= SynergyDiminishing.Length) break;
+			if (matchCount >= Cfg.SynergyDiminishing.Length) break;
 			foreach (string tag in relicSynTags)
 			{
-				if (arch.Archetype.CoreTags.Contains(tag) || arch.Archetype.SupportTags.Contains(tag) || arch.Archetype.Id == tag)
+				if (ArchetypeUtils.MatchesAnyTag(arch.Archetype, tag) || arch.Archetype.Id == tag)
 				{
 					float baseBoost = 0.3f + arch.Strength * 0.5f;
-					float dimMult = matchCount < SynergyDiminishing.Length ? SynergyDiminishing[matchCount] : 0f;
-					float boost = baseBoost * dimMult;
+					float dimMult = matchCount < Cfg.SynergyDiminishing.Length ? Cfg.SynergyDiminishing[matchCount] : 0f;
+					// Apply saturation multiplier to relic synergy scoring too (#3)
+					float satMult = GetSaturationMult(deckAnalysis, tag);
+					float boost = baseBoost * dimMult * satMult;
 					num += boost;
 					synergyDelta += boost;
-					synReasons.Add($"+{boost:F2} {arch.Archetype.DisplayName}");
+					string satNote = satMult < 1f ? $" (sat {satMult:P0})" : "";
+					synReasons.Add($"+{boost:F2} {arch.Archetype.DisplayName}{satNote}");
 					matchCount++;
 					break;
 				}
@@ -570,7 +576,7 @@ public class SynergyScorer
 		{
 			foreach (string tag in relicAntiTags)
 			{
-				if (arch.Archetype.CoreTags.Contains(tag) || arch.Archetype.SupportTags.Contains(tag) || arch.Archetype.Id == tag)
+				if (ArchetypeUtils.MatchesAnyTag(arch.Archetype, tag) || arch.Archetype.Id == tag)
 				{
 					num -= AntiSynergyPenalty;
 					synergyDelta -= AntiSynergyPenalty;
@@ -589,9 +595,9 @@ public class SynergyScorer
 		// Floor-aware: late-game scaling bonus for relics too
 		if (floorNumber >= 19 && relicSynTags.Any((string s) => ScalingTags.Contains(s)))
 		{
-			num += LateFloorScalingBonus;
-			floorAdjust += LateFloorScalingBonus;
-			synReasons.Add($"+{LateFloorScalingBonus:F1} scaling (late floors)");
+			num += Cfg.LateFloorScalingBonus;
+			floorAdjust += Cfg.LateFloorScalingBonus;
+			synReasons.Add($"+{Cfg.LateFloorScalingBonus:F1} scaling (late floors)");
 		}
 		num = Math.Max(0f, Math.Min(6.0f, num));
 		return new ScoredRelic

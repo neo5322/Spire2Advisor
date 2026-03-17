@@ -35,4 +35,10 @@ public class GameState
 	public List<CardInfo> DiscardPile { get; set; } = new List<CardInfo>();
 
 	public List<CardInfo> HandCards { get; set; } = new List<CardInfo>();
+
+	/// <summary>
+	/// True when reflection failed to extract card data from the game.
+	/// Callers can distinguish "no cards offered" from "couldn't read game state".
+	/// </summary>
+	public bool ReflectionFailed { get; set; }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
@@ -64,8 +65,30 @@ public class EnemyAdvisor
 	private static string SnakeToPascal(string snake)
 	{
 		if (!snake.Contains('_')) return snake;
-		return string.Join("", snake.Split('_').Select(part =>
-			part.Length > 0 ? char.ToUpper(part[0]) + part.Substring(1).ToLower() : ""));
+		string[] parts = snake.Split('_');
+		var sb = new StringBuilder(snake.Length);
+		foreach (string part in parts)
+		{
+			if (part.Length > 0)
+			{
+				sb.Append(char.ToUpper(part[0]));
+				if (part.Length > 1)
+					sb.Append(part, 1, part.Length - 1);
+			}
+		}
+		// Convert to proper casing: first char upper, rest lower per segment
+		// Re-process to get PascalCase from UPPER_SNAKE
+		sb.Clear();
+		foreach (string part in parts)
+		{
+			if (part.Length > 0)
+			{
+				sb.Append(char.ToUpper(part[0]));
+				for (int i = 1; i < part.Length; i++)
+					sb.Append(char.ToLower(part[i]));
+			}
+		}
+		return sb.ToString();
 	}
 
 	public List<EnemyTipEntry> GetTips(List<string> enemyIds)
@@ -84,7 +107,7 @@ public class EnemyAdvisor
 				result.Add(entry);
 			else
 			{
-				string baseId = System.Text.RegularExpressions.Regex.Replace(id, @"_(WEAK|ELITE|STRONG|BOSS|HARD|EASY)$", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+				string baseId = Regex.Replace(id, @"_(WEAK|ELITE|STRONG|BOSS|HARD|EASY)$", "", RegexOptions.IgnoreCase);
 				if (baseId != id && _tipsByEnemyId.TryGetValue(baseId, out var baseEntry) && !seen.Contains(baseId))
 				{
 					seen.Add(baseId);

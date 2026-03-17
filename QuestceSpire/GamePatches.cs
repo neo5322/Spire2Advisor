@@ -43,11 +43,13 @@ public static class GamePatches
 	private static void RecordHook(string hookName)
 	{
 		HookLastFired[hookName] = DateTime.Now;
-		// Any non-card-reward hook clears the genuine card reward flag and active screen reference
+		// Any non-card-reward hook clears the genuine card reward flag, active screen reference,
+		// and dedup fingerprint so the next card reward is always recorded
 		if (hookName != "OnCardRewardOpened" && hookName != "OnCardRewardRefreshed")
 		{
 			_isGenuineCardReward = false;
 			_activeCardRewardScreen = null;
+			_lastCardRewardFingerprint = null;
 		}
 	}
 
@@ -220,6 +222,11 @@ public static class GamePatches
 
 		GameState gameState = GameStateReader.ReadCurrentState();
 		if (gameState == null) return false;
+		if (gameState.ReflectionFailed)
+		{
+			Plugin.Log("Card reward: reflection failed to read game state");
+			return false;
+		}
 		if (gameState.OfferedCards == null || gameState.OfferedCards.Count == 0)
 		{
 			Plugin.Log("Card reward: no offered cards in game state");
@@ -249,11 +256,22 @@ public static class GamePatches
 		{
 			var tree = (SceneTree)Engine.GetMainLoop();
 			if (tree == null) return;
+			// Capture the active screen reference so we can check validity before executing
+			var screenRef = _activeCardRewardScreen;
 			var timer = tree.CreateTimer(delay);
 			timer.Timeout += () =>
 			{
 				try
 				{
+					// Check if the captured screen is still valid before executing
+					if (screenRef != null && screenRef.TryGetTarget(out var targetNode))
+					{
+						if (!GodotObject.IsInstanceValid(targetNode))
+						{
+							Plugin.Log("ScheduleRetry skipped — captured screen node is no longer valid");
+							return;
+						}
+					}
 					if (!action() && retriesLeft > 1)
 					{
 						Plugin.Log($"Retry failed, {retriesLeft - 1} attempts remaining...");
@@ -442,12 +460,13 @@ public static class GamePatches
 								Plugin.Log($"Encounter localized: {encounterId} → {encLocalName}");
 							}
 						}
-						catch { }
+						catch (Exception ex) { Plugin.Log($"Failed to extract encounter localized name: {ex.Message}"); }
+						try
 						{
 							var eProps = encounterObj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 							Plugin.Log($"EncounterObj type: {encounterObj.GetType().FullName}, props: {string.Join(", ", eProps.Select(p => $"{p.Name}:{p.PropertyType.Name}"))}");
 						}
-						catch { }
+						catch (Exception ex) { Plugin.Log($"Failed to log encounter object properties: {ex.Message}"); }
 					}
 					// Also try to get enemy names from Enemies property
 					if (encounterId == null)
@@ -476,7 +495,7 @@ public static class GamePatches
 										string eName = eTitleP?.GetValue(enemy)?.ToString();
 										if (string.IsNullOrEmpty(eName)) { var eNP = enemy.GetType().GetProperty("Name", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic); eName = eNP?.GetValue(enemy)?.ToString(); }
 										if (entry != null && !string.IsNullOrEmpty(eName)) GameStateReader.CacheLocalizedName("enemy", entry, eName);
-									} catch { }
+									} catch (Exception ex) { Plugin.Log($"Failed to cache localized enemy name: {ex.Message}"); }
 								}
 								if (tempIds.Count > 0)
 								{
@@ -604,7 +623,7 @@ public static class GamePatches
 						var props = eventObj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 						Plugin.Log($"EventObj type: {eventObj.GetType().FullName}, props: {string.Join(", ", props.Select(p => $"{p.Name}:{p.PropertyType.Name}"))}");
 					}
-					catch { }
+					catch (Exception ex) { Plugin.Log($"Failed to log event object properties: {ex.Message}"); }
 				}
 			}
 			catch (Exception ex)

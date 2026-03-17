@@ -48,7 +48,7 @@ public static class CombatTracker
 		{
 			return CombatManager.Instance != null && CombatManager.Instance.IsInProgress;
 		}
-		catch { return false; }
+		catch (Exception ex) { Plugin.Log($"IsInCombat check failed: {ex.Message}"); return false; }
 	}
 
 	/// <summary>
@@ -60,6 +60,8 @@ public static class CombatTracker
 		{
 			if (!IsInCombat()) return null;
 
+			// DebugOnlyGetState is a legitimate game API despite its name -
+			// it provides combat state data needed for tracking
 			var combatState = CombatManager.Instance.DebugOnlyGetState();
 			if (combatState == null) return null;
 
@@ -84,7 +86,7 @@ public static class CombatTracker
 				if (handProp?.GetValue(pcs) is CardPile handPile && handPile.Cards != null)
 					snapshot.Hand = ReadPile(handPile);
 			}
-			catch { }
+			catch (Exception ex) { Plugin.Log($"CombatTracker: failed to read Hand pile: {ex.Message}"); }
 
 			// Exhaust pile — try via reflection
 			try
@@ -94,7 +96,7 @@ public static class CombatTracker
 				if (exhaustProp?.GetValue(pcs) is CardPile exhaustPile && exhaustPile.Cards != null)
 					snapshot.ExhaustPile = ReadPile(exhaustPile);
 			}
-			catch { }
+			catch (Exception ex) { Plugin.Log($"CombatTracker: failed to read ExhaustPile: {ex.Message}"); }
 
 			return snapshot;
 		}
@@ -183,11 +185,11 @@ public static class CombatTracker
 
 			// Id
 			try { info.Id = card.Id?.Entry ?? info.Name; }
-			catch { info.Id = info.Name; }
+			catch (Exception ex) { Plugin.Log($"CombatTracker: failed to read card Id: {ex.Message}"); info.Id = info.Name; }
 
 			// Type
 			try { info.Type = card.Type.ToString(); }
-			catch { info.Type = "Unknown"; }
+			catch (Exception ex) { Plugin.Log($"CombatTracker: failed to read card Type: {ex.Message}"); info.Type = "Unknown"; }
 
 			// Cost
 			try
@@ -199,21 +201,21 @@ public static class CombatTracker
 						info.Cost = card.EnergyCost.GetWithModifiers(CostModifiers.All);
 				}
 			}
-			catch { info.Cost = -1; }
+			catch (Exception ex) { Plugin.Log($"CombatTracker: failed to read card cost: {ex.Message}"); info.Cost = -1; }
 
 			// Upgraded
 			try { info.IsUpgraded = card.IsUpgraded; }
-			catch { }
+			catch (Exception ex) { Plugin.Log($"CombatTracker: failed to read card IsUpgraded: {ex.Message}"); }
 
 			// Enchantment
 			try { info.Enchantment = card.Enchantment?.GetType().Name ?? ""; }
-			catch { }
+			catch (Exception ex) { Plugin.Log($"CombatTracker: failed to read card Enchantment: {ex.Message}"); }
 
 			// Rarity
 			try { info.Rarity = card.Rarity.ToString(); }
-			catch { }
+			catch (Exception ex) { Plugin.Log($"CombatTracker: failed to read card Rarity: {ex.Message}"); }
 		}
-		catch { }
+		catch (Exception ex) { Plugin.Log($"CombatTracker.CardModelToCombatInfo error: {ex.Message}"); }
 		return info;
 	}
 }

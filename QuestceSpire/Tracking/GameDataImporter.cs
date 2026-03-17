@@ -59,8 +59,10 @@ public class GameDataImporter
 				var run = JObject.Parse(json);
 				bool? win = (bool?)run["win"];
 				bool? abandoned = (bool?)run["was_abandoned"];
-				if (win == null || abandoned == true) continue;
-				bool isWin = win.Value;
+				// Include abandoned runs — they're important for pick/skip statistics.
+				// Treat abandoned runs as losses for win rate computation.
+				if (win == null && abandoned != true) continue;
+				bool isWin = win == true;
 
 				var players = run["players"] as JArray;
 				if (players == null || players.Count == 0) continue;

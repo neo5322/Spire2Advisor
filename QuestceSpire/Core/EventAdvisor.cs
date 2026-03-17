@@ -11,6 +11,8 @@ public class EventAdvisor
 {
 	private readonly Dictionary<string, EventAdviceEntry> _adviceByEventId = new(StringComparer.OrdinalIgnoreCase);
 
+	private ScoringConfig Cfg => ScoringConfig.Instance;
+
 	public EventAdvisor(string dataFolder)
 	{
 		try
@@ -100,18 +102,18 @@ public class EventAdvisor
 		return result;
 	}
 
-	private static bool EvaluateCondition(string when, float hpRatio, int gold, int deckSize, int act)
+	private bool EvaluateCondition(string when, float hpRatio, int gold, int deckSize, int act)
 	{
 		if (string.IsNullOrEmpty(when))
 			return false;
 		return when.ToLowerInvariant() switch
 		{
-			"low_hp" => hpRatio < 0.35f,
-			"high_hp" => hpRatio > 0.70f,
-			"low_gold" => gold < 50,
-			"high_gold" => gold >= 200,
-			"large_deck" => deckSize >= 25,
-			"small_deck" => deckSize <= 15,
+			"low_hp" => hpRatio < Cfg.LowHpRatio,
+			"high_hp" => hpRatio > Cfg.HighHpRatio,
+			"low_gold" => gold < Cfg.LowGold,
+			"high_gold" => gold >= Cfg.HighGold,
+			"large_deck" => deckSize >= Cfg.LargeDeckSize,
+			"small_deck" => deckSize <= Cfg.SmallDeckSize,
 			"act1" => act == 1,
 			"act2" => act == 2,
 			"act3" => act >= 3,

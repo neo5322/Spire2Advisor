@@ -202,10 +202,11 @@ public class CardPropertyScorer
 	{
 		var list = new List<string>();
 		if (string.IsNullOrWhiteSpace(csv)) return list;
+		var seen = new HashSet<string>(StringComparer.Ordinal);
 		foreach (string item in csv.Split(','))
 		{
 			string trimmed = item.Trim();
-			if (trimmed.Length > 0 && !list.Contains(trimmed))
+			if (trimmed.Length > 0 && seen.Add(trimmed))
 				list.Add(trimmed);
 		}
 		return list;

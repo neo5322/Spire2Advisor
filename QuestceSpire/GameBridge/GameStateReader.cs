@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -20,7 +21,7 @@ public static class GameStateReader
 			Plugin.Log("WARN: RunManager.State property not found via reflection — game state reading will fail.");
 	}
 
-	private static bool _keywordsFieldWarned;
+	private static int _keywordsFailCount;
 
 	private static readonly object _stateLock = new object();
 
@@ -68,6 +69,7 @@ public static class GameStateReader
 				Plugin.Log("No player found in RunState.");
 				return null;
 			}
+			var offeredCards = ReadOfferedCards(out bool reflectionFailed);
 			var state = new GameState
 			{
 				Character = ReadCharacter(player),
@@ -79,10 +81,11 @@ public static class GameStateReader
 				AscensionLevel = runState.AscensionLevel,
 				DeckCards = ReadDeck(player),
 				CurrentRelics = ReadRelics(player),
-				OfferedCards = ReadOfferedCards(),
+				OfferedCards = offeredCards,
 				OfferedRelics = ReadOfferedRelics(),
 				ShopCards = ReadShopCards(player),
-				ShopRelics = ReadShopRelics(player)
+				ShopRelics = ReadShopRelics(player),
+				ReflectionFailed = reflectionFailed
 			};
 			// Read combat piles (best-effort)
 			try
@@ -128,8 +131,9 @@ public static class GameStateReader
 		{
 			return player.Creature?.CurrentHp ?? 0;
 		}
-		catch
+		catch (Exception ex)
 		{
+			Plugin.Log($"ReadCurrentHP error: {ex.Message}");
 			return 0;
 		}
 	}
@@ -140,8 +144,9 @@ public static class GameStateReader
 		{
 			return player.Creature?.MaxHp ?? 0;
 		}
-		catch
+		catch (Exception ex)
 		{
+			Plugin.Log($"ReadMaxHP error: {ex.Message}");
 			return 0;
 		}
 	}
@@ -152,8 +157,9 @@ public static class GameStateReader
 		{
 			return player.Gold;
 		}
-		catch
+		catch (Exception ex)
 		{
+			Plugin.Log($"ReadGold error: {ex.Message}");
 			return 0;
 		}
 	}
@@ -204,6 +210,12 @@ public static class GameStateReader
 
 	private static List<CardInfo> ReadOfferedCards()
 	{
+		return ReadOfferedCards(out _);
+	}
+
+	private static List<CardInfo> ReadOfferedCards(out bool reflectionFailed)
+	{
+		reflectionFailed = false;
 		List<CardInfo> list = new List<CardInfo>();
 		try
 		{
@@ -222,6 +234,7 @@ public static class GameStateReader
 		catch (Exception ex)
 		{
 			Plugin.Log("ReadOfferedCards error: " + ex.Message);
+			reflectionFailed = true;
 		}
 		return list;
 	}
@@ -373,11 +386,9 @@ public static class GameStateReader
 			var field = card.GetType().GetField("_keywords", BindingFlags.Instance | BindingFlags.NonPublic);
 			if (field == null)
 			{
-				if (!_keywordsFieldWarned)
-				{
-					Plugin.Log("WARN: CardModel._keywords field not found — card tags will be empty. Game version may have changed.");
-					_keywordsFieldWarned = true;
-				}
+				_keywordsFailCount++;
+				if (_keywordsFailCount == 1 || _keywordsFailCount % 10 == 0)
+					Plugin.Log($"WARN: CardModel._keywords field not found — card tags will be empty. Game version may have changed. ({_keywordsFailCount}x)");
 			}
 			else if (field.GetValue(card) is HashSet<CardKeyword> hashSet)
 			{
@@ -392,11 +403,9 @@ public static class GameStateReader
 		}
 		catch (System.Exception ex)
 		{
-			if (!_keywordsFieldWarned)
-			{
-				Plugin.Log($"WARN: Failed to read card keywords: {ex.Message}");
-				_keywordsFieldWarned = true;
-			}
+			_keywordsFailCount++;
+			if (_keywordsFailCount == 1 || _keywordsFailCount % 10 == 0)
+				Plugin.Log($"WARN: Failed to read card keywords ({_keywordsFailCount}x): {ex.Message}");
 		}
 		return cardInfo;
 	}
@@ -443,7 +452,7 @@ public static class GameStateReader
 
 	// ─── Localized Name Cache ───
 	// Stores runtime-extracted localized names (Korean etc.) keyed by category+id
-	private static readonly Dictionary<string, string> _localizedNameCache = new(StringComparer.OrdinalIgnoreCase);
+	private static readonly ConcurrentDictionary<string, string> _localizedNameCache = new(StringComparer.OrdinalIgnoreCase);
 
 	/// <summary>
 	/// Cache a localized name extracted at runtime (event, enemy, etc.)
@@ -452,11 +461,11 @@ public static class GameStateReader
 	{
 		if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(localizedName)) return;
 		string key = $"{category}:{id}";
-		_localizedNameCache[key] = localizedName;
+		_localizedNameCache.AddOrUpdate(key, localizedName, (_, _) => localizedName);
 		// Also cache with snake_case variant
 		string snake = id.Replace(" ", "_").ToUpperInvariant();
 		if (snake != id)
-			_localizedNameCache[$"{category}:{snake}"] = localizedName;
+			_localizedNameCache.AddOrUpdate($"{category}:{snake}", localizedName, (_, _) => localizedName);
 	}
 
 	/// <summary>

@@ -57,16 +57,17 @@ public class LocalStatsComputer
                         SELECT
                             j.value AS card_id,
                             r.character,
-                            CAST(SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END) AS REAL) / COUNT(*) AS pick_rate,
+                            CAST(SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END) AS REAL)
+                                / COUNT(DISTINCT d.id) AS pick_rate,
                             CASE WHEN SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END) > 0
                                 THEN CAST(SUM(CASE WHEN d.chosen_id IS j.value AND r.outcome = 'Win' THEN 1 ELSE 0 END) AS REAL)
                                      / SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END)
                                 ELSE 0.0 END AS win_rate_when_picked,
-                            CASE WHEN COUNT(*) - SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END) > 0
+                            CASE WHEN COUNT(DISTINCT d.id) - SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END) > 0
                                 THEN CAST(SUM(CASE WHEN d.chosen_id IS NOT j.value AND r.outcome = 'Win' THEN 1 ELSE 0 END) AS REAL)
-                                     / (COUNT(*) - SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END))
+                                     / (COUNT(DISTINCT d.id) - SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END))
                                 ELSE 0.0 END AS win_rate_when_skipped,
-                            COUNT(*) AS sample_size,
+                            COUNT(DISTINCT d.id) AS sample_size,
                             COALESCE(AVG(CASE WHEN d.chosen_id IS j.value THEN d.floor ELSE NULL END), 0.0) AS avg_floor_picked,
                             NULL AS archetype_context
                         FROM decisions d
@@ -75,7 +76,7 @@ public class LocalStatsComputer
                         WHERE d.event_type IN ('CardReward', 'CardTransform', 'ShopCard')
                         AND r.outcome IS NOT NULL
                         GROUP BY j.value, r.character
-                        HAVING COUNT(*) >= 3;
+                        HAVING COUNT(DISTINCT d.id) >= 3;
                     ";
 			sqliteCommand.ExecuteNonQuery();
 			Plugin.Log("Local card stats recomputed.");
@@ -105,16 +106,17 @@ public class LocalStatsComputer
                         SELECT
                             j.value AS relic_id,
                             r.character,
-                            CAST(SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END) AS REAL) / COUNT(*) AS pick_rate,
+                            CAST(SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END) AS REAL)
+                                / COUNT(DISTINCT d.id) AS pick_rate,
                             CASE WHEN SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END) > 0
                                 THEN CAST(SUM(CASE WHEN d.chosen_id IS j.value AND r.outcome = 'Win' THEN 1 ELSE 0 END) AS REAL)
                                      / SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END)
                                 ELSE 0.0 END AS win_rate_when_picked,
-                            CASE WHEN COUNT(*) - SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END) > 0
+                            CASE WHEN COUNT(DISTINCT d.id) - SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END) > 0
                                 THEN CAST(SUM(CASE WHEN d.chosen_id IS NOT j.value AND r.outcome = 'Win' THEN 1 ELSE 0 END) AS REAL)
-                                     / (COUNT(*) - SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END))
+                                     / (COUNT(DISTINCT d.id) - SUM(CASE WHEN d.chosen_id IS j.value THEN 1 ELSE 0 END))
                                 ELSE 0.0 END AS win_rate_when_skipped,
-                            COUNT(*) AS sample_size,
+                            COUNT(DISTINCT d.id) AS sample_size,
                             COALESCE(AVG(CASE WHEN d.chosen_id IS j.value THEN d.floor ELSE NULL END), 0.0) AS avg_floor_picked,
                             NULL AS archetype_context
                         FROM decisions d
@@ -123,7 +125,7 @@ public class LocalStatsComputer
                         WHERE d.event_type IN ('RelicReward', 'BossRelic', 'ShopRelic')
                         AND r.outcome IS NOT NULL
                         GROUP BY j.value, r.character
-                        HAVING COUNT(*) >= 3;
+                        HAVING COUNT(DISTINCT d.id) >= 3;
                     ";
 			sqliteCommand.ExecuteNonQuery();
 			Plugin.Log("Local relic stats recomputed.");
@@ -173,7 +175,11 @@ public class LocalStatsComputer
 
 					List<string> deckIds;
 					try { deckIds = JsonConvert.DeserializeObject<List<string>>(deckJson); }
-					catch { continue; }
+					catch (Exception ex)
+					{
+						Plugin.Log($"Failed to deserialize deck snapshot: {ex.Message}");
+						continue;
+					}
 					if (deckIds == null || deckIds.Count == 0) continue;
 
 					// Count archetype core tags in the deck using TierEngine synergies
@@ -285,7 +291,11 @@ public class LocalStatsComputer
 
 					List<string> deckIds;
 					try { deckIds = JsonConvert.DeserializeObject<List<string>>(deckJson); }
-					catch { continue; }
+					catch (Exception ex)
+					{
+						Plugin.Log($"Failed to deserialize deck snapshot: {ex.Message}");
+						continue;
+					}
 					if (deckIds == null || deckIds.Count == 0) continue;
 
 					var tagCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);

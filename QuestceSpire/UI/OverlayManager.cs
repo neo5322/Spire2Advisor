@@ -176,6 +176,9 @@ public class OverlayManager
 	private int _lastCombatHash;
 	private bool _showCombatPiles = true;
 
+	// Hover signal tracking — centralized connect/disconnect to prevent signal memory leaks
+	private readonly List<Control> _connectedHoverNodes = new();
+
 	private StyleBoxFlat _sbHover;
 
 	private StyleBoxFlat _sbHoverBest;
@@ -272,8 +275,9 @@ public class OverlayManager
 			_cardPortraitCache[key] = tex;
 			return tex;
 		}
-		catch
+		catch (Exception ex)
 		{
+			Plugin.Log($"GetCardPortrait error for '{cardId}': {ex.Message}");
 			_cardPortraitCache[key] = null;
 			return null;
 		}
@@ -290,8 +294,9 @@ public class OverlayManager
 			_relicIconCache[relicId] = tex;
 			return tex;
 		}
-		catch
+		catch (Exception ex)
 		{
+			Plugin.Log($"GetRelicIcon error for '{relicId}': {ex.Message}");
 			_relicIconCache[relicId] = null;
 			return null;
 		}
@@ -312,6 +317,37 @@ public class OverlayManager
 		return false;
 	}
 
+	private void SafeDisconnectSignals(Control node)
+	{
+		foreach (var signalName in new[] { "mouse_entered", "mouse_exited" })
+		{
+			foreach (var conn in node.GetSignalConnectionList(signalName))
+			{
+				var callable = (Callable)conn["callable"];
+				node.Disconnect(signalName, callable);
+			}
+		}
+	}
+
+	private void ConnectHoverSignals(Control node, Action onEnter, Action onExit)
+	{
+		node.Connect("mouse_entered", Callable.From(onEnter));
+		node.Connect("mouse_exited", Callable.From(onExit));
+		_connectedHoverNodes.Add(node);
+	}
+
+	private void DisconnectAllHoverSignals()
+	{
+		foreach (var node in _connectedHoverNodes)
+		{
+			if (node != null && GodotObject.IsInstanceValid(node))
+			{
+				SafeDisconnectSignals(node);
+			}
+		}
+		_connectedHoverNodes.Clear();
+	}
+
 	private bool EnsureOverlay()
 	{
 		if (IsOverlayValid())
@@ -321,6 +357,7 @@ public class OverlayManager
 		// Remove old nodes from scene tree before rebuilding
 		try
 		{
+			DisconnectAllHoverSignals();
 			if (_layer != null && GodotObject.IsInstanceValid(_layer))
 			{
 				_layer.GetParent()?.RemoveChild(_layer);
@@ -328,11 +365,12 @@ public class OverlayManager
 			}
 			if (_hoverPreview != null && GodotObject.IsInstanceValid(_hoverPreview))
 			{
+				SafeDisconnectSignals(_hoverPreview);
 				_hoverPreview.GetParent()?.RemoveChild(_hoverPreview);
 				_hoverPreview.QueueFree();
 			}
 		}
-		catch { }
+		catch (Exception ex) { Plugin.Log($"EnsureOverlay cleanup error: {ex.Message}"); }
 		_layer = null;
 		_panel = null;
 		_content = null;
@@ -650,16 +688,16 @@ public class OverlayManager
 				}
 			}
 		}
-		catch { }
+		catch (Exception ex) { Plugin.Log($"CheckForStaleScreen badge lifecycle error: {ex.Message}"); }
 		// Shop live-refresh: re-read shop state every tick to catch purchases
 		if (_currentScreen == "MERCHANT SHOP")
 		{
-			try { RefreshShopIfChanged(); } catch { }
+			try { RefreshShopIfChanged(); } catch (Exception ex) { Plugin.Log($"RefreshShopIfChanged error: {ex.Message}"); }
 		}
 		// Event card offering: detect when an event offers cards (not handled by ShowScreen patch)
 		if (_currentScreen == "EVENT" && _currentCards == null)
 		{
-			try { CheckForEventCardOffering(); } catch { }
+			try { CheckForEventCardOffering(); } catch (Exception ex) { Plugin.Log($"CheckForEventCardOffering error: {ex.Message}"); }
 		}
 		ulong elapsed = Time.GetTicksMsec() - _lastUpdateTick;
 		// If advice is showing for 8+ seconds, check if the game screen is still valid
@@ -697,7 +735,7 @@ public class OverlayManager
 					Clear();
 				}
 			}
-			catch { }
+			catch (Exception ex) { Plugin.Log($"CheckForStaleScreen staleness check error: {ex.Message}"); }
 		}
 	}
 
@@ -739,6 +777,7 @@ public class OverlayManager
 		// Remove old combat pile section if exists
 		if (_combatPileContainer != null && GodotObject.IsInstanceValid(_combatPileContainer))
 		{
+			SafeDisconnectSignals(_combatPileContainer);
 			_combatPileContainer.GetParent()?.RemoveChild(_combatPileContainer);
 			_combatPileContainer.QueueFree();
 		}
@@ -1421,6 +1460,7 @@ public class OverlayManager
 		_lastCombatHash = 0;
 		if (_combatPileContainer != null && GodotObject.IsInstanceValid(_combatPileContainer))
 		{
+			SafeDisconnectSignals(_combatPileContainer);
 			_combatPileContainer.GetParent()?.RemoveChild(_combatPileContainer);
 			_combatPileContainer.QueueFree();
 			_combatPileContainer = null;
@@ -1708,6 +1748,7 @@ public class OverlayManager
 		if (_settingsMenu != null && GodotObject.IsInstanceValid(_settingsMenu))
 		{
 			bool wasVisible = _settingsMenu.Visible;
+			SafeDisconnectSignals(_settingsMenu);
 			_settingsMenu.QueueFree();
 			_settingsMenu = null;
 			BuildSettingsMenu();
@@ -1859,11 +1900,14 @@ public class OverlayManager
 			_previousScreen = _currentScreen;
 			return;
 		}
+		DisconnectAllHoverSignals();
 		var children = _content.GetChildren().ToArray();
 		foreach (Node child in children)
 		{
 			if (child != null)
 			{
+				if (child is Control ctrl)
+					SafeDisconnectSignals(ctrl);
 				_content.RemoveChild(child);
 				child.QueueFree();
 			}
@@ -2318,22 +2362,23 @@ public class OverlayManager
 		if (_showTooltips && portrait != null)
 		{
 			Texture2D hoverTex = portrait;
-			panelContainer.Connect("mouse_entered", Callable.From(delegate
-			{
-				if (_hoverPreview != null && GodotObject.IsInstanceValid(_hoverPreview) &&
-				    _hoverPreviewTex != null && _panel != null && GodotObject.IsInstanceValid(_panel))
+			ConnectHoverSignals(panelContainer,
+				() =>
 				{
-					_hoverPreviewTex.Texture = hoverTex;
-					_hoverPreview.Position = new Vector2(_panel.GlobalPosition.X - 218f,
-						panelContainer.GlobalPosition.Y);
-					_hoverPreview.Visible = true;
-				}
-			}));
-			panelContainer.Connect("mouse_exited", Callable.From(delegate
-			{
-				if (_hoverPreview != null && GodotObject.IsInstanceValid(_hoverPreview))
-					_hoverPreview.Visible = false;
-			}));
+					if (_hoverPreview != null && GodotObject.IsInstanceValid(_hoverPreview) &&
+					    _hoverPreviewTex != null && _panel != null && GodotObject.IsInstanceValid(_panel))
+					{
+						_hoverPreviewTex.Texture = hoverTex;
+						_hoverPreview.Position = new Vector2(_panel.GlobalPosition.X - 218f,
+							panelContainer.GlobalPosition.Y);
+						_hoverPreview.Visible = true;
+					}
+				},
+				() =>
+				{
+					if (_hoverPreview != null && GodotObject.IsInstanceValid(_hoverPreview))
+						_hoverPreview.Visible = false;
+				});
 		}
 		VBoxContainer vBoxContainer = new VBoxContainer();
 		vBoxContainer.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
@@ -2400,14 +2445,9 @@ public class OverlayManager
 			if (detailBox.GetChildCount() > 0)
 			{
 				vBoxContainer.AddChild(detailBox, forceReadableName: false, Node.InternalMode.Disabled);
-				panelContainer.Connect("mouse_entered", Callable.From(delegate
-				{
-					if (GodotObject.IsInstanceValid(detailBox)) detailBox.Visible = true;
-				}));
-				panelContainer.Connect("mouse_exited", Callable.From(delegate
-				{
-					if (GodotObject.IsInstanceValid(detailBox)) detailBox.Visible = false;
-				}));
+				ConnectHoverSignals(panelContainer,
+					() => { if (GodotObject.IsInstanceValid(detailBox)) detailBox.Visible = true; },
+					() => { if (GodotObject.IsInstanceValid(detailBox)) detailBox.Visible = false; });
 			}
 		}
 		_content.AddChild(panelContainer, forceReadableName: false, Node.InternalMode.Disabled);
@@ -2559,14 +2599,9 @@ public class OverlayManager
 			if (detailBox.GetChildCount() > 0)
 			{
 				vBoxContainer.AddChild(detailBox, forceReadableName: false, Node.InternalMode.Disabled);
-				panelContainer.Connect("mouse_entered", Callable.From(delegate
-				{
-					if (GodotObject.IsInstanceValid(detailBox)) detailBox.Visible = true;
-				}));
-				panelContainer.Connect("mouse_exited", Callable.From(delegate
-				{
-					if (GodotObject.IsInstanceValid(detailBox)) detailBox.Visible = false;
-				}));
+				ConnectHoverSignals(panelContainer,
+					() => { if (GodotObject.IsInstanceValid(detailBox)) detailBox.Visible = true; },
+					() => { if (GodotObject.IsInstanceValid(detailBox)) detailBox.Visible = false; });
 			}
 		}
 		_content.AddChild(panelContainer, forceReadableName: false, Node.InternalMode.Disabled);
@@ -2979,6 +3014,8 @@ public class OverlayManager
 		var vizChildren = _deckVizContainer.GetChildren().ToArray();
 		foreach (Node child in vizChildren)
 		{
+			if (child is Control ctrl)
+				SafeDisconnectSignals(ctrl);
 			_deckVizContainer.RemoveChild(child);
 			child.QueueFree();
 		}
@@ -3179,6 +3216,8 @@ public class OverlayManager
 		var vizChildren = _deckVizContainer.GetChildren().ToArray();
 		foreach (Node child in vizChildren)
 		{
+			if (child is Control ctrl)
+				SafeDisconnectSignals(ctrl);
 			_deckVizContainer.RemoveChild(child);
 			child.QueueFree();
 		}
@@ -3589,20 +3628,9 @@ public class OverlayManager
 			(isBest ? _sbHoverBest : _sbHover) ?? _sbEntry;
 		panel.AddThemeStyleboxOverride("panel", normalStyle);
 		panel.MouseFilter = Control.MouseFilterEnum.Stop;
-		panel.Connect("mouse_entered", Callable.From(delegate
-		{
-			if (GodotObject.IsInstanceValid(panel))
-			{
-				panel.AddThemeStyleboxOverride("panel", hoverStyle);
-			}
-		}));
-		panel.Connect("mouse_exited", Callable.From(delegate
-		{
-			if (GodotObject.IsInstanceValid(panel))
-			{
-				panel.AddThemeStyleboxOverride("panel", normalStyle);
-			}
-		}));
+		ConnectHoverSignals(panel,
+			() => { if (GodotObject.IsInstanceValid(panel)) panel.AddThemeStyleboxOverride("panel", hoverStyle); },
+			() => { if (GodotObject.IsInstanceValid(panel)) panel.AddThemeStyleboxOverride("panel", normalStyle); });
 		// S-tier pulsing golden glow
 		if (isSTier)
 		{
@@ -3795,11 +3823,14 @@ public class OverlayManager
 				ResizePanelToContent();
 				return;
 			}
+			DisconnectAllHoverSignals();
 			var children = _content.GetChildren().ToArray();
 			foreach (Node child in children)
 			{
 				if (child != null)
 				{
+					if (child is Control ctrl)
+						SafeDisconnectSignals(ctrl);
 					_content.RemoveChild(child);
 					child.QueueFree();
 				}
@@ -4254,11 +4285,12 @@ public class OverlayManager
 			{
 				if (badge != null && GodotObject.IsInstanceValid(badge))
 				{
+					SafeDisconnectSignals(badge);
 					badge.GetParent()?.RemoveChild(badge);
 					badge.QueueFree();
 				}
 			}
-			catch { }
+			catch (Exception ex) { Plugin.Log($"ClearInGameBadges error: {ex.Message}"); }
 		}
 		_inGameBadges.Clear();
 		_badgeScreenNode = null;
@@ -4287,7 +4319,13 @@ public class OverlayManager
 			}
 			// Context check: if more NGridCardHolder nodes appeared, a pile/overlay opened
 			var allHolders = new List<Control>();
-			FindNodesByTypeName(screenNode.GetTree()?.Root ?? screenNode, "NGridCardHolder", allHolders, 8);
+			var searchRoot = screenNode.GetTree()?.Root;
+			if (searchRoot == null)
+			{
+				Plugin.Log("OverlayManager: GetTree().Root is null, falling back to screenNode");
+				searchRoot = screenNode;
+			}
+			FindNodesByTypeName(searchRoot, "NGridCardHolder", allHolders, 8);
 			if (allHolders.Count > _badgeExpectedHolderCount + 1)
 			{
 				Plugin.Log($"Badge context changed: {allHolders.Count} NGridCardHolder nodes vs expected {_badgeExpectedHolderCount} — clearing badges");
