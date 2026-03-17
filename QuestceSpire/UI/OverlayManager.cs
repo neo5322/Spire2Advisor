@@ -317,14 +317,24 @@ public class OverlayManager
 		return false;
 	}
 
-	private void SafeDisconnectSignals(Control node)
+	private static readonly string[] TrackedSignals = { "mouse_entered", "mouse_exited", "gui_input", "pressed" };
+
+	private void SafeDisconnectSignals(Control node, bool recursive = false)
 	{
-		foreach (var signalName in new[] { "mouse_entered", "mouse_exited" })
+		foreach (var signalName in TrackedSignals)
 		{
 			foreach (var conn in node.GetSignalConnectionList(signalName))
 			{
 				var callable = (Callable)conn["callable"];
 				node.Disconnect(signalName, callable);
+			}
+		}
+		if (recursive)
+		{
+			foreach (var child in node.GetChildren())
+			{
+				if (child is Control childCtrl && GodotObject.IsInstanceValid(childCtrl))
+					SafeDisconnectSignals(childCtrl, true);
 			}
 		}
 	}
@@ -333,7 +343,8 @@ public class OverlayManager
 	{
 		node.Connect("mouse_entered", Callable.From(onEnter));
 		node.Connect("mouse_exited", Callable.From(onExit));
-		_connectedHoverNodes.Add(node);
+		if (!_connectedHoverNodes.Contains(node))
+			_connectedHoverNodes.Add(node);
 	}
 
 	private void DisconnectAllHoverSignals()
@@ -1748,7 +1759,7 @@ public class OverlayManager
 		if (_settingsMenu != null && GodotObject.IsInstanceValid(_settingsMenu))
 		{
 			bool wasVisible = _settingsMenu.Visible;
-			SafeDisconnectSignals(_settingsMenu);
+			SafeDisconnectSignals(_settingsMenu, recursive: true);
 			_settingsMenu.QueueFree();
 			_settingsMenu = null;
 			BuildSettingsMenu();
@@ -1907,7 +1918,7 @@ public class OverlayManager
 			if (child != null)
 			{
 				if (child is Control ctrl)
-					SafeDisconnectSignals(ctrl);
+					SafeDisconnectSignals(ctrl, recursive: true);
 				_content.RemoveChild(child);
 				child.QueueFree();
 			}
@@ -3878,7 +3889,7 @@ public class OverlayManager
 				foreach (var (evt, chosenGrade, bestGrade) in controversial.Take(8))
 				{
 					string chosen = evt.ChosenId != null ? PrettifyId(evt.ChosenId) : "스킵";
-					string bestId = evt.OfferedIds.OrderByDescending(id => (int)LookupGrade(id, character)).First();
+					string bestId = evt.OfferedIds?.OrderByDescending(id => (int)LookupGrade(id, character)).FirstOrDefault();
 					string bestName = bestId ?? "?";
 					int gap = (int)bestGrade - (int)chosenGrade;
 					PanelContainer cPanel = new PanelContainer();

@@ -64,6 +64,7 @@ public static class CombatTracker
 			// it provides combat state data needed for tracking
 			var combatState = CombatManager.Instance.DebugOnlyGetState();
 			if (combatState == null) return null;
+			if (combatState.Players == null || combatState.Players.Count == 0) return null;
 
 			var player = combatState.Players[0];
 			if (player?.PlayerCombatState == null) return null;
