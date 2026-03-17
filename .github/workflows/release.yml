@@ -49,8 +49,26 @@ jobs:
         shell: pwsh
         run: |
           cd QuestceSpire
-          dotnet build -c Release
+          dotnet build -c Release 2>&1 | Tee-Object -Variable buildOutput
+          # Allow build to continue even if game DLLs are missing (CI limitation)
         continue-on-error: true
+
+      - name: Read version from csproj
+        id: version
+        shell: pwsh
+        run: |
+          $version = ([xml](Get-Content QuestceSpire\QuestceSpire.csproj)).Project.PropertyGroup.ModVersion | Where-Object { $_ }
+          echo "MOD_VERSION=$version" >> $env:GITHUB_OUTPUT
+          echo "Detected mod version: $version"
+
+      - name: Validate tag matches csproj version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $expected = "v${{ steps.version.outputs.MOD_VERSION }}"
+          if ($tag -ne $expected) {
+            Write-Warning "Tag '$tag' does not match csproj version '$expected'. Proceeding anyway."
+          }
 
       - name: Package Release
         shell: pwsh
@@ -58,28 +76,50 @@ jobs:
           $version = "${{ github.ref_name }}"
           $outDir = "SpireAdvisor-$version"
           mkdir $outDir\Data -Force
-          
+
           # Copy build output
           $dll = "QuestceSpire\bin\Release\net9.0\SpireAdvisor.dll"
-          if (Test-Path $dll) { Copy-Item $dll $outDir\ }
-          
+          if (Test-Path $dll) {
+            Copy-Item $dll $outDir\
+          } else {
+            Write-Error "SpireAdvisor.dll not found — build may have failed"
+            exit 1
+          }
+
           # Copy NuGet runtime DLLs
           Get-ChildItem "QuestceSpire\bin\Release\net9.0\*.dll" -Exclude "SpireAdvisor.dll" | Copy-Item -Destination $outDir\
-          
+
           # Copy native DLLs (e_sqlite3 etc)
           $nativeDir = "QuestceSpire\bin\Release\net9.0\runtimes\win-x64\native"
           if (Test-Path $nativeDir) { Get-ChildItem "$nativeDir\*.dll" | Copy-Item -Destination $outDir\ }
-          
+
           # Copy Data
+          if (!(Test-Path "QuestceSpire\Data")) {
+            Write-Error "Data directory not found"
+            exit 1
+          }
           Copy-Item -Recurse QuestceSpire\Data\* $outDir\Data\
-          
+
+          # Verify essential files
+          $required = @("$outDir\SpireAdvisor.dll")
+          foreach ($f in $required) {
+            if (!(Test-Path $f)) {
+              Write-Error "Required file missing: $f"
+              exit 1
+            }
+          }
+
           # Zip
           Compress-Archive -Path $outDir -DestinationPath "$outDir.zip"
+          Write-Host "Release package created: $outDir.zip"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: SpireAdvisor-*.zip
-          generate_release_notes: true
+          body: |
+            ## Spire Advisor ${{ github.ref_name }}
+
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

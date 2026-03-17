@@ -13,7 +13,7 @@
 		<ModName>SpireAdvisor</ModName>
 		<ModDisplayName>Spire Advisor</ModDisplayName>
 		<ModAuthor>Taka</ModAuthor>
-		<ModVersion>0.4.0</ModVersion>
+		<ModVersion>0.8.0</ModVersion>
 
 		<AssemblyName>$(ModName)</AssemblyName>
 		<Version>$(ModVersion)</Version>

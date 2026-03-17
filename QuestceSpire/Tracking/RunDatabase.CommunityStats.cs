@@ -18,21 +18,29 @@ public partial class RunDatabase
 		using SqliteConnection sqliteConnection = new SqliteConnection(_connectionString);
 		sqliteConnection.Open();
 		using SqliteTransaction sqliteTransaction = sqliteConnection.BeginTransaction();
-		foreach (CommunityCardStats stats in statsList)
+		try
 		{
-			using SqliteCommand sqliteCommand = sqliteConnection.CreateCommand();
-			sqliteCommand.CommandText = "\r\n                                INSERT OR REPLACE INTO community_card_stats\r\n                                    (card_id, character, pick_rate, win_rate_when_picked, win_rate_when_skipped,\r\n                                     sample_size, avg_floor_picked, archetype_context)\r\n                                VALUES (@cardId, @character, @pickRate, @winPicked, @winSkipped,\r\n                                        @sampleSize, @avgFloor, @archetypeContext)";
-			sqliteCommand.Parameters.AddWithValue("@cardId", stats.CardId);
-			sqliteCommand.Parameters.AddWithValue("@character", stats.Character);
-			sqliteCommand.Parameters.AddWithValue("@pickRate", stats.PickRate);
-			sqliteCommand.Parameters.AddWithValue("@winPicked", stats.WinRateWhenPicked);
-			sqliteCommand.Parameters.AddWithValue("@winSkipped", stats.WinRateWhenSkipped);
-			sqliteCommand.Parameters.AddWithValue("@sampleSize", stats.SampleSize);
-			sqliteCommand.Parameters.AddWithValue("@avgFloor", stats.AvgFloorPicked);
-			sqliteCommand.Parameters.AddWithValue("@archetypeContext", JsonConvert.SerializeObject(stats.ArchetypeContext));
-			sqliteCommand.ExecuteNonQuery();
+			foreach (CommunityCardStats stats in statsList)
+			{
+				using SqliteCommand sqliteCommand = sqliteConnection.CreateCommand();
+				sqliteCommand.CommandText = "\r\n                                INSERT OR REPLACE INTO community_card_stats\r\n                                    (card_id, character, pick_rate, win_rate_when_picked, win_rate_when_skipped,\r\n                                     sample_size, avg_floor_picked, archetype_context)\r\n                                VALUES (@cardId, @character, @pickRate, @winPicked, @winSkipped,\r\n                                        @sampleSize, @avgFloor, @archetypeContext)";
+				sqliteCommand.Parameters.AddWithValue("@cardId", stats.CardId);
+				sqliteCommand.Parameters.AddWithValue("@character", stats.Character);
+				sqliteCommand.Parameters.AddWithValue("@pickRate", stats.PickRate);
+				sqliteCommand.Parameters.AddWithValue("@winPicked", stats.WinRateWhenPicked);
+				sqliteCommand.Parameters.AddWithValue("@winSkipped", stats.WinRateWhenSkipped);
+				sqliteCommand.Parameters.AddWithValue("@sampleSize", stats.SampleSize);
+				sqliteCommand.Parameters.AddWithValue("@avgFloor", stats.AvgFloorPicked);
+				sqliteCommand.Parameters.AddWithValue("@archetypeContext", JsonConvert.SerializeObject(stats.ArchetypeContext));
+				sqliteCommand.ExecuteNonQuery();
+			}
+			sqliteTransaction.Commit();
 		}
-		sqliteTransaction.Commit();
+		catch (Exception ex)
+		{
+			try { sqliteTransaction.Rollback(); } catch { }
+			Plugin.Log($"SaveCommunityCardStats error: {ex.Message}");
+		}
 	}
 
 	public void SaveCommunityRelicStats(List<CommunityRelicStats> statsList)
@@ -44,21 +52,29 @@ public partial class RunDatabase
 		using SqliteConnection sqliteConnection = new SqliteConnection(_connectionString);
 		sqliteConnection.Open();
 		using SqliteTransaction sqliteTransaction = sqliteConnection.BeginTransaction();
-		foreach (CommunityRelicStats stats in statsList)
+		try
 		{
-			using SqliteCommand sqliteCommand = sqliteConnection.CreateCommand();
-			sqliteCommand.CommandText = "\r\n                                INSERT OR REPLACE INTO community_relic_stats\r\n                                    (relic_id, character, pick_rate, win_rate_when_picked, win_rate_when_skipped,\r\n                                     sample_size, avg_floor_picked, archetype_context)\r\n                                VALUES (@relicId, @character, @pickRate, @winPicked, @winSkipped,\r\n                                        @sampleSize, @avgFloor, @archetypeContext)";
-			sqliteCommand.Parameters.AddWithValue("@relicId", stats.RelicId);
-			sqliteCommand.Parameters.AddWithValue("@character", stats.Character);
-			sqliteCommand.Parameters.AddWithValue("@pickRate", stats.PickRate);
-			sqliteCommand.Parameters.AddWithValue("@winPicked", stats.WinRateWhenPicked);
-			sqliteCommand.Parameters.AddWithValue("@winSkipped", stats.WinRateWhenSkipped);
-			sqliteCommand.Parameters.AddWithValue("@sampleSize", stats.SampleSize);
-			sqliteCommand.Parameters.AddWithValue("@avgFloor", stats.AvgFloorPicked);
-			sqliteCommand.Parameters.AddWithValue("@archetypeContext", JsonConvert.SerializeObject(stats.ArchetypeContext));
-			sqliteCommand.ExecuteNonQuery();
+			foreach (CommunityRelicStats stats in statsList)
+			{
+				using SqliteCommand sqliteCommand = sqliteConnection.CreateCommand();
+				sqliteCommand.CommandText = "\r\n                                INSERT OR REPLACE INTO community_relic_stats\r\n                                    (relic_id, character, pick_rate, win_rate_when_picked, win_rate_when_skipped,\r\n                                     sample_size, avg_floor_picked, archetype_context)\r\n                                VALUES (@relicId, @character, @pickRate, @winPicked, @winSkipped,\r\n                                        @sampleSize, @avgFloor, @archetypeContext)";
+				sqliteCommand.Parameters.AddWithValue("@relicId", stats.RelicId);
+				sqliteCommand.Parameters.AddWithValue("@character", stats.Character);
+				sqliteCommand.Parameters.AddWithValue("@pickRate", stats.PickRate);
+				sqliteCommand.Parameters.AddWithValue("@winPicked", stats.WinRateWhenPicked);
+				sqliteCommand.Parameters.AddWithValue("@winSkipped", stats.WinRateWhenSkipped);
+				sqliteCommand.Parameters.AddWithValue("@sampleSize", stats.SampleSize);
+				sqliteCommand.Parameters.AddWithValue("@avgFloor", stats.AvgFloorPicked);
+				sqliteCommand.Parameters.AddWithValue("@archetypeContext", JsonConvert.SerializeObject(stats.ArchetypeContext));
+				sqliteCommand.ExecuteNonQuery();
+			}
+			sqliteTransaction.Commit();
 		}
-		sqliteTransaction.Commit();
+		catch (Exception ex)
+		{
+			try { sqliteTransaction.Rollback(); } catch { }
+			Plugin.Log($"SaveCommunityRelicStats error: {ex.Message}");
+		}
 	}
 
 	public CommunityCardStats GetCommunityCardStats(string character, string cardId)

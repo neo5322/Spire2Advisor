@@ -66,41 +66,49 @@ public partial class RunDatabase : IRunDatabase
 		using SqliteConnection sqliteConnection = new SqliteConnection(_connectionString);
 		sqliteConnection.Open();
 		using SqliteTransaction sqliteTransaction = sqliteConnection.BeginTransaction();
-		using (SqliteCommand sqliteCommand = sqliteConnection.CreateCommand())
+		try
 		{
-			sqliteCommand.CommandText = "\r\n                            INSERT INTO runs (run_id, player_id, character, seed, start_time, end_time,\r\n                                              outcome, final_floor, final_act, ascension_level, synced)\r\n                            VALUES (@runId, @playerId, @character, @seed, @startTime, @endTime,\r\n                                    @outcome, @finalFloor, @finalAct, @ascensionLevel, @synced)";
-			sqliteCommand.Parameters.AddWithValue("@runId", run.RunId);
-			sqliteCommand.Parameters.AddWithValue("@playerId", run.PlayerId);
-			sqliteCommand.Parameters.AddWithValue("@character", run.Character);
-			sqliteCommand.Parameters.AddWithValue("@seed", ((object)run.Seed) ?? ((object)DBNull.Value));
-			sqliteCommand.Parameters.AddWithValue("@startTime", run.StartTime.ToString("o"));
-			sqliteCommand.Parameters.AddWithValue("@endTime", run.EndTime.HasValue ? ((IConvertible)run.EndTime.Value.ToString("o")) : ((IConvertible)DBNull.Value));
-			sqliteCommand.Parameters.AddWithValue("@outcome", run.Outcome.HasValue ? ((IConvertible)run.Outcome.Value.ToString()) : ((IConvertible)DBNull.Value));
-			sqliteCommand.Parameters.AddWithValue("@finalFloor", ((object)run.FinalFloor) ?? DBNull.Value);
-			sqliteCommand.Parameters.AddWithValue("@finalAct", ((object)run.FinalAct) ?? DBNull.Value);
-			sqliteCommand.Parameters.AddWithValue("@ascensionLevel", run.AscensionLevel);
-			sqliteCommand.Parameters.AddWithValue("@synced", run.Synced ? 1 : 0);
-			sqliteCommand.ExecuteNonQuery();
+			using (SqliteCommand sqliteCommand = sqliteConnection.CreateCommand())
+			{
+				sqliteCommand.CommandText = "\r\n                            INSERT INTO runs (run_id, player_id, character, seed, start_time, end_time,\r\n                                              outcome, final_floor, final_act, ascension_level, synced)\r\n                            VALUES (@runId, @playerId, @character, @seed, @startTime, @endTime,\r\n                                    @outcome, @finalFloor, @finalAct, @ascensionLevel, @synced)";
+				sqliteCommand.Parameters.AddWithValue("@runId", run.RunId);
+				sqliteCommand.Parameters.AddWithValue("@playerId", run.PlayerId);
+				sqliteCommand.Parameters.AddWithValue("@character", run.Character);
+				sqliteCommand.Parameters.AddWithValue("@seed", ((object)run.Seed) ?? ((object)DBNull.Value));
+				sqliteCommand.Parameters.AddWithValue("@startTime", run.StartTime.ToString("o"));
+				sqliteCommand.Parameters.AddWithValue("@endTime", run.EndTime.HasValue ? ((IConvertible)run.EndTime.Value.ToString("o")) : ((IConvertible)DBNull.Value));
+				sqliteCommand.Parameters.AddWithValue("@outcome", run.Outcome.HasValue ? ((IConvertible)run.Outcome.Value.ToString()) : ((IConvertible)DBNull.Value));
+				sqliteCommand.Parameters.AddWithValue("@finalFloor", ((object)run.FinalFloor) ?? DBNull.Value);
+				sqliteCommand.Parameters.AddWithValue("@finalAct", ((object)run.FinalAct) ?? DBNull.Value);
+				sqliteCommand.Parameters.AddWithValue("@ascensionLevel", run.AscensionLevel);
+				sqliteCommand.Parameters.AddWithValue("@synced", run.Synced ? 1 : 0);
+				sqliteCommand.ExecuteNonQuery();
+			}
+			foreach (DecisionEvent decision in decisions)
+			{
+				using SqliteCommand sqliteCommand2 = sqliteConnection.CreateCommand();
+				sqliteCommand2.CommandText = "\r\n                                INSERT INTO decisions (run_id, floor, act, event_type, offered_ids, chosen_id,\r\n                                                       deck_snapshot, relic_snapshot, current_hp, max_hp, gold, timestamp)\r\n                                VALUES (@runId, @floor, @act, @eventType, @offeredIds, @chosenId,\r\n                                        @deckSnapshot, @relicSnapshot, @currentHp, @maxHp, @gold, @timestamp)";
+				sqliteCommand2.Parameters.AddWithValue("@runId", decision.RunId);
+				sqliteCommand2.Parameters.AddWithValue("@floor", decision.Floor);
+				sqliteCommand2.Parameters.AddWithValue("@act", decision.Act);
+				sqliteCommand2.Parameters.AddWithValue("@eventType", decision.EventType.ToString());
+				sqliteCommand2.Parameters.AddWithValue("@offeredIds", JsonConvert.SerializeObject(decision.OfferedIds));
+				sqliteCommand2.Parameters.AddWithValue("@chosenId", ((object)decision.ChosenId) ?? ((object)DBNull.Value));
+				sqliteCommand2.Parameters.AddWithValue("@deckSnapshot", JsonConvert.SerializeObject(decision.DeckSnapshot));
+				sqliteCommand2.Parameters.AddWithValue("@relicSnapshot", JsonConvert.SerializeObject(decision.RelicSnapshot));
+				sqliteCommand2.Parameters.AddWithValue("@currentHp", decision.CurrentHP);
+				sqliteCommand2.Parameters.AddWithValue("@maxHp", decision.MaxHP);
+				sqliteCommand2.Parameters.AddWithValue("@gold", decision.Gold);
+				sqliteCommand2.Parameters.AddWithValue("@timestamp", decision.Timestamp.ToString("o"));
+				sqliteCommand2.ExecuteNonQuery();
+			}
+			sqliteTransaction.Commit();
 		}
-		foreach (DecisionEvent decision in decisions)
+		catch (Exception ex)
 		{
-			using SqliteCommand sqliteCommand2 = sqliteConnection.CreateCommand();
-			sqliteCommand2.CommandText = "\r\n                                INSERT INTO decisions (run_id, floor, act, event_type, offered_ids, chosen_id,\r\n                                                       deck_snapshot, relic_snapshot, current_hp, max_hp, gold, timestamp)\r\n                                VALUES (@runId, @floor, @act, @eventType, @offeredIds, @chosenId,\r\n                                        @deckSnapshot, @relicSnapshot, @currentHp, @maxHp, @gold, @timestamp)";
-			sqliteCommand2.Parameters.AddWithValue("@runId", decision.RunId);
-			sqliteCommand2.Parameters.AddWithValue("@floor", decision.Floor);
-			sqliteCommand2.Parameters.AddWithValue("@act", decision.Act);
-			sqliteCommand2.Parameters.AddWithValue("@eventType", decision.EventType.ToString());
-			sqliteCommand2.Parameters.AddWithValue("@offeredIds", JsonConvert.SerializeObject(decision.OfferedIds));
-			sqliteCommand2.Parameters.AddWithValue("@chosenId", ((object)decision.ChosenId) ?? ((object)DBNull.Value));
-			sqliteCommand2.Parameters.AddWithValue("@deckSnapshot", JsonConvert.SerializeObject(decision.DeckSnapshot));
-			sqliteCommand2.Parameters.AddWithValue("@relicSnapshot", JsonConvert.SerializeObject(decision.RelicSnapshot));
-			sqliteCommand2.Parameters.AddWithValue("@currentHp", decision.CurrentHP);
-			sqliteCommand2.Parameters.AddWithValue("@maxHp", decision.MaxHP);
-			sqliteCommand2.Parameters.AddWithValue("@gold", decision.Gold);
-			sqliteCommand2.Parameters.AddWithValue("@timestamp", decision.Timestamp.ToString("o"));
-			sqliteCommand2.ExecuteNonQuery();
+			try { sqliteTransaction.Rollback(); } catch { }
+			Plugin.Log($"SaveRun error: {ex.Message}");
 		}
-		sqliteTransaction.Commit();
 	}
 
 	public List<(RunLog Run, List<DecisionEvent> Decisions)> GetUnsynced()

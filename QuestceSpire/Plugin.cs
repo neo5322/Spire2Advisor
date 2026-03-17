@@ -17,7 +17,7 @@ public static class Plugin
 {
 	public const string ModName = "Spire Advisor";
 
-	public const string ModVersion = "0.8.0";
+	public static string ModVersion => typeof(Plugin).Assembly.GetName().Version?.ToString(3) ?? "0.0.0";
 
 	public const string HarmonyId = "com.spire.advisor";
 
