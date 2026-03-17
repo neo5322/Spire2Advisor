@@ -11,12 +11,29 @@ namespace QuestceSpire.Core;
 public class EnemyAdvisor
 {
 	private readonly Dictionary<string, EnemyTipEntry> _tipsByEnemyId = new(StringComparer.OrdinalIgnoreCase);
+	private readonly string _dataFolder;
 
 	public EnemyAdvisor(string dataFolder)
 	{
+		_dataFolder = dataFolder;
+		LoadData();
+	}
+
+	/// <summary>
+	/// Reload enemy data from disk. Call after DataUpdater downloads new files.
+	/// </summary>
+	public void Reload()
+	{
+		_tipsByEnemyId.Clear();
+		LoadData();
+		Plugin.Log("EnemyAdvisor: reloaded enemy data.");
+	}
+
+	private void LoadData()
+	{
 		try
 		{
-			string path = Path.Combine(dataFolder, "EnemyTips", "enemies.json");
+			string path = Path.Combine(_dataFolder, "EnemyTips", "enemies.json");
 			if (File.Exists(path))
 			{
 				string json = File.ReadAllText(path);

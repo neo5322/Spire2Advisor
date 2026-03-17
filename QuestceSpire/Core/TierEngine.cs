@@ -15,10 +15,27 @@ public class TierEngine
 	private readonly Dictionary<string, Dictionary<string, CardTierEntry>> _cardIndex = new Dictionary<string, Dictionary<string, CardTierEntry>>();
 	private readonly Dictionary<string, Dictionary<string, RelicTierEntry>> _relicIndex = new Dictionary<string, Dictionary<string, RelicTierEntry>>();
 
+	private readonly string _dataPath;
+
 	public TierEngine(string dataPath)
 	{
+		_dataPath = dataPath;
 		LoadCardTiers(Path.Combine(dataPath, "CardTiers"));
 		LoadRelicTiers(Path.Combine(dataPath, "RelicTiers"));
+	}
+
+	/// <summary>
+	/// Reload all tier data from disk. Call after DataUpdater downloads new files.
+	/// </summary>
+	public void Reload()
+	{
+		_cardTiers.Clear();
+		_relicTiers.Clear();
+		_cardIndex.Clear();
+		_relicIndex.Clear();
+		LoadCardTiers(Path.Combine(_dataPath, "CardTiers"));
+		LoadRelicTiers(Path.Combine(_dataPath, "RelicTiers"));
+		Plugin.Log("TierEngine: reloaded all tier data.");
 	}
 
 	private void LoadCardTiers(string folder)

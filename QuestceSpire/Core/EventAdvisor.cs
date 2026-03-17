@@ -10,14 +10,31 @@ namespace QuestceSpire.Core;
 public class EventAdvisor
 {
 	private readonly Dictionary<string, EventAdviceEntry> _adviceByEventId = new(StringComparer.OrdinalIgnoreCase);
+	private readonly string _dataFolder;
 
 	private ScoringConfig Cfg => ScoringConfig.Instance;
 
 	public EventAdvisor(string dataFolder)
 	{
+		_dataFolder = dataFolder;
+		LoadData();
+	}
+
+	/// <summary>
+	/// Reload event data from disk. Call after DataUpdater downloads new files.
+	/// </summary>
+	public void Reload()
+	{
+		_adviceByEventId.Clear();
+		LoadData();
+		Plugin.Log("EventAdvisor: reloaded event data.");
+	}
+
+	private void LoadData()
+	{
 		try
 		{
-			string path = Path.Combine(dataFolder, "EventAdvice", "events.json");
+			string path = Path.Combine(_dataFolder, "EventAdvice", "events.json");
 			if (File.Exists(path))
 			{
 				string json = File.ReadAllText(path);

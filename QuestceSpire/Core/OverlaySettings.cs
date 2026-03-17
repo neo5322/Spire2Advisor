@@ -23,10 +23,11 @@ public class OverlaySettings
 	public bool ShowMapAdvice { get; set; } = true;
 	public bool ShowCombatAdvice { get; set; } = true;
 	public bool CloudSyncEnabled { get; set; } = false;
+	public bool AutoUpdateData { get; set; } = true;
 
 	// Bump this when defaults change to force migration on old saved files
 	public int SettingsVersion { get; set; } = 0;
-	private const int CurrentVersion = 4;
+	private const int CurrentVersion = 5;
 
 	private static string GetSettingsPath()
 	{
@@ -54,6 +55,9 @@ public class OverlaySettings
 						// v3 → v4: CloudSyncEnabled disabled (no server deployed yet)
 						if (settings.SettingsVersion < 4)
 							settings.CloudSyncEnabled = false;
+						// v4 → v5: AutoUpdateData enabled by default
+						if (settings.SettingsVersion < 5)
+							settings.AutoUpdateData = true;
 						settings.SettingsVersion = CurrentVersion;
 						settings.Save();
 					}

@@ -75,6 +75,7 @@ public partial class OverlayManager
 		AddSettingsToggle(menuVBox, "전투 조언", _settings.ShowCombatAdvice, () => { _settings.ShowCombatAdvice = !_settings.ShowCombatAdvice; _settings.Save(); RegenerateAdvice(); RefreshSettingsMenu(); });
 		AddSettingsToggle(menuVBox, "전투 파일 추적", _showCombatPiles, () => { _showCombatPiles = !_showCombatPiles; if (!_showCombatPiles && _combatPileContainer != null) { _combatPileContainer.GetParent()?.RemoveChild(_combatPileContainer); _combatPileContainer.QueueFree(); _combatPileContainer = null; } RefreshSettingsMenu(); });
 		AddSettingsToggle(menuVBox, "클라우드 동기화", _settings.CloudSyncEnabled, () => { _settings.CloudSyncEnabled = !_settings.CloudSyncEnabled; _settings.Save(); RefreshSettingsMenu(); });
+		AddSettingsToggle(menuVBox, "데이터 자동 업데이트", _settings.AutoUpdateData, () => { _settings.AutoUpdateData = !_settings.AutoUpdateData; _settings.Save(); RefreshSettingsMenu(); });
 
 		// Opacity section
 		HSeparator sep2 = new HSeparator();

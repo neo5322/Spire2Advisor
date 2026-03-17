@@ -63,6 +63,8 @@ public static class Plugin
 
 	public static string UpdateUrl { get; set; }
 
+	public static DataUpdater DataUpdater { get; private set; }
+
 	public static OverlayManager Overlay { get; set; }
 
 	public static void Init()
@@ -89,10 +91,11 @@ public static class Plugin
 		Log($"PluginFolder: {PluginFolder}");
 		try
 		{
+		var dataPath = Path.Combine(PluginFolder, "Data");
 		Log("Loading tier data...");
-		TierEngine = new TierEngine(Path.Combine(PluginFolder, "Data"));
+		TierEngine = new TierEngine(dataPath);
 		Log("Tier data loaded.");
-		CardPropertyScorer = new CardPropertyScorer(Path.Combine(PluginFolder, "Data", "CardProperties"));
+		CardPropertyScorer = new CardPropertyScorer(Path.Combine(dataPath, "CardProperties"));
 		DeckAnalyzer = new DeckAnalyzer();
 		SynergyScorer = new SynergyScorer();
 		RunDatabase = new RunDatabase(PluginFolder);
@@ -102,36 +105,40 @@ public static class Plugin
 		LocalStats.RecomputeAll();
 		new GameDataImporter(RunDatabase).ImportAll();
 		AdaptiveScorer = new AdaptiveScorer(RunDatabase);
-		EventAdvisor = new EventAdvisor(Path.Combine(PluginFolder, "Data"));
-		EnemyAdvisor = new EnemyAdvisor(Path.Combine(PluginFolder, "Data"));
+		EventAdvisor = new EventAdvisor(dataPath);
+		EnemyAdvisor = new EnemyAdvisor(dataPath);
 		CloudSync = new CloudSync(RunDatabase, RunTracker.PlayerId);
+		DataUpdater = new DataUpdater(dataPath);
 		var overlaySettings = OverlaySettings.Load();
-		if (overlaySettings.CloudSyncEnabled)
+		// Background init: data update + cloud sync
+		Task.Run(async () =>
 		{
-			// Download community stats and merge on top of local+imported data.
-			// DownloadCommunityStats calls ApplyCachedStats which recomputes local
-			// then merges cloud — this preserves correct totals.
-			Task.Run(async () =>
+			try
 			{
-				try
+				// Auto-update tier/enemy/event data if enabled
+				if (overlaySettings.AutoUpdateData)
+				{
+					bool updated = await DataUpdater.CheckAndUpdate();
+					if (updated)
+						ReloadAllData();
+				}
+
+				// Download community stats
+				if (overlaySettings.CloudSyncEnabled)
 				{
 					await CloudSync.DownloadCommunityStats();
-					// Re-apply game history import after cloud merge
 					new GameDataImporter(RunDatabase).ImportAll();
-					_backgroundInitDone = true;
 				}
-				catch (Exception ex)
-				{
-					Log("Background cloud sync error: " + ex.Message);
-					_backgroundInitFailed = true;
-					_backgroundInitDone = true;
-				}
-			});
-		}
-		else
-		{
-			_backgroundInitDone = true;
-		}
+
+				_backgroundInitDone = true;
+			}
+			catch (Exception ex)
+			{
+				Log("Background init error: " + ex.Message);
+				_backgroundInitFailed = true;
+				_backgroundInitDone = true;
+			}
+		});
 		_harmony = new Harmony(HarmonyId);
 		_harmony.PatchAll(typeof(GamePatches).Assembly);
 		GamePatches.ApplyManualPatches(_harmony);
@@ -177,6 +184,26 @@ public static class Plugin
 		{
 			Log($"FATAL init error: {ex}");
 			Godot.GD.PrintErr($"[SpireAdvisor] FATAL: {ex}");
+		}
+	}
+
+	/// <summary>
+	/// Reload all data files after a remote update.
+	/// </summary>
+	internal static void ReloadAllData()
+	{
+		try
+		{
+			TierEngine?.Reload();
+			EventAdvisor?.Reload();
+			EnemyAdvisor?.Reload();
+			var bossPath = Path.Combine(PluginFolder, "Data", "BossData", "bosses.json");
+			BossAdvisor.LoadFromJson(bossPath);
+			Log("All data reloaded after update.");
+		}
+		catch (Exception ex)
+		{
+			Log($"ReloadAllData error: {ex.Message}");
 		}
 	}
 
