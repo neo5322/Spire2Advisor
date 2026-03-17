@@ -472,6 +472,17 @@ public partial class OverlayManager
 			}
 		}
 
+		// Run health in combat (compact)
+		if (Plugin.RunHealthComputer != null)
+		{
+			float archStr = deckAnalysis?.DetectedArchetypes?.Count > 0 ? deckAnalysis.DetectedArchetypes[0].Strength : 0f;
+			int bossReady = 50;
+			int health = Plugin.RunHealthComputer.CalculateHealth(currentHP, maxHP, 0, deckAnalysis?.TotalCards ?? 0, floor, archStr, bossReady);
+			string healthIcon = health >= 70 ? "\u2705" : health >= 45 ? "\u26a0" : "\u274c";
+			Color healthColor = health >= 70 ? ClrPositive : health >= 45 ? ClrExpensive : ClrNegative;
+			_mapAdvice.Add((healthIcon, $"런 건강도: {health}/100", healthColor));
+		}
+
 		// Generic combat advice (appended)
 		if (_settings.ShowCombatAdvice)
 		{
@@ -904,11 +915,88 @@ public partial class OverlayManager
 				advice.Add(("\u26a0", w, ClrNegative));
 		}
 
+		// ─── Meta Archetype Panel ───
+		try
+		{
+			string metaPath = System.IO.Path.Combine(Plugin.PluginFolder, "Data", "meta_archetypes.json");
+			if (System.IO.File.Exists(metaPath))
+			{
+				var metaJson = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, List<MetaArchetypeEntry>>>(
+					System.IO.File.ReadAllText(metaPath));
+				string charKey = character?.ToLowerInvariant() ?? deck?.Character?.ToLowerInvariant() ?? "";
+				if (metaJson != null && metaJson.TryGetValue(charKey, out var archetypes) && archetypes.Count > 0)
+				{
+					advice.Add(("##", "메타 아키타입 Top 3", ClrAccent));
+					int shown = 0;
+					foreach (var arch in archetypes)
+					{
+						if (shown >= 3) break;
+						string coreStr = arch.CoreCards != null && arch.CoreCards.Count > 0
+							? string.Join(", ", arch.CoreCards.Take(3))
+							: "";
+						advice.Add(("\u2B50", $"{arch.Archetype}: {arch.WinRate:P0} 승률 ({arch.SampleSize}게임)", ClrPositive));
+						if (coreStr.Length > 0)
+							advice.Add(("\u2022", $"핵심: {coreStr}", ClrAqua));
+						shown++;
+					}
+				}
+			}
+		}
+		catch { }
+
+		// ─── Run Health Gauge ───
+		if (Plugin.RunHealthComputer != null)
+		{
+			float archStr = deck?.DetectedArchetypes?.Count > 0 ? deck.DetectedArchetypes[0].Strength : 0f;
+			int bossReady = 50;
+			var bossResults = BossAdvisor.Diagnose(deck, act, character, hp, maxHP);
+			if (bossResults.Count > 0)
+				bossReady = (int)bossResults[0].ReadinessScore;
+			int health = Plugin.RunHealthComputer.CalculateHealth(hp, maxHP, gold, deck?.TotalCards ?? 0, floor, archStr, bossReady);
+			string healthIcon = health >= 70 ? "\u2705" : health >= 45 ? "\u26a0" : "\u274c";
+			Color healthColor = health >= 70 ? ClrPositive : health >= 45 ? ClrExpensive : ClrNegative;
+			advice.Insert(0, ("##", "런 건강도", ClrAccent));
+			advice.Insert(1, (healthIcon, $"건강도: {health}/100", healthColor));
+		}
+
 		if (advice.Count == 0)
 		{
 			advice.Add(("\u2714", "균형 잡힌 상태 — 덱 강점을 살리세요", ClrCream));
 		}
 
 		return advice;
+	}
+
+	/// <summary>
+	/// Get patch change badge text for a card or relic.
+	/// Returns null if no recent changes.
+	/// </summary>
+	private string GetPatchChangeBadge(string entityType, string entityId)
+	{
+		try
+		{
+			var changes = Plugin.RunDatabase?.GetRecentPatchChanges(entityType, entityId, 3);
+			if (changes == null || changes.Count == 0) return null;
+			var latest = changes[0];
+			if (latest.OldValue != null && latest.NewValue != null)
+				return $"\u26a1 {latest.Property}: {latest.OldValue}\u2192{latest.NewValue}";
+			return $"\u26a1 최근 변경: {latest.Property}";
+		}
+		catch { return null; }
+	}
+
+	/// <summary>
+	/// Get floor/act-specific tier info for display.
+	/// Returns null if no data available.
+	/// </summary>
+	private string GetFloorTierInfo(string cardId, string character, int act)
+	{
+		try
+		{
+			var stat = Plugin.RunDatabase?.GetFloorCardStat(cardId, character, act);
+			if (stat == null || stat.SampleSize < 3) return null;
+			return $"Act {act} 승률 {stat.WinRate:P0} ({stat.SampleSize}게임)";
+		}
+		catch { return null; }
 	}
 }
