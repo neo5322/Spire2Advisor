@@ -1,142 +1,276 @@
-# Spire Advisor — Slay the Spire 2 Mod
+# STS2Overlay
 
-[한국어](#기능) | [English](#features)
+[한국어](#한국어) | [English](#english)
 
-실시간 카드/유물 추천, 덱 분석, 전투 파일 추적을 제공하는 STS2 인게임 오버레이 모드입니다.
+Slay the Spire 2 인게임 오버레이 모드 — 실시간 카드/유물 추천, 덱 분석, 전투 추적, 런 코칭을 제공합니다.
 
-An in-game overlay mod for Slay the Spire 2 that provides real-time card/relic recommendations, deck analysis, and combat tracking.
-
----
-
-## 기능
-
-- **카드 보상 분석**: 현재 덱/유물/아키타입 기반 시너지 점수 + 티어 등급
-- **유물 보상 분석**: 덱 시너지 기반 추천
-- **전투 파일 추적**: 드로우/버림/손패 실시간 표시 + 다음 턴 확률 계산
-- **보스 대비 진단**: 맵 화면에서 보스 대응력 분석
-- **업그레이드 우선순위**: 휴식에서 업그레이드 순위 표시
-- **적 정보**: 위험도 + 팁
-- **이벤트 조언**: 선택지별 평가
-- **상점 분석**: 가성비 분석
-- **런 추적**: 선택 기록, 승률 통계
-
-## Features
-
-- **Card Reward Analysis**: Synergy scoring + tier grades based on current deck/relics/archetype
-- **Relic Reward Analysis**: Deck synergy-based recommendations
-- **Combat File Tracker**: Real-time draw/discard/hand display + next turn probability
-- **Boss Matchup Diagnosis**: Boss readiness analysis on the map screen
-- **Upgrade Priority**: Upgrade rankings at rest sites
-- **Enemy Intel**: Threat level + tips
-- **Event Advice**: Per-choice evaluation
-- **Shop Analysis**: Value-for-gold analysis
-- **Run Tracking**: Decision history, win rate statistics
+In-game overlay mod for Slay the Spire 2 — real-time card/relic recommendations, deck analysis, combat tracking, and run coaching.
 
 ---
 
-## 설치 / Installation
+## 한국어
 
-### 다운로드 / Download
+### 주요 기능
 
-[Releases](../../releases) 페이지에서 최신 `SpireAdvisor-v*.zip`을 다운로드하세요.
+#### 실시간 추천
+- **카드 보상 분석** — 덱/유물/아키타입 기반 시너지 점수, S~F 티어 등급, 커뮤니티 승률 데이터
+- **유물 보상 분석** — 덱 시너지 + 유물-카드 교차 승률 기반 추천
+- **업그레이드 우선순위** — 정적 티어 + DB 업그레이드 승률 델타 기반 순위
+- **상점 분석** — 가성비 분석, 제거 추천 (카드 사용률 기반)
+- **포션 조언** — 티어 평가, 보스전 아끼기 vs 지금 사용 추천
 
-Download the latest `SpireAdvisor-v*.zip` from the [Releases](../../releases) page.
+#### 전투 지원
+- **전투 파일 추적** — 드로우/버림/손패 실시간 표시, 다음 턴 확률 계산
+- **적 정보** — 위험도 + 전투 팁
+- **전투 턴 로깅** — 카드 사용, 딜/블록/피해 기록 (combat_turns DB)
+- **포션 사용 추적** — 획득/사용/버림 이벤트 기록
 
-### 설치 경로 / Install Path
+#### 전략 분석
+- **보스 대비 진단** — Codex 몬스터 데이터 + 과거 전투 기록 기반 분석
+- **이벤트 조언** — 선택지별 평가
+- **런 건강도 게이지** — HP/골드/덱/층수 기반 0~100 점수
+- **메타 아키타입** — 현재 메타 Top 3 아키타입 + 핵심 카드
+- **층별 티어** — Act별 카드 승률 차이 표시
 
-압축을 해제하고 `SpireAdvisor/` 폴더를 게임의 `mods/` 디렉토리에 복사합니다.
+#### 런 회고
+- **런 요약** — 전투 효율, 카드 사용 빈도, 커뮤니티 대비 결정 분석
+- **결정 리플레이** — 모든 선택을 스크롤하며 복기, 커뮤니티 승률 비교
+- **논란 선택 하이라이트** — 최적 대비 2등급 이상 낮은 선택 표시
+- **글로벌 통계 비교** — Steam 리더보드 대비 내 성적
 
-Extract and copy the `SpireAdvisor/` folder into the game's `mods/` directory:
+#### 데이터 파이프라인
+14개 백그라운드 파이프라인이 자동으로 데이터를 수집하고 분석합니다:
 
-| OS | 경로 / Path |
-|----|-------------|
-| **Windows (Steam)** | `C:\Program Files (x86)\Steam\steamapps\common\Slay the Spire 2\mods\` |
-| **Linux (Steam)** | `~/.steam/steam/steamapps/common/Slay the Spire 2/mods/` |
-| **macOS (Steam)** | `~/Library/Application Support/Steam/steamapps/common/Slay the Spire 2/mods/` |
+| 파이프라인 | 역할 |
+|-----------|------|
+| SpireCodexSync | Spire Codex API 카드/유물/포션/몬스터 동기화 |
+| PatchNotesTracker | Steam 패치 노트 파싱 → 밸런스 변경 추적 |
+| SteamLeaderboardSync | 글로벌 리더보드 통계 캐시 |
+| CoPickSynergyComputer | 카드 쌍 동시 등장 승률 분석 |
+| FloorTierComputer | Act별 카드 티어 조정 |
+| UpgradeValueComputer | 카드 업그레이드 승률 델타 |
+| RunHealthComputer | 런 건강도 점수 산출 |
+| CombatLogger | 턴별 카드/딜/블록 기록 |
+| CardUsageTracker | 카드 사용 빈도 → 제거 추천 |
+| PotionTracker | 포션 획득/사용/버림 추적 |
+| AutoTierGenerator | 다중 신호 기반 자동 티어 생성 |
+| MetaArchetypeComputer | Top 3 메타 아키타입 산출 |
+| RelicCardCrossRef | 유물-카드 교차 승률 분석 |
+| RuntimeCardExtractor | sts2.dll 리플렉션으로 신규 카드/유물 자동 감지 |
 
-> Steam 라이브러리 폴더를 변경한 경우, Steam → 게임 우클릭 → 관리 → 로컬 파일 보기로 경로를 확인하세요.
->
-> If you changed your Steam library folder: Steam → Right-click game → Manage → Browse local files.
+#### 설정
+- 20개 이상의 기능별 ON/OFF 토글
+- 패널 투명도, 위치 조정
+- 클라우드 동기화, 자동 업데이트, 파이프라인 개별 제어
+- 오프라인 모드: 번들 데이터 + 디스크 캐시로 네트워크 없이도 동작
 
-설치 후 폴더 구조:
+---
 
+### 설치
+
+#### 다운로드
+
+[Releases](../../releases) 페이지에서 최신 버전을 다운로드하세요.
+
+#### 설치 경로
+
+압축 해제 후 `SpireAdvisor/` 폴더를 게임의 `mods/` 디렉토리에 복사합니다:
+
+| OS | 경로 |
+|----|------|
+| **Windows** | `C:\Program Files (x86)\Steam\steamapps\common\Slay the Spire 2\mods\` |
+| **Linux** | `~/.steam/steam/steamapps/common/Slay the Spire 2/mods/` |
+| **macOS** | `~/Library/Application Support/Steam/steamapps/common/Slay the Spire 2/mods/` |
+
+> Steam 라이브러리 폴더를 변경한 경우: Steam → 게임 우클릭 → 관리 → 로컬 파일 보기
+
+설치 후 구조:
 ```
 Slay the Spire 2/mods/SpireAdvisor/
 ├── SpireAdvisor.dll
 ├── SpireAdvisor.pck
 ├── Data/
-└── (기타 DLL / other DLLs)
+└── (기타 DLL)
 ```
 
-### 설치 확인 / Verify
+#### 설치 확인
 
-게임을 실행하면 왼쪽 상단에 Spire Advisor 오버레이가 나타납니다. `spire-advisor.log` 파일이 모드 폴더에 생성되면 정상 로딩된 것입니다.
-
-Launch the game. The Spire Advisor overlay should appear at the top-left. A `spire-advisor.log` file will be created in the mod folder upon successful loading.
+게임 실행 시 왼쪽 상단에 오버레이 패널이 나타납니다. `spire-advisor.log` 파일이 모드 폴더에 생성되면 정상입니다.
 
 ---
 
-## 사용법 / Usage
+### 사용법
 
-- 왼쪽 상단 오버레이 패널 / Top-left overlay panel
-- 드래그로 이동 / Drag to move
-- ▲ 버튼으로 접기 / ▲ button to collapse
-- ⚙ 설정에서 기능별 ON/OFF / ⚙ Settings for per-feature toggles
-- 카드/유물/상점/이벤트/전투/맵에서 자동 분석 / Auto-analysis on card/relic/shop/event/combat/map screens
-
-<!-- 스크린샷 추가 예정 / Screenshots coming soon -->
+- 왼쪽 상단 오버레이 패널 자동 표시
+- 드래그로 위치 이동
+- ▲ 버튼으로 접기/펼치기
+- ⚙ 버튼으로 설정 메뉴 열기
+- 카드/유물/상점/이벤트/전투/맵 화면에서 자동 분석
 
 ---
 
-## FAQ / 문제 해결 / Troubleshooting
+### FAQ
 
-**Q: 오버레이가 안 보여요 / Overlay not showing**
-- `mods/SpireAdvisor/` 폴더에 `SpireAdvisor.dll`과 `SpireAdvisor.pck`가 모두 있는지 확인하세요.
-- Check that both `SpireAdvisor.dll` and `SpireAdvisor.pck` exist in `mods/SpireAdvisor/`.
+**오버레이가 안 보여요**
+→ `mods/SpireAdvisor/` 폴더에 `.dll`과 `.pck` 파일이 모두 있는지 확인
 
-**Q: 게임 업데이트 후 작동 안 해요 / Mod stopped working after game update**
-- STS2 업데이트로 API가 변경되면 모드가 호환되지 않을 수 있습니다. 최신 모드 버전을 확인하세요.
-- Game updates may break mod compatibility. Check for the latest mod release.
+**게임 업데이트 후 작동 안 해요**
+→ STS2 업데이트로 API가 변경되면 모드가 깨질 수 있습니다. 최신 릴리즈를 확인하세요
 
-**Q: 성능 이슈 / Performance issues**
-- ⚙ 설정에서 사용하지 않는 기능을 OFF하면 성능이 개선될 수 있습니다.
-- Turn off unused features in ⚙ Settings to improve performance.
+**성능 이슈**
+→ ⚙ 설정에서 불필요한 기능을 끄면 개선됩니다
 
-**Q: 로그 파일은 어디에? / Where are the logs?**
-- `mods/SpireAdvisor/spire-advisor.log` 파일을 확인하세요.
-- Check `mods/SpireAdvisor/spire-advisor.log`.
+**로그 파일 위치**
+→ `mods/SpireAdvisor/spire-advisor.log`
 
 ---
 
-## 빌드 (개발자용) / Build (Developers)
+## English
 
-### 요구사항 / Requirements
-- .NET 9 SDK
-- Godot 4.5.1 Mono
-- Slay the Spire 2
+### Key Features
 
-### 절차 / Steps
-1. `local.props.example` → `local.props` 복사 / Copy
-2. 경로 수정 / Edit paths:
+#### Real-time Recommendations
+- **Card Reward Analysis** — Synergy scoring based on deck/relics/archetype, S–F tier grades, community win-rate data
+- **Relic Reward Analysis** — Deck synergy + relic-card cross-reference win-rate recommendations
+- **Upgrade Priority** — Static tier delta + DB upgrade win-rate delta ranking
+- **Shop Analysis** — Value-for-gold analysis, removal recommendations (based on card play frequency)
+- **Potion Advice** — Tier ratings, save-for-boss vs use-now recommendations
+
+#### Combat Support
+- **Combat Pile Tracker** — Real-time draw/discard/hand display, next turn probability
+- **Enemy Intel** — Threat levels + combat tips
+- **Combat Turn Logging** — Card plays, damage/block/HP recorded per turn
+- **Potion Tracking** — Acquire/use/discard event recording
+
+#### Strategic Analysis
+- **Boss Matchup Diagnosis** — Codex monster data + past combat history analysis
+- **Event Advice** — Per-choice evaluation
+- **Run Health Gauge** — HP/gold/deck/floor-based 0–100 score
+- **Meta Archetypes** — Current meta top 3 archetypes + core cards
+- **Floor-based Tiers** — Per-act card win-rate differences
+
+#### Post-Run Review
+- **Run Summary** — Combat efficiency, card play frequency, community comparison
+- **Decision Replay** — Scroll through every pick with community win-rate data
+- **Controversial Pick Highlights** — Flags choices 2+ grades below optimal
+- **Global Stats Comparison** — Your performance vs Steam leaderboards
+
+#### Data Pipelines
+14 background pipelines automatically collect and analyze data:
+
+| Pipeline | Purpose |
+|----------|---------|
+| SpireCodexSync | Spire Codex API card/relic/potion/monster sync |
+| PatchNotesTracker | Steam patch note parsing → balance change tracking |
+| SteamLeaderboardSync | Global leaderboard stats cache |
+| CoPickSynergyComputer | Card pair co-occurrence win-rate analysis |
+| FloorTierComputer | Per-act card tier adjustment |
+| UpgradeValueComputer | Card upgrade win-rate delta |
+| RunHealthComputer | Run health score computation |
+| CombatLogger | Per-turn card/damage/block recording |
+| CardUsageTracker | Card play frequency → removal recommendations |
+| PotionTracker | Potion acquire/use/discard tracking |
+| AutoTierGenerator | Multi-signal automated tier computation |
+| MetaArchetypeComputer | Top 3 meta archetype computation |
+| RelicCardCrossRef | Relic-card co-occurrence win-rate analysis |
+| RuntimeCardExtractor | sts2.dll reflection for new card/relic detection |
+
+#### Settings
+- 20+ per-feature ON/OFF toggles
+- Panel opacity and position adjustment
+- Cloud sync, auto-update, per-pipeline control
+- Offline mode: bundled data + disk cache for network-free operation
+
+---
+
+### Installation
+
+#### Download
+
+Get the latest release from the [Releases](../../releases) page.
+
+#### Install Path
+
+Extract and copy the `SpireAdvisor/` folder into the game's `mods/` directory:
+
+| OS | Path |
+|----|------|
+| **Windows** | `C:\Program Files (x86)\Steam\steamapps\common\Slay the Spire 2\mods\` |
+| **Linux** | `~/.steam/steam/steamapps/common/Slay the Spire 2/mods/` |
+| **macOS** | `~/Library/Application Support/Steam/steamapps/common/Slay the Spire 2/mods/` |
+
+> Custom Steam library folder? Steam → Right-click game → Manage → Browse local files.
+
+After installation:
+```
+Slay the Spire 2/mods/SpireAdvisor/
+├── SpireAdvisor.dll
+├── SpireAdvisor.pck
+├── Data/
+└── (other DLLs)
+```
+
+#### Verify
+
+Launch the game. The overlay panel should appear at the top-left. A `spire-advisor.log` file in the mod folder confirms successful loading.
+
+---
+
+### Usage
+
+- Overlay panel auto-displays at top-left
+- Drag to reposition
+- ▲ button to collapse/expand
+- ⚙ button for settings menu
+- Auto-analysis on card/relic/shop/event/combat/map screens
+
+---
+
+### FAQ
+
+**Overlay not showing**
+→ Check that `.dll` and `.pck` files both exist in `mods/SpireAdvisor/`
+
+**Mod stopped working after game update**
+→ Game API changes may break mod compatibility. Check for the latest release
+
+**Performance issues**
+→ Disable unused features in ⚙ Settings
+
+**Log file location**
+→ `mods/SpireAdvisor/spire-advisor.log`
+
+---
+
+## Tech Stack
+
+- **Runtime**: .NET 9, Godot 4.5.1 Mono, Harmony
+- **Language**: C# (latest, nullable enabled)
+- **Data**: Newtonsoft.Json, Microsoft.Data.Sqlite (8 DB tables)
+- **UI**: Godot Control tree (programmatic, no .tscn)
+
+## Build (Developers)
+
+Requirements: .NET 9 SDK, Godot 4.5.1 Mono, Slay the Spire 2
+
+1. Copy `local.props.example` → `local.props`
+2. Set paths:
    ```xml
-   <STS2GamePath>게임 경로 / game path</STS2GamePath>
-   <GodotExePath>Godot 경로 / Godot path</GodotExePath>
+   <STS2GamePath>your game path</STS2GamePath>
+   <GodotExePath>your Godot path</GodotExePath>
    ```
-3. 빌드 실행 / Run build:
-   - **Windows**: `cd QuestceSpire && build.bat`
-   - **Linux/macOS**: `cd QuestceSpire && ./build.sh`
+3. Build: `cd QuestceSpire && dotnet build -c Release`
 
----
+## Data Sources
 
-## 데이터 출처 / Data Sources
+- Card/relic tiers: Based on [sts2-advisor](https://github.com/ebadon16/sts2-advisor)
+- Card names: Runtime localization from game (Korean, etc.)
+- Community data: Spire Codex API, Steam leaderboards
 
-- 카드/유물 티어: [sts2-advisor](https://github.com/ebadon16/sts2-advisor) 기반
-- 카드 이름: 게임 런타임 로컬라이즈 (한국어 등)
+## Compatibility
 
-## 호환성 / Compatibility
+- Slay the Spire 2 v0.98+ (Early Access)
 
-- STS2 v0.98+ (Early Access)
-
-## 라이선스 / License
+## License
 
 MIT License
