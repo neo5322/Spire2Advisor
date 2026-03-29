@@ -43,6 +43,8 @@ mkdir "%RELEASE_DIR%"
 copy "%MODS_SRC%\%MOD_NAME%.dll" "%RELEASE_DIR%\" >nul
 :: Copy PCK
 copy "%MODS_SRC%\%MOD_NAME%.pck" "%RELEASE_DIR%\" >nul
+:: Copy mod manifest
+copy "%MODS_SRC%\mod_manifest.json" "%RELEASE_DIR%\" >nul
 :: Copy all NuGet/native DLLs
 for %%f in ("%MODS_SRC%\*.dll") do (
     if /i not "%%~nxf"=="%MOD_NAME%.dll" copy "%%f" "%RELEASE_DIR%\" >nul
@@ -59,6 +61,10 @@ if not exist "%RELEASE_DIR%\%MOD_NAME%.dll" (
 )
 if not exist "%RELEASE_DIR%\%MOD_NAME%.pck" (
     echo ERROR: Missing %MOD_NAME%.pck
+    set VALID=0
+)
+if not exist "%RELEASE_DIR%\mod_manifest.json" (
+    echo ERROR: Missing mod_manifest.json
     set VALID=0
 )
 if not exist "%RELEASE_DIR%\Data" (

@@ -40,6 +40,8 @@ mkdir -p "$RELEASE_DIR"
 cp "$MODS_SRC/$MOD_NAME.dll" "$RELEASE_DIR/"
 # Copy PCK
 cp "$MODS_SRC/$MOD_NAME.pck" "$RELEASE_DIR/"
+# Copy mod manifest
+cp "$MODS_SRC/mod_manifest.json" "$RELEASE_DIR/"
 # Copy all NuGet/native DLLs (except the main mod DLL)
 for f in "$MODS_SRC"/*.dll; do
     [ "$(basename "$f")" = "$MOD_NAME.dll" ] && continue
@@ -51,7 +53,7 @@ cp -r "$MODS_SRC/Data" "$RELEASE_DIR/Data"
 # Validate release artifacts
 echo "[3/5] Validating..."
 MISSING=0
-for f in "$RELEASE_DIR/$MOD_NAME.dll" "$RELEASE_DIR/$MOD_NAME.pck" "$RELEASE_DIR/Data"; do
+for f in "$RELEASE_DIR/$MOD_NAME.dll" "$RELEASE_DIR/$MOD_NAME.pck" "$RELEASE_DIR/mod_manifest.json" "$RELEASE_DIR/Data"; do
     if [ ! -e "$f" ]; then
         echo "ERROR: Missing required file: $f"
         MISSING=1

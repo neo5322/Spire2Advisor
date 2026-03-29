@@ -14,6 +14,7 @@
 		<ModDisplayName>Spire Advisor</ModDisplayName>
 		<ModAuthor>Taka</ModAuthor>
 		<ModVersion>0.8.0</ModVersion>
+		<ModDescription>Real-time card/relic recommendations, deck analysis, and combat tracking overlay for Slay the Spire 2.</ModDescription>
 
 		<AssemblyName>$(ModName)</AssemblyName>
 		<Version>$(ModVersion)</Version>
@@ -77,10 +78,14 @@ project/assembly_name="$(ModName)"
 		<PropertyGroup>
 			<ModManifestPath>$(PackProject)\mod_manifest.json</ModManifestPath>
 			<ModManifestContent>{
-  "pck_name": "$(ModName)",
+  "id": "$(ModName)",
   "name": "$(ModDisplayName)",
   "author": "$(ModAuthor)",
-  "version": "$(ModVersion)"
+  "description": "$(ModDescription)",
+  "version": "$(ModVersion)",
+  "has_pck": true,
+  "has_dll": true,
+  "affects_gameplay": false
 }</ModManifestContent>
 		</PropertyGroup>
 		<WriteLinesToFile File="$(ModManifestPath)" Lines="$(ModManifestContent)" Overwrite="true" Encoding="UTF-8" />
@@ -91,6 +96,8 @@ project/assembly_name="$(ModName)"
 		<MakeDir Directories="$(ModsOutputDir)" />
 		<!-- Copy mod DLL -->
 		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsOutputDir)" />
+		<!-- Copy mod manifest -->
+		<Copy SourceFiles="$(PackProject)\mod_manifest.json" DestinationFolder="$(ModsOutputDir)" />
 		<!-- Copy ALL runtime DLLs (NuGet: Newtonsoft.Json, Microsoft.Data.Sqlite, etc.) -->
 		<ItemGroup>
 			<RuntimeDlls Include="$(OutputPath)*.dll" Exclude="$(OutputPath)$(AssemblyName).dll" />

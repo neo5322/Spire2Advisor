@@ -86,6 +86,9 @@ jobs:
             exit 1
           }
 
+          # Copy mod manifest
+          Copy-Item "QuestceSpire\pack\mod_manifest.json" $outDir\
+
           # Copy NuGet runtime DLLs
           Get-ChildItem "QuestceSpire\bin\Release\net9.0\*.dll" -Exclude "SpireAdvisor.dll" | Copy-Item -Destination $outDir\
 
@@ -101,7 +104,7 @@ jobs:
           Copy-Item -Recurse QuestceSpire\Data\* $outDir\Data\
 
           # Verify essential files
-          $required = @("$outDir\SpireAdvisor.dll")
+          $required = @("$outDir\SpireAdvisor.dll", "$outDir\mod_manifest.json")
           foreach ($f in $required) {
             if (!(Test-Path $f)) {
               Write-Error "Required file missing: $f"
