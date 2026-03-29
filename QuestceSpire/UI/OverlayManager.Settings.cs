@@ -243,20 +243,6 @@ public partial class OverlayManager
 		_layer.AddChild(_settingsMenu, forceReadableName: false, Node.InternalMode.Disabled);
 	}
 
-	private void AddSettingsGroupHeader(VBoxContainer container, string groupName)
-	{
-		HSeparator sep = new HSeparator();
-		sep.AddThemeStyleboxOverride("separator", OverlayStyles.CreateSeparatorStyle());
-		container.AddChild(sep, forceReadableName: false, Node.InternalMode.Disabled);
-
-		Label groupHeader = new Label();
-		groupHeader.Text = groupName;
-		ApplyFont(groupHeader, _fontBold);
-		groupHeader.AddThemeFontSizeOverride("font_size", OverlayTheme.FontSmall);
-		groupHeader.AddThemeColorOverride("font_color", ClrAccent);
-		container.AddChild(groupHeader, forceReadableName: false, Node.InternalMode.Disabled);
-	}
-
 	private void AddSettingsToggle(VBoxContainer parent, string label, bool currentValue, Action onToggle)
 	{
 		HBoxContainer row = new HBoxContainer();
