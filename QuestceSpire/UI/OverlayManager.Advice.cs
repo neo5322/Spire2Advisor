@@ -163,6 +163,52 @@ public partial class OverlayManager
 		_content.AddChild(_combatPileContainer);
 	}
 
+	private void RebuildEnemyDetailsSection()
+	{
+		if (_content == null || _enemyDetailsTips == null || _enemyDetailsTips.Count == 0) return;
+
+		// Remove old enemy details section if exists
+		if (_enemyDetailsContainer != null && GodotObject.IsInstanceValid(_enemyDetailsContainer))
+		{
+			SafeDisconnectSignals(_enemyDetailsContainer);
+			_enemyDetailsContainer.GetParent()?.RemoveChild(_enemyDetailsContainer);
+			_enemyDetailsContainer.QueueFree();
+		}
+
+		var enemySection = AddCollapsibleSection("적 상세 정보", "combatEnemyDetails", ref _showEnemyDetails);
+		if (enemySection != null)
+		{
+			_enemyDetailsContainer = enemySection;
+			foreach (var (icon, text, color) in _enemyDetailsTips)
+			{
+				PanelContainer advPanel = new PanelContainer();
+				StyleBoxFlat advStyle = new StyleBoxFlat();
+				advStyle.BgColor = new Color(0.05f, 0.07f, 0.12f, 0.5f);
+				advStyle.CornerRadiusTopRight = 8;
+				advStyle.CornerRadiusBottomRight = 8;
+				advStyle.BorderWidthLeft = 3;
+				advStyle.BorderColor = new Color(color, 0.6f);
+				advStyle.ContentMarginLeft = 12f;
+				advStyle.ContentMarginRight = 10f;
+				advStyle.ContentMarginTop = 6f;
+				advStyle.ContentMarginBottom = 6f;
+				advPanel.AddThemeStyleboxOverride("panel", advStyle);
+				Label advLbl = new Label();
+				advLbl.Text = $"{icon}  {text}";
+				ApplyFont(advLbl, _fontBody);
+				advLbl.AddThemeColorOverride("font_color", color);
+				advLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
+				advLbl.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+				advPanel.AddChild(advLbl, forceReadableName: false, Node.InternalMode.Disabled);
+				enemySection.AddChild(advPanel, forceReadableName: false, Node.InternalMode.Disabled);
+			}
+		}
+		else
+		{
+			_enemyDetailsContainer = null;
+		}
+	}
+
 	private static string TranslateDangerLevel(string level)
 	{
 		return level?.ToLowerInvariant() switch
