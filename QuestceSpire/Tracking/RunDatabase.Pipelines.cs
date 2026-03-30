@@ -112,6 +112,12 @@ public partial class RunDatabase
 			CREATE INDEX IF NOT EXISTS idx_potion_events_run ON potion_events(run_id);
 			CREATE INDEX IF NOT EXISTS idx_patch_changes_entity ON patch_changes(entity_type, entity_id);
 			CREATE INDEX IF NOT EXISTS idx_relic_card_cross_relic ON relic_card_cross(relic_id, character);
+			CREATE INDEX IF NOT EXISTS idx_card_pair_char_a ON card_pair_stats(character, card_a);
+			CREATE INDEX IF NOT EXISTS idx_card_pair_char_b ON card_pair_stats(character, card_b);
+			CREATE INDEX IF NOT EXISTS idx_floor_card ON floor_card_stats(character, card_id);
+			CREATE INDEX IF NOT EXISTS idx_card_usage ON card_usage_stats(character, card_id);
+			CREATE INDEX IF NOT EXISTS idx_upgrade_val ON upgrade_values(character, card_id);
+			CREATE INDEX IF NOT EXISTS idx_relic_cross ON relic_card_cross(character, relic_id);
 		";
 		cmd.ExecuteNonQuery();
 		Plugin.Log("Pipeline tables created/verified.");

@@ -19,8 +19,6 @@ public partial class OverlayManager
 
 	private Label _compactToggle;
 
-	// _archetypeLabel removed — deck info lives in DECK BREAKDOWN section
-
 	private Label _screenLabel;
 
 	// Settings menu
@@ -74,7 +72,6 @@ public partial class OverlayManager
 
 	// Feature 4: Collapsible mode
 	private bool _collapsed;
-	// _archChipPanel removed — deck info lives in DECK BREAKDOWN section
 	private VBoxContainer _deckVizContainer;
 
 	// Feature 1: Decision history
@@ -82,8 +79,6 @@ public partial class OverlayManager
 
 	// Section toggles (persisted)
 	private bool _showDeckBreakdown = true;
-	// _showDrawProb removed — feature wasn't useful
-
 	// Staleness tracking: clear overlay when game screen changes without a patch firing
 	private ulong _lastUpdateTick;
 
@@ -113,8 +108,6 @@ public partial class OverlayManager
 	// A1: Win rate tracker
 	private Label _winRateLabel;
 
-	// _minimizeBtn removed — collapse to title bar instead
-
 	// Layout stabilization counter (re-runs FitPanelHeight for first N process ticks)
 	private int _layoutTicksRemaining;
 
@@ -122,8 +115,6 @@ public partial class OverlayManager
 	private int _shopItemCount;
 	private HashSet<string> _shopCardIds = new HashSet<string>();
 	private HashSet<string> _shopRelicIds = new HashSet<string>();
-
-	// _archChipVBox removed — deck info lives in DECK BREAKDOWN section
 
 	// Color aliases — delegate to centralized OverlayTheme tokens
 	private static readonly Color ClrBg = OverlayTheme.BgPanel;
@@ -958,6 +949,28 @@ public partial class OverlayManager
 			warnLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
 			warnPanel.AddChild(warnLabel, forceReadableName: false, Node.InternalMode.Disabled);
 			_content.AddChild(warnPanel, forceReadableName: false, Node.InternalMode.Disabled);
+		}
+		// Game compatibility warning
+		if (Plugin.CompatibilityIssues > 0)
+		{
+			var compatPanel = new PanelContainer();
+			var compatStyle = new StyleBoxFlat();
+			compatStyle.BgColor = new Color(OverlayTheme.Negative, 0.15f);
+			OverlayStyles.SetAllCornerRadius(compatStyle, OverlayTheme.RadiusSM);
+			compatStyle.BorderWidthLeft = 3;
+			compatStyle.BorderColor = OverlayTheme.Negative;
+			compatStyle.ContentMarginLeft = compatStyle.ContentMarginRight = 10f;
+			compatStyle.ContentMarginTop = compatStyle.ContentMarginBottom = 6f;
+			compatPanel.AddThemeStyleboxOverride("panel", compatStyle);
+
+			var compatLabel = new Label();
+			compatLabel.Text = $"⚠ 게임 호환성 문제 {Plugin.CompatibilityIssues}건 감지됨 — 일부 기능이 작동하지 않을 수 있습니다";
+			ApplyFont(compatLabel, _fontBody);
+			compatLabel.AddThemeColorOverride("font_color", OverlayTheme.Negative);
+			compatLabel.AddThemeFontSizeOverride("font_size", OverlayTheme.FontCaption);
+			compatLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			compatPanel.AddChild(compatLabel, forceReadableName: false, Node.InternalMode.Disabled);
+			_content.AddChild(compatPanel, forceReadableName: false, Node.InternalMode.Disabled);
 		}
 		bool hasCards = _currentCards != null && _currentCards.Count > 0;
 		bool hasRelics = _currentRelics != null && _currentRelics.Count > 0;
