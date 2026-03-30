@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,8 +12,8 @@ namespace QuestceSpire.Tracking;
 public static class PipelineHttp
 {
 	private static readonly HttpClient Client = new() { Timeout = TimeSpan.FromSeconds(15) };
-	private static readonly Dictionary<string, DateTime> LastRequestByHost = new();
-	private static readonly SemaphoreSlim Lock = new(1, 1);
+	private static readonly ConcurrentDictionary<string, SemaphoreSlim> HostLocks = new();
+	private static readonly ConcurrentDictionary<string, DateTime> LastRequestByHost = new();
 
 	/// <summary>
 	/// GET with per-host rate limiting. Ensures at least <paramref name="minInterval"/> between
@@ -24,7 +24,10 @@ public static class PipelineHttp
 		var uri = new Uri(url);
 		var interval = minInterval ?? TimeSpan.FromSeconds(1);
 
-		await Lock.WaitAsync();
+		// Get or create per-host lock
+		var hostLock = HostLocks.GetOrAdd(uri.Host, _ => new SemaphoreSlim(1, 1));
+
+		await hostLock.WaitAsync();
 		try
 		{
 			if (LastRequestByHost.TryGetValue(uri.Host, out var last))
@@ -37,7 +40,7 @@ public static class PipelineHttp
 		}
 		finally
 		{
-			Lock.Release();
+			hostLock.Release();
 		}
 
 		return await Client.GetStringAsync(url);

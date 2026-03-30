@@ -39,6 +39,69 @@ namespace QuestceSpire.Core
         public int LargeDeckSize { get; set; } = 25;
         public int SmallDeckSize { get; set; } = 15;
 
+        // Energy curve thresholds
+        public float HighAvgCostThreshold { get; set; } = 2.2f;
+        public float MedAvgCostThreshold { get; set; } = 1.8f;
+        public float LowAvgCostThreshold { get; set; } = 1.5f;
+
+        // Energy curve adjustments
+        public float ExpensiveCardPenalty { get; set; } = -0.3f;
+        public float VeryExpensiveCardPenalty { get; set; } = -0.5f;
+        public float CheapCardBonus { get; set; } = 0.15f;
+
+        // Card type balance
+        public float PowerGapBonus { get; set; } = 0.2f;
+        public float PowerGlutPenalty { get; set; } = -0.2f;
+        public float AoEGapBonus { get; set; } = 0.3f;
+        public int PowerGlutThreshold { get; set; } = 4;
+
+        // Deck size adjustments
+        public float ThinDeckPenalty { get; set; } = -0.2f;
+        public float BloatedDeckPenalty { get; set; } = -0.4f;
+
+        // Synergy
+        public float AntiSynergyPenalty { get; set; } = 0.6f;
+        public float AntiSynergyCap { get; set; } = -1.2f;
+        public float SaturationSoftMult { get; set; } = 0.7f;
+        public float SaturationHardMult { get; set; } = 0.4f;
+        public float CoPickBonusCap { get; set; } = 0.4f;
+
+        // Upgrade
+        public float UpgradeBonus { get; set; } = 0.4f;
+
+        // Score clamp
+        public float MaxScore { get; set; } = 6.0f;
+        public float MinScore { get; set; } = 0f;
+
+        // Graduated synergy base
+        public float SynergyBaseMin { get; set; } = 0.3f;
+        public float SynergyBaseScale { get; set; } = 0.5f;
+
+        // Floor scoring thresholds
+        public int EarlyFloorMax { get; set; } = 6;
+        public int MidFloorMax { get; set; } = 18;
+
+        // Removal thresholds
+        public float RarelyPlayedThreshold { get; set; } = 0.5f;
+        public float LowEffectivenessThreshold { get; set; } = 0.3f;
+
+        // DeckAnalyzer
+        public float DensityTargetDeckSize { get; set; } = 20f;
+        public float DensityMinFactor { get; set; } = 0.7f;
+        public float DensityMaxFactor { get; set; } = 1.3f;
+
+        // Boss readiness
+        public float BossBaseReadiness { get; set; } = 50f;
+
+        // PotionAdvisor
+        public int ActLengthFloors { get; set; } = 17;
+        public int NearBossFloorThreshold { get; set; } = 15;
+
+        // Adaptive scoring
+        public float AdaptiveBlendContext { get; set; } = 0.6f;
+        public float AdaptiveBlendWinRate { get; set; } = 0.4f;
+        public float AdaptivePickRateMaxBonus { get; set; } = 0.3f;
+
         // Per-character deck size thresholds (optional override)
         public Dictionary<string, int> ThinDeckByCharacter { get; set; } = new();
         public Dictionary<string, int> BloatedDeckByCharacter { get; set; } = new();
@@ -65,8 +128,9 @@ namespace QuestceSpire.Core
                 string json = System.IO.File.ReadAllText(jsonPath);
                 Instance = JsonConvert.DeserializeObject<ScoringConfig>(json) ?? new ScoringConfig();
             }
-            catch
+            catch (Exception ex)
             {
+                Plugin.Log($"ScoringConfig: failed to load: {ex.Message}");
                 Instance = new ScoringConfig();
             }
         }

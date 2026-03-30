@@ -45,10 +45,10 @@ public class AdaptiveScorer : IAdaptiveScorer
 		float contextScore = GetContextScore(communityCardStats.ArchetypeContext, deckAnalysis);
 		if (contextScore >= 0f)
 		{
-			num2 = num2 * 0.4f + contextScore * 0.6f;
+			num2 = num2 * Cfg.AdaptiveBlendWinRate + contextScore * Cfg.AdaptiveBlendContext;
 		}
 		float val = (communityCardStats.PickRate - 0.33f) * 0.9f;
-		val = Math.Max(-0.3f, Math.Min(0.3f, val));
+		val = Math.Max(-Cfg.AdaptivePickRateMaxBonus, Math.Min(Cfg.AdaptivePickRateMaxBonus, val));
 		num2 += val;
 		float num3 = communityCardStats.WinRateWhenPicked - communityCardStats.WinRateWhenSkipped;
 		if (Math.Abs(num3) > 0.03f)
@@ -105,7 +105,7 @@ public class AdaptiveScorer : IAdaptiveScorer
 		}
 		float num2 = WinRateToScore(communityRelicStats.WinRateWhenPicked);
 		float val = (communityRelicStats.PickRate - 0.33f) * 0.9f;
-		val = Math.Max(-0.3f, Math.Min(0.3f, val));
+		val = Math.Max(-Cfg.AdaptivePickRateMaxBonus, Math.Min(Cfg.AdaptivePickRateMaxBonus, val));
 		num2 += val;
 		float num3 = communityRelicStats.WinRateWhenPicked - communityRelicStats.WinRateWhenSkipped;
 		if (Math.Abs(num3) > 0.03f)

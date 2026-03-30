@@ -39,6 +39,29 @@ public class OfflineDataManager
 		"meta_archetypes.json"
 	};
 
+	/// <summary>
+	/// Write content to file atomically using temp file + rename pattern.
+	/// Prevents data corruption if process crashes mid-write.
+	/// </summary>
+	public static void AtomicWriteAllText(string path, string content)
+	{
+		string tempPath = path + ".tmp";
+		try
+		{
+			File.WriteAllText(tempPath, content);
+			if (File.Exists(path))
+				File.Replace(tempPath, path, null);
+			else
+				File.Move(tempPath, path);
+		}
+		catch
+		{
+			// Clean up temp file on failure
+			try { if (File.Exists(tempPath)) File.Delete(tempPath); } catch { }
+			throw;
+		}
+	}
+
 	public OfflineDataManager(string dataPath)
 	{
 		_dataPath = dataPath;

@@ -139,8 +139,9 @@ public class DeckAnalyzer : IDeckAnalyzer
 				// larger decks get density penalty (floored at 0.7x).
 				if (deckAnalysis.TotalCards > 0)
 				{
-					float rawDensity = 20f / Math.Max(deckAnalysis.TotalCards, 15f);
-					float densityFactor = Math.Clamp(rawDensity, 0.7f, 1.3f);
+					var cfg = ScoringConfig.Instance;
+					float rawDensity = cfg.DensityTargetDeckSize / Math.Max(deckAnalysis.TotalCards, cfg.DensityTargetDeckSize * 0.75f);
+					float densityFactor = Math.Clamp(rawDensity, cfg.DensityMinFactor, cfg.DensityMaxFactor);
 					num4 *= densityFactor;
 				}
 				num4 = Math.Min(num4, 1f);

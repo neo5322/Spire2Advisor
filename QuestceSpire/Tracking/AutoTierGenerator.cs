@@ -100,7 +100,7 @@ public class AutoTierGenerator
 			// Save auto tiers
 			string path = Path.Combine(autoTierDir, $"{character}.json");
 			var output = new { character, generated = DateTime.UtcNow.ToString("o"), cards = entries };
-			File.WriteAllText(path, JsonConvert.SerializeObject(output, Formatting.Indented));
+			OfflineDataManager.AtomicWriteAllText(path, JsonConvert.SerializeObject(output, Formatting.Indented));
 			totalCards += entries.Count;
 		}
 
@@ -283,7 +283,7 @@ public class AutoTierGenerator
 				{
 					existingEntries.Sort((a, b) => b.Score.CompareTo(a.Score));
 					var output = new { character, generated = DateTime.UtcNow.ToString("o"), cards = existingEntries };
-					File.WriteAllText(autoPath, JsonConvert.SerializeObject(output, Formatting.Indented));
+					OfflineDataManager.AtomicWriteAllText(autoPath, JsonConvert.SerializeObject(output, Formatting.Indented));
 				}
 			}
 

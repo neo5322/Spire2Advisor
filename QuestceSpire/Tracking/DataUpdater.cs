@@ -162,7 +162,7 @@ public class DataUpdater
 
 					string filePath = Path.Combine(dir, fileName.EndsWith(".json") ? fileName : fileName + ".json");
 					string serialized = fileContent is string s ? s : JsonConvert.SerializeObject(fileContent, Formatting.Indented);
-					File.WriteAllText(filePath, serialized);
+					OfflineDataManager.AtomicWriteAllText(filePath, serialized);
 				}
 			}
 		}
@@ -170,7 +170,7 @@ public class DataUpdater
 		{
 			// Single file endpoint
 			Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
-			File.WriteAllText(fullPath, content);
+			OfflineDataManager.AtomicWriteAllText(fullPath, content);
 		}
 
 		Plugin.Log($"DataUpdater: updated {key}");

@@ -75,7 +75,7 @@ public class SpireCodexSync
 				() => PipelineHttp.GetAsync($"{BaseUrl}/{endpoint}", RateLimit));
 
 			string path = Path.Combine(_dataFolder, localFile);
-			File.WriteAllText(path, json);
+			OfflineDataManager.AtomicWriteAllText(path, json);
 
 			// Parse and log count
 			var arr = JToken.Parse(json);

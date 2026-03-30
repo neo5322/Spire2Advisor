@@ -108,8 +108,9 @@ public class PotionAdvisor
 		{
 			// Check if we're near a boss: last 3 floors of each ~17-floor act
 			// Boss floors are approximately: Act 1 = 17, Act 2 = 34, Act 3 = 51
-			int floorInAct = ((floor - 1) % 17) + 1;
-			bool nearBoss = floorInAct >= 15;
+			var cfg = ScoringConfig.Instance;
+			int floorInAct = ((floor - 1) % cfg.ActLengthFloors) + 1;
+			bool nearBoss = floorInAct >= cfg.NearBossFloorThreshold;
 			if (nearBoss)
 			{
 				advice.Recommendation = "보스 임박 — 아끼세요";
