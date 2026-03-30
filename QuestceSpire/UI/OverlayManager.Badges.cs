@@ -300,14 +300,14 @@ public partial class OverlayManager
 		badgeStyle.BorderWidthRight = isBestPick ? 2 : 1;
 		badgeStyle.BorderColor = isBestPick ? ClrAccent : badgeColor.Darkened(0.3f);
 		badgeStyle.ShadowSize = isBestPick ? 12 : 4;
-		badgeStyle.ShadowColor = isBestPick ? new Color(ClrAccent, 0.7f) : new Color(0f, 0f, 0f, 0.6f);
+		badgeStyle.ShadowColor = isBestPick ? new Color(ClrAccent, 0.7f) : OverlayTheme.Shadow;
 		badge.AddThemeStyleboxOverride("panel", badgeStyle);
 
 		Label gradeLbl = new Label();
 		gradeLbl.Text = subGrade;
 		ApplyFont(gradeLbl, _fontHeader);
 		gradeLbl.AddThemeColorOverride("font_color", textColor);
-		gradeLbl.AddThemeFontSizeOverride("font_size", subGrade.Length > 1 ? 17 : 20);
+		gradeLbl.AddThemeFontSizeOverride("font_size", subGrade.Length > 1 ? OverlayTheme.FontBadgeSmall : OverlayTheme.FontBadgeLarge);
 		gradeLbl.HorizontalAlignment = HorizontalAlignment.Center;
 		gradeLbl.VerticalAlignment = VerticalAlignment.Center;
 		badge.AddChild(gradeLbl, forceReadableName: false, Node.InternalMode.Disabled);

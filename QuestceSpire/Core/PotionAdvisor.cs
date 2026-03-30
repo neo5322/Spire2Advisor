@@ -106,8 +106,10 @@ public class PotionAdvisor
 		}
 		else if (isOffensivePotion && actNumber >= 2)
 		{
-			// Check if we're near a boss (rough heuristic)
-			bool nearBoss = (floor % 17) >= 14;
+			// Check if we're near a boss: last 3 floors of each ~17-floor act
+			// Boss floors are approximately: Act 1 = 17, Act 2 = 34, Act 3 = 51
+			int floorInAct = ((floor - 1) % 17) + 1;
+			bool nearBoss = floorInAct >= 15;
 			if (nearBoss)
 			{
 				advice.Recommendation = "보스 임박 — 아끼세요";

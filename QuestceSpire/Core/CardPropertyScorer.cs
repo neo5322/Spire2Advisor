@@ -86,7 +86,7 @@ public class CardPropertyScorer
 		string normId = NormalizeId(cardId);
 		if (!_cards.TryGetValue(normId, out var card))
 		{
-			return new ComputedCardScore { Score = 2.0f, SynergyTags = null };
+			return new ComputedCardScore { Score = 2.0f, SynergyTags = new List<string>() };
 		}
 		return ComputeScoreFromData(card);
 	}
@@ -195,7 +195,7 @@ public class CardPropertyScorer
 			}
 		}
 
-		return tagSet.Count > 0 ? tagSet.ToList() : null;
+		return tagSet.Count > 0 ? tagSet.ToList() : new List<string>();
 	}
 
 	private static List<string> ParseList(string csv)

@@ -15,6 +15,7 @@ public static partial class GamePatches
 {
 	// ─── Combat Turn Tracking (v0.10.1) ───
 
+	private static readonly object _combatLock = new();
 	private static int _currentTurnNumber;
 	private static List<string> _turnCardsPlayed = new();
 	private static int _turnDamageDealt;
@@ -27,11 +28,14 @@ public static partial class GamePatches
 		try
 		{
 			RecordHook("OnTurnStart");
-			_currentTurnNumber++;
-			_turnCardsPlayed = new List<string>();
-			_turnDamageDealt = 0;
-			_turnDamageTaken = 0;
-			_turnBlockGenerated = 0;
+			lock (_combatLock)
+			{
+				_currentTurnNumber++;
+				_turnCardsPlayed = new List<string>();
+				_turnDamageDealt = 0;
+				_turnDamageTaken = 0;
+				_turnBlockGenerated = 0;
+			}
 		}
 		catch (Exception ex) { Plugin.Log($"OnTurnStart error: {ex.Message}"); }
 	}
@@ -48,18 +52,24 @@ public static partial class GamePatches
 			string runId = Plugin.RunTracker?.CurrentRunId;
 			int floor = gs?.Floor ?? 0;
 
-			Plugin.CombatLogger.RecordTurn(new CombatTurnRecord
+			CombatTurnRecord record;
+			lock (_combatLock)
 			{
-				RunId = runId ?? "unknown",
-				Floor = floor,
-				EnemyId = _currentCombatEnemyId,
-				TurnNumber = _currentTurnNumber,
-				CardsPlayed = new List<string>(_turnCardsPlayed),
-				DamageDealt = _turnDamageDealt,
-				DamageTaken = _turnDamageTaken,
-				BlockGenerated = _turnBlockGenerated,
-				PlayerHp = playerHp
-			});
+				record = new CombatTurnRecord
+				{
+					RunId = runId ?? "unknown",
+					Floor = floor,
+					EnemyId = _currentCombatEnemyId,
+					TurnNumber = _currentTurnNumber,
+					CardsPlayed = new List<string>(_turnCardsPlayed),
+					DamageDealt = _turnDamageDealt,
+					DamageTaken = _turnDamageTaken,
+					BlockGenerated = _turnBlockGenerated,
+					PlayerHp = playerHp
+				};
+			}
+
+			Plugin.CombatLogger.RecordTurn(record);
 		}
 		catch (Exception ex) { Plugin.Log($"OnTurnEnd error: {ex.Message}"); }
 	}
@@ -70,7 +80,10 @@ public static partial class GamePatches
 		{
 			RecordHook("OnCardPlayed");
 			string cardId = ExtractCardId(card);
-			_turnCardsPlayed.Add(cardId);
+			lock (_combatLock)
+			{
+				_turnCardsPlayed.Add(cardId);
+			}
 		}
 		catch (Exception ex) { Plugin.Log($"OnCardPlayed error: {ex.Message}"); }
 	}
@@ -79,7 +92,10 @@ public static partial class GamePatches
 	{
 		try
 		{
-			_turnDamageDealt += Math.Max(0, amount);
+			lock (_combatLock)
+			{
+				_turnDamageDealt += Math.Max(0, amount);
+			}
 		}
 		catch (Exception ex) { Plugin.Log($"OnDamageDealt error: {ex.Message}"); }
 	}
@@ -88,7 +104,10 @@ public static partial class GamePatches
 	{
 		try
 		{
-			_turnDamageTaken += Math.Max(0, amount);
+			lock (_combatLock)
+			{
+				_turnDamageTaken += Math.Max(0, amount);
+			}
 		}
 		catch (Exception ex) { Plugin.Log($"OnDamageTaken error: {ex.Message}"); }
 	}
@@ -97,16 +116,30 @@ public static partial class GamePatches
 	{
 		try
 		{
-			_turnBlockGenerated += Math.Max(0, amount);
+			lock (_combatLock)
+			{
+				_turnBlockGenerated += Math.Max(0, amount);
+			}
 		}
 		catch (Exception ex) { Plugin.Log($"OnBlockGenerated error: {ex.Message}"); }
 	}
 
+	/// <summary>
+	/// Reset combat state. Currently not registered as a Harmony patch —
+	/// called manually from OnCombatSetup via the encounter ID extraction path.
+	/// If no caller invokes this, OnTurnStart still resets per-turn fields each turn.
+	/// </summary>
 	public static void OnCombatStarted(string enemyId)
 	{
-		_currentTurnNumber = 0;
-		_currentCombatEnemyId = enemyId;
-		_turnCardsPlayed = new List<string>();
+		lock (_combatLock)
+		{
+			_currentTurnNumber = 0;
+			_currentCombatEnemyId = enemyId;
+			_turnCardsPlayed = new List<string>();
+			_turnDamageDealt = 0;
+			_turnDamageTaken = 0;
+			_turnBlockGenerated = 0;
+		}
 	}
 
 	// ─── Potion Tracking (v0.10.2) ───
@@ -140,13 +173,15 @@ public static partial class GamePatches
 			if (potionId == null) return;
 
 			var gs = GameStateReader.ReadCurrentState();
+			string enemyId;
+			lock (_combatLock) { enemyId = _currentCombatEnemyId; }
 			Plugin.PotionTracker?.RecordEvent(new PotionEvent
 			{
 				RunId = Plugin.RunTracker?.CurrentRunId ?? "unknown",
 				PotionId = potionId,
 				EventType = "used",
 				Floor = gs?.Floor ?? 0,
-				EnemyId = _currentCombatEnemyId
+				EnemyId = enemyId
 			});
 		}
 		catch (Exception ex) { Plugin.Log($"OnPotionUsed error: {ex.Message}"); }

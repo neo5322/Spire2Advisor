@@ -40,14 +40,14 @@ public partial class OverlayManager
 		arrow.Text = isExpanded ? "\u25BC " : "\u25B6 ";
 		ApplyFont(arrow, _fontBold);
 		arrow.AddThemeColorOverride("font_color", ClrSub);
-		arrow.AddThemeFontSizeOverride("font_size", 14);
+		arrow.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 		arrow.MouseFilter = Control.MouseFilterEnum.Ignore;
 		headerRow.AddChild(arrow, forceReadableName: false, Node.InternalMode.Disabled);
 		Label headerLabel = new Label();
 		headerLabel.Text = text;
 		ApplyFont(headerLabel, _fontBold);
 		headerLabel.AddThemeColorOverride("font_color", ClrAccent);
-		headerLabel.AddThemeFontSizeOverride("font_size", 16);
+		headerLabel.AddThemeFontSizeOverride("font_size", OverlayTheme.FontH2);
 		headerLabel.AddThemeConstantOverride("outline_size", 3);
 		headerLabel.AddThemeColorOverride("font_outline_color", ClrOutline);
 		headerLabel.MouseFilter = Control.MouseFilterEnum.Ignore;
@@ -252,7 +252,7 @@ public partial class OverlayManager
 		mainLine.Text = $"{typeIcon} F{evt.Floor}: {chosenName}{gradeStr}";
 		ApplyFont(mainLine, _fontBold);
 		mainLine.AddThemeColorOverride("font_color", evt.ChosenId != null ? ClrAccent : ClrSub);
-		mainLine.AddThemeFontSizeOverride("font_size", 14);
+		mainLine.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 		mainLine.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
 		vbox.AddChild(mainLine, forceReadableName: false, Node.InternalMode.Disabled);
 
@@ -359,7 +359,7 @@ public partial class OverlayManager
 		curveHeader.Text = "에너지 비용";
 		ApplyFont(curveHeader, _fontBody);
 		curveHeader.AddThemeColorOverride("font_color", ClrSub);
-		curveHeader.AddThemeFontSizeOverride("font_size", 14);
+		curveHeader.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 		target.AddChild(curveHeader, forceReadableName: false, Node.InternalMode.Disabled);
 
 		HBoxContainer costRow = new HBoxContainer();
@@ -370,7 +370,7 @@ public partial class OverlayManager
 			costLbl.Text = cost == 5 ? "5+" : cost.ToString();
 			ApplyFont(costLbl, _fontBody);
 			costLbl.AddThemeColorOverride("font_color", ClrSub);
-			costLbl.AddThemeFontSizeOverride("font_size", 14);
+			costLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 			costLbl.HorizontalAlignment = HorizontalAlignment.Center;
 			costLbl.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
 			costRow.AddChild(costLbl, forceReadableName: false, Node.InternalMode.Disabled);
@@ -404,7 +404,7 @@ public partial class OverlayManager
 			lbl.Text = count.ToString();
 			ApplyFont(lbl, _fontBody);
 			lbl.AddThemeColorOverride("font_color", ClrSub);
-			lbl.AddThemeFontSizeOverride("font_size", 14);
+			lbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 			lbl.HorizontalAlignment = HorizontalAlignment.Center;
 			col.AddChild(lbl, forceReadableName: false, Node.InternalMode.Disabled);
 			curveRow.AddChild(col, forceReadableName: false, Node.InternalMode.Disabled);
@@ -504,7 +504,7 @@ public partial class OverlayManager
 			curveHeader.Text = "에너지 비용";
 			ApplyFont(curveHeader, _fontBody);
 			curveHeader.AddThemeColorOverride("font_color", ClrSub);
-			curveHeader.AddThemeFontSizeOverride("font_size", 14);
+			curveHeader.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 			_deckVizContainer.AddChild(curveHeader, forceReadableName: false, Node.InternalMode.Disabled);
 
 			// Cost number row above bars
@@ -516,7 +516,7 @@ public partial class OverlayManager
 				costLbl.Text = cost == 5 ? "5+" : cost.ToString();
 				ApplyFont(costLbl, _fontBody);
 				costLbl.AddThemeColorOverride("font_color", ClrSub);
-				costLbl.AddThemeFontSizeOverride("font_size", 14);
+				costLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 				costLbl.HorizontalAlignment = HorizontalAlignment.Center;
 				costLbl.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
 				costRow.AddChild(costLbl, forceReadableName: false, Node.InternalMode.Disabled);
@@ -554,7 +554,7 @@ public partial class OverlayManager
 				lbl.Text = count.ToString();
 				ApplyFont(lbl, _fontBody);
 				lbl.AddThemeColorOverride("font_color", ClrSub);
-				lbl.AddThemeFontSizeOverride("font_size", 14);
+				lbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 				lbl.HorizontalAlignment = HorizontalAlignment.Center;
 				col.AddChild(lbl, forceReadableName: false, Node.InternalMode.Disabled);
 
@@ -878,7 +878,7 @@ public partial class OverlayManager
 						noContr.Text = "논란 선택 없음 \u2014 좋은 판단!";
 						ApplyFont(noContr, _fontBody);
 						noContr.AddThemeColorOverride("font_color", ClrPositive);
-						noContr.AddThemeFontSizeOverride("font_size", 14);
+						noContr.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 						controversialSection.AddChild(noContr, forceReadableName: false, Node.InternalMode.Disabled);
 					}
 				}
@@ -913,7 +913,7 @@ public partial class OverlayManager
 			statsLbl.Text = $"Decisions: {events.Count} | Controversial: {controversial.Count}";
 			ApplyFont(statsLbl, _fontBold);
 			statsLbl.AddThemeColorOverride("font_color", ClrSub);
-			statsLbl.AddThemeFontSizeOverride("font_size", 14);
+			statsLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 			_content.AddChild(statsLbl, forceReadableName: false, Node.InternalMode.Disabled);
 			ResizePanelToContent();
 

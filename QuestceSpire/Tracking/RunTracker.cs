@@ -143,7 +143,10 @@ public class RunTracker : IRunTracker
 			Gold = gold,
 			Timestamp = DateTime.UtcNow
 		};
-		_currentEvents.Add(item);
+		lock (_decisionLock)
+		{
+			_currentEvents.Add(item);
+		}
 		UpdateRelicTracking(relicSnapshot ?? new List<string>(), floor);
 		Plugin.Log($"Decision recorded: {eventType} on floor {floor} — chose {chosenId ?? "(skip)"}");
 	}
