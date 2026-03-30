@@ -248,29 +248,25 @@ public static class BossAdvisor
 		// ─── Combat history data-driven adjustment ───
 		try
 		{
-			var db = Plugin.RunDatabase;
-			if (db != null)
+			var connStr = GetDbConnectionString();
+			if (connStr != null)
 			{
-				var connStr = db.ConnectionString;
-				if (connStr != null)
+				using var conn = new Microsoft.Data.Sqlite.SqliteConnection(connStr);
+				conn.Open();
+				using var cmd = conn.CreateCommand();
+				cmd.CommandText = @"SELECT AVG(damage_taken), AVG(turn_number)
+					FROM combat_turns WHERE enemy_id LIKE @eid
+					GROUP BY run_id ORDER BY rowid DESC LIMIT 5";
+				string bossNameFirst = boss.Name?.Split(' ').FirstOrDefault();
+				if (string.IsNullOrEmpty(bossNameFirst)) return result;
+				cmd.Parameters.AddWithValue("@eid", $"%{bossNameFirst}%");
+				using var reader = cmd.ExecuteReader();
+				if (reader.Read() && !reader.IsDBNull(0))
 				{
-					using var conn = new Microsoft.Data.Sqlite.SqliteConnection(connStr);
-					conn.Open();
-					using var cmd = conn.CreateCommand();
-					cmd.CommandText = @"SELECT AVG(damage_taken), AVG(turn_number)
-						FROM combat_turns WHERE enemy_id LIKE @eid
-						GROUP BY run_id ORDER BY rowid DESC LIMIT 5";
-					string bossNameFirst = boss.Name?.Split(' ').FirstOrDefault();
-					if (string.IsNullOrEmpty(bossNameFirst)) return result;
-					cmd.Parameters.AddWithValue("@eid", $"%{bossNameFirst}%");
-					using var reader = cmd.ExecuteReader();
-					if (reader.Read() && !reader.IsDBNull(0))
-					{
-						float avgDmgTaken = reader.GetFloat(0);
-						float avgTurns = reader.GetFloat(1);
-						if (avgDmgTaken > 20) result.Weaknesses.Add($"과거 전투 평균 피해: {avgDmgTaken:F0}/턴");
-						if (avgTurns > 8) result.Weaknesses.Add($"과거 전투 평균 {avgTurns:F0}턴 소요");
-					}
+					float avgDmgTaken = reader.GetFloat(0);
+					float avgTurns = reader.GetFloat(1);
+					if (avgDmgTaken > 20) result.Weaknesses.Add($"과거 전투 평균 피해: {avgDmgTaken:F0}/턴");
+					if (avgTurns > 8) result.Weaknesses.Add($"과거 전투 평균 {avgTurns:F0}턴 소요");
 				}
 			}
 		}
@@ -286,6 +282,11 @@ public static class BossAdvisor
 
 		return result;
 	}
+
+	/// <summary>
+	/// Centralizes cross-layer dependency on RunDatabase for connection string access.
+	/// </summary>
+	private static string GetDbConnectionString() => Plugin.RunDatabase?.ConnectionString;
 
 	private class BossTemplate
 	{

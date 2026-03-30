@@ -69,15 +69,11 @@ public class PotionAdvisor
 		}
 
 		// Historical usage data
-		var tracker = Plugin.PotionTracker;
-		if (tracker != null)
+		var summary = GetPotionUsageSummary(potionId);
+		if (summary != null && summary.TimesObtained >= 3)
 		{
-			var summary = tracker.GetUsageSummary(potionId);
-			if (summary != null && summary.TimesObtained >= 3)
-			{
-				advice.UseRate = summary.UseRate;
-				advice.AvgFloorUsed = summary.AvgFloorUsed;
-			}
+			advice.UseRate = summary.UseRate;
+			advice.AvgFloorUsed = summary.AvgFloorUsed;
 		}
 
 		// Decision: use now or save?
@@ -135,6 +131,12 @@ public class PotionAdvisor
 
 		return advice;
 	}
+
+	/// <summary>
+	/// Centralizes cross-layer dependency on PotionTracker for usage summary access.
+	/// </summary>
+	private PotionUsageSummary GetPotionUsageSummary(string potionId)
+		=> Plugin.PotionTracker?.GetUsageSummary(potionId);
 
 	/// <summary>
 	/// Generate potion advice lines for combat overlay.

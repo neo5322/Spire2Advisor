@@ -9,6 +9,26 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 {
 	private ScoringConfig Cfg => ScoringConfig.Instance;
 
+	// Injected dependency (falls back to Plugin singleton if not provided)
+	private readonly CardPropertyScorer _cardPropertyScorer;
+
+	public SynergyScorer(CardPropertyScorer cardPropertyScorer = null)
+	{
+		_cardPropertyScorer = cardPropertyScorer;
+	}
+
+	private CardPropertyScorer GetCardPropertyScorer() => _cardPropertyScorer ?? Plugin.CardPropertyScorer;
+
+	/// <summary>Isolate RunDatabase access to a single helper. Core should not scatter Tracking references.</summary>
+	private string GetRunDatabaseConnectionString() => Plugin.RunDatabase?.ConnectionString;
+
+	/// <summary>Isolate upgrade value lookup from RunDatabase.</summary>
+	private dynamic GetUpgradeValue(string cardId, string character) => Plugin.RunDatabase?.GetUpgradeValue(cardId, character);
+
+	/// <summary>Isolate CoPickSynergyComputer access to a single helper.</summary>
+	private float GetCoPickBonusFromComputer(string cardId, List<string> deckCardIds, string character)
+		=> Plugin.CoPickSynergyComputer?.GetCoPickBonus(cardId, deckCardIds, character) ?? 0f;
+
 	// Job-to-tag mapping for card evaluation
 	private static readonly Dictionary<string, string[]> JobTags = new()
 	{
@@ -114,7 +134,7 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 				string usageReason = null;
 				try
 				{
-					var connStr = Plugin.RunDatabase?.ConnectionString;
+					var connStr = GetRunDatabaseConnectionString();
 					if (connStr != null && character != null)
 					{
 						using var conn = new Microsoft.Data.Sqlite.SqliteConnection(connStr);
@@ -227,7 +247,7 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 
 			// Bonus from DB upgrade value data (win-rate delta when upgraded)
 			float upgradeValueBonus = 0f;
-			var upgradeData = Plugin.RunDatabase?.GetUpgradeValue(baseId, character);
+			var upgradeData = GetUpgradeValue(baseId, character);
 			if (upgradeData != null && upgradeData.SampleSize >= 3 && upgradeData.UpgradeWinDelta > 0.02f)
 			{
 				upgradeValueBonus = Math.Min(0.5f, upgradeData.UpgradeWinDelta * 3f);
@@ -380,9 +400,10 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 			var grade = TierEngine.ParseGrade(tierEntry.BaseTier);
 			return (grade, (float)grade, null, "static");
 		}
-		if (Plugin.CardPropertyScorer != null)
+		var cps = GetCardPropertyScorer();
+		if (cps != null)
 		{
-			var computed = Plugin.CardPropertyScorer.ComputeScore(card.Id);
+			var computed = cps.ComputeScore(card.Id);
 			return (TierEngine.ScoreToGrade(computed.Score), computed.Score, computed.SynergyTags, "computed");
 		}
 		return (TierGrade.C, (float)TierGrade.C, null, "default");
@@ -470,9 +491,9 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 	/// <summary>Co-pick synergy bonus from community data for cards that pair well with existing deck.</summary>
 	private float ApplyCoPickSynergy(string cardId, string character, List<string> deckCardIds, ref float score, List<string> reasons)
 	{
-		if (character == null || Plugin.CoPickSynergyComputer == null || deckCardIds == null || deckCardIds.Count < 3)
+		if (character == null || deckCardIds == null || deckCardIds.Count < 3)
 			return 0f;
-		float coPickBonus = Plugin.CoPickSynergyComputer.GetCoPickBonus(cardId, deckCardIds, character);
+		float coPickBonus = GetCoPickBonusFromComputer(cardId, deckCardIds, character);
 		if (coPickBonus <= 0.01f) return 0f;
 		coPickBonus = Math.Min(Cfg.CoPickBonusCap, coPickBonus);
 		score += coPickBonus;

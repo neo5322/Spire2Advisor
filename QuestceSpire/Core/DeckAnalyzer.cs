@@ -6,6 +6,16 @@ namespace QuestceSpire.Core;
 
 public class DeckAnalyzer : IDeckAnalyzer
 {
+	// Injected dependency (falls back to Plugin singleton if not provided)
+	private readonly CardPropertyScorer _cardPropertyScorer;
+
+	public DeckAnalyzer(CardPropertyScorer cardPropertyScorer = null)
+	{
+		_cardPropertyScorer = cardPropertyScorer;
+	}
+
+	private CardPropertyScorer GetCardPropertyScorer() => _cardPropertyScorer ?? Plugin.CardPropertyScorer;
+
 	// Job definitions: each job maps to tags that indicate coverage, with a threshold
 	private static readonly Dictionary<string, (string[] Tags, int Threshold)> JobDefinitions = new()
 	{
@@ -58,9 +68,10 @@ public class DeckAnalyzer : IDeckAnalyzer
 					hashSet.Add(item2);
 				}
 			}
-			if (Plugin.CardPropertyScorer != null && (cardTier?.Synergies == null || cardTier.Synergies.Count == 0))
+			var cps = GetCardPropertyScorer();
+			if (cps != null && (cardTier?.Synergies == null || cardTier.Synergies.Count == 0))
 			{
-				var computed = Plugin.CardPropertyScorer.ComputeScore(item3.Id);
+				var computed = cps.ComputeScore(item3.Id);
 				if (computed.SynergyTags != null)
 				{
 					foreach (string synTag in computed.SynergyTags)

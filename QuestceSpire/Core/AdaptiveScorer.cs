@@ -75,8 +75,9 @@ public class AdaptiveScorer : IAdaptiveScorer
 		{
 			return Plugin.FloorTierComputer?.GetFloorAdjustment(cardId, character, act) ?? 0f;
 		}
-		catch
+		catch (Exception ex)
 		{
+			Plugin.Log($"AdaptiveScorer: FloorTierComputer lookup failed: {ex.Message}");
 			return 0f;
 		}
 	}
