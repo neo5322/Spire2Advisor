@@ -58,10 +58,22 @@ In-game overlay mod for Slay the Spire 2 — real-time card/relic recommendation
 | RelicCardCrossRef | 유물-카드 교차 승률 분석 |
 | RuntimeCardExtractor | sts2.dll 리플렉션으로 신규 카드/유물 자동 감지 |
 
+#### UI & 품질 개선
+- 🎨 디자인 토큰 시스템으로 일관된 UI 테마
+- ⚠️ 게임 버전과 티어 데이터 버전 불일치 시 자동 경고
+- 🔄 신규 카드 자동 감지 및 기본 티어 자동 할당
+- 🛡️ API 응답 검증 및 경로 보안 강화
+- 🔒 클라우드 동기화 시 전송 데이터 안내 (프라이버시)
+- 📊 SQLite 쿼리 성능 최적화 (인덱스)
+- 🎬 카드 추천 진입 애니메이션 (stagger fade)
+- 📂 설정 메뉴 4그룹 분류 (표시/조언/데이터/고급)
+- 🔍 디버그 로깅 모드 및 로그 파일 열기
+
 #### 설정
-- 20개 이상의 기능별 ON/OFF 토글
+- 20개 이상의 기능별 ON/OFF 토글 (4개 그룹: 표시/조언/데이터/고급)
 - 패널 투명도, 위치 조정
 - 클라우드 동기화, 자동 업데이트, 파이프라인 개별 제어
+- 프라이버시 안내: 전송 데이터 내역 투명하게 표시
 - 오프라인 모드: 번들 데이터 + 디스크 캐시로 네트워크 없이도 동작
 
 ---
@@ -175,10 +187,22 @@ Slay the Spire 2/mods/SpireAdvisor/
 | RelicCardCrossRef | Relic-card co-occurrence win-rate analysis |
 | RuntimeCardExtractor | sts2.dll reflection for new card/relic detection |
 
+#### UI & Quality Improvements
+- 🎨 Design token system for consistent UI theming
+- ⚠️ Automatic warning when game version and tier data version mismatch
+- 🔄 Auto-detection of new cards with default tier assignment
+- 🛡️ API response validation and path traversal prevention
+- 🔒 Transparent privacy notice for cloud sync data
+- 📊 SQLite query performance optimization (indexes)
+- 🎬 Card recommendation entry animation (stagger fade)
+- 📂 Settings menu organized into 4 groups (Display/Advice/Data/Advanced)
+- 🔍 Debug logging mode and log file quick-open
+
 #### Settings
-- 20+ per-feature ON/OFF toggles
+- 20+ per-feature ON/OFF toggles (4 groups: Display/Advice/Data/Advanced)
 - Panel opacity and position adjustment
 - Cloud sync, auto-update, per-pipeline control
+- Privacy notice: transparent display of transmitted data
 - Offline mode: bundled data + disk cache for network-free operation
 
 ---
@@ -248,6 +272,10 @@ Launch the game. The overlay panel should appear at the top-left. A `spire-advis
 - **Language**: C# (latest, nullable enabled)
 - **Data**: Newtonsoft.Json, Microsoft.Data.Sqlite (8 DB tables)
 - **UI**: Godot Control tree (programmatic, no .tscn)
+- **Design system**: OverlayTheme.cs (color/size tokens) + OverlayStyles.cs (reusable style builders)
+- **Game integration**: Thread-safe game state access, game version detection with stale data warnings
+- **Security**: Path traversal prevention, API response size limits, input validation
+- **Pipelines**: 14-pipeline data processing with dependency-ordered execution (PipelineOrchestrator)
 
 ## Build (Developers)
 

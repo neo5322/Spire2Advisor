@@ -445,7 +445,7 @@ public partial class OverlayManager
 		Label label = new Label();
 		label.Text = "QU'EST-CE SPIRE?";
 		ApplyFont(label, _fontBold);
-		label.AddThemeFontSizeOverride("font_size", 26);
+		label.AddThemeFontSizeOverride("font_size", OverlayTheme.FontTitle);
 		label.AddThemeColorOverride("font_color", ClrHeader);
 		label.AddThemeConstantOverride("outline_size", 4);
 		label.AddThemeColorOverride("font_outline_color", ClrOutline);
@@ -479,7 +479,7 @@ public partial class OverlayManager
 		_compactToggle = new Label();
 		_compactToggle.Text = "\u25B2";
 		ApplyFont(_compactToggle, _fontBold);
-		_compactToggle.AddThemeFontSizeOverride("font_size", 18);
+		_compactToggle.AddThemeFontSizeOverride("font_size", OverlayTheme.FontH1);
 		_compactToggle.AddThemeColorOverride("font_color", ClrSub);
 		_compactToggle.MouseFilter = Control.MouseFilterEnum.Stop;
 		_compactToggle.MouseDefaultCursorShape = Control.CursorShape.PointingHand;
@@ -499,7 +499,7 @@ public partial class OverlayManager
 		_screenLabel = new Label();
 		_screenLabel.Text = "대기 중... (드래그로 이동)";
 		ApplyFont(_screenLabel, _fontBold);
-		_screenLabel.AddThemeFontSizeOverride("font_size", 14);
+		_screenLabel.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 		_screenLabel.AddThemeColorOverride("font_color", ClrSub);
 		_screenLabel.MouseFilter = Control.MouseFilterEnum.Ignore;
 		titleBar.AddChild(_screenLabel, forceReadableName: false, Node.InternalMode.Disabled);
@@ -523,7 +523,7 @@ public partial class OverlayManager
 		// Content container — no scroll, panel auto-expands to fit
 		_content = new VBoxContainer();
 		_content.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
-		_content.AddThemeConstantOverride("separation", 6);
+		_content.AddThemeConstantOverride("separation", OverlayTheme.SpaceMD); // 8px grid-aligned
 		vBoxContainer.AddChild(_content, forceReadableName: false, Node.InternalMode.Disabled);
 		_layer.AddChild(_panel, forceReadableName: false, Node.InternalMode.Disabled);
 		OverlayInputHandler node = new OverlayInputHandler(this);
@@ -922,7 +922,7 @@ public partial class OverlayManager
 			Label updateLbl = new Label();
 			updateLbl.Text = $"\u26a0 Update Available: v{Plugin.LatestVersion}";
 			ApplyFont(updateLbl, _fontBold);
-			updateLbl.AddThemeFontSizeOverride("font_size", 14);
+			updateLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 			updateLbl.AddThemeColorOverride("font_color", ClrExpensive);
 			_content.AddChild(updateLbl, forceReadableName: false, Node.InternalMode.Disabled);
 		}
@@ -998,7 +998,7 @@ public partial class OverlayManager
 				skipLbl.Text = $"  + {skippedCards}장 낮은 등급 카드";
 				ApplyFont(skipLbl, _fontBody);
 				skipLbl.AddThemeColorOverride("font_color", ClrSub);
-				skipLbl.AddThemeFontSizeOverride("font_size", 13);
+				skipLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontSmall);
 				_content.AddChild(skipLbl, forceReadableName: false, Node.InternalMode.Disabled);
 			}
 			// Skip recommendation — tighter thresholds aligned with community consensus
@@ -1050,7 +1050,7 @@ public partial class OverlayManager
 				skipRLbl.Text = $"  + {skippedRelics}개 낮은 등급 유물";
 				ApplyFont(skipRLbl, _fontBody);
 				skipRLbl.AddThemeColorOverride("font_color", ClrSub);
-				skipRLbl.AddThemeFontSizeOverride("font_size", 13);
+				skipRLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontSmall);
 				_content.AddChild(skipRLbl, forceReadableName: false, Node.InternalMode.Disabled);
 			}
 		}
@@ -1077,13 +1077,13 @@ public partial class OverlayManager
 					subHeader.Text = text;
 					ApplyFont(subHeader, _fontBold);
 					subHeader.AddThemeColorOverride("font_color", color);
-					subHeader.AddThemeFontSizeOverride("font_size", 15);
+					subHeader.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 					_content.AddChild(subHeader, forceReadableName: false, Node.InternalMode.Disabled);
 					continue;
 				}
 				PanelContainer advPanel = new PanelContainer();
 				StyleBoxFlat advStyle = new StyleBoxFlat();
-				advStyle.BgColor = new Color(0.05f, 0.07f, 0.12f, 0.5f);
+				advStyle.BgColor = new Color(OverlayTheme.BgEntry, 0.5f);
 				advStyle.CornerRadiusTopRight = 8;
 				advStyle.CornerRadiusBottomRight = 8;
 				advStyle.BorderWidthLeft = 3;
@@ -1122,7 +1122,7 @@ public partial class OverlayManager
 					Label statsLbl = new Label();
 					statsLbl.Text = $"승률: {localWR:F1}% ({localN}회)";
 					ApplyFont(statsLbl, _fontBody);
-					statsLbl.AddThemeFontSizeOverride("font_size", 15);
+					statsLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 					statsLbl.AddThemeColorOverride("font_color", ClrCream);
 					_content.AddChild(statsLbl, forceReadableName: false, Node.InternalMode.Disabled);
 
@@ -1131,7 +1131,7 @@ public partial class OverlayManager
 						Label commLbl = new Label();
 						commLbl.Text = $"커뮤니티: {commWR:F1}% (차이: {deltaStr})";
 						ApplyFont(commLbl, _fontBody);
-						commLbl.AddThemeFontSizeOverride("font_size", 14);
+						commLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 						commLbl.AddThemeColorOverride("font_color", deltaColor);
 						_content.AddChild(commLbl, forceReadableName: false, Node.InternalMode.Disabled);
 					}
@@ -1169,7 +1169,7 @@ public partial class OverlayManager
 				Label hookLbl = new Label();
 				hookLbl.Text = $"  {hookName}: {timeStr}";
 				ApplyFont(hookLbl, _fontBody);
-				hookLbl.AddThemeFontSizeOverride("font_size", 12);
+				hookLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontCaption);
 				hookLbl.AddThemeColorOverride("font_color", timeStr == "never" ? ClrSub : ClrCream);
 				_content.AddChild(hookLbl, forceReadableName: false, Node.InternalMode.Disabled);
 			}
@@ -1178,7 +1178,7 @@ public partial class OverlayManager
 			int deckSize = _currentDeckAnalysis?.TotalCards ?? 0;
 			stateLbl.Text = $"  Screen: {_currentScreen}  Char: {_currentCharacter ?? "?"}  Floor: {_currentFloor}  Deck: {deckSize}  v{Plugin.ModVersion}";
 			ApplyFont(stateLbl, _fontBody);
-			stateLbl.AddThemeFontSizeOverride("font_size", 12);
+			stateLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontCaption);
 			stateLbl.AddThemeColorOverride("font_color", ClrAqua);
 			_content.AddChild(stateLbl, forceReadableName: false, Node.InternalMode.Disabled);
 		}
@@ -1188,7 +1188,7 @@ public partial class OverlayManager
 			_gearButton.Text = "\u2699 설정";
 			_gearButton.Flat = true;
 			if (_fontBody != null) _gearButton.AddThemeFontOverride("font", _fontBody);
-			_gearButton.AddThemeFontSizeOverride("font_size", 13);
+			_gearButton.AddThemeFontSizeOverride("font_size", OverlayTheme.FontSmall);
 			_gearButton.AddThemeColorOverride("font_color", new Color(ClrSub, 0.7f));
 			_gearButton.AddThemeColorOverride("font_hover_color", ClrHeader);
 			_gearButton.MouseFilter = Control.MouseFilterEnum.Stop;
@@ -1279,13 +1279,13 @@ public partial class OverlayManager
 	private void ApplyOpacity(float opacity)
 	{
 		if (_sbPanel != null) _sbPanel.BgColor = new Color(ClrBg.R, ClrBg.G, ClrBg.B, 0.97f * opacity);
-		if (_sbEntry != null) _sbEntry.BgColor = new Color(0.06f, 0.08f, 0.14f, 0.6f * opacity);
-		if (_sbBest != null) _sbBest.BgColor = new Color(0.831f, 0.714f, 0.357f, 0.1f * opacity);
+		if (_sbEntry != null) _sbEntry.BgColor = new Color(OverlayTheme.BgEntry, OverlayTheme.BgEntry.A * opacity);
+		if (_sbBest != null) _sbBest.BgColor = new Color(OverlayTheme.BgEntryBest, OverlayTheme.BgEntryBest.A * opacity);
 		if (_sbHover != null) _sbHover.BgColor = new Color(ClrHover.R, ClrHover.G, ClrHover.B, 0.8f * opacity);
-		if (_sbHoverBest != null) _sbHoverBest.BgColor = new Color(0.831f, 0.714f, 0.357f, 0.15f * opacity);
-		if (_sbSTier != null) _sbSTier.BgColor = new Color(0.831f, 0.714f, 0.357f, 0.1f * opacity);
-		if (_sbSTierHover != null) _sbSTierHover.BgColor = new Color(0.831f, 0.714f, 0.357f, 0.18f * opacity);
-		if (_sbChip != null) _sbChip.BgColor = new Color(0.02f, 0.03f, 0.07f, 0.7f * opacity);
+		if (_sbHoverBest != null) _sbHoverBest.BgColor = new Color(OverlayTheme.BgEntryBestHover, OverlayTheme.BgEntryBestHover.A * opacity);
+		if (_sbSTier != null) _sbSTier.BgColor = new Color(OverlayTheme.BgEntryBest, OverlayTheme.BgEntryBest.A * opacity);
+		if (_sbSTierHover != null) _sbSTierHover.BgColor = new Color(OverlayTheme.BgEntrySTierHover, OverlayTheme.BgEntrySTierHover.A * opacity);
+		if (_sbChip != null) _sbChip.BgColor = new Color(OverlayTheme.BgChip, OverlayTheme.BgChip.A * opacity);
 	}
 
 	/// <summary>
