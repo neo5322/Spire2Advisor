@@ -67,15 +67,22 @@ QuestceSpire/                 # Main C# project
 │   ├── AutoTierGenerator.cs  # Multi-signal automated tier computation
 │   └── MetaArchetypeComputer.cs # Top-3 meta archetypes + core cards
 ├── UI/                       # Overlay UI (Godot controls)
-│   ├── OverlayManager.cs     # Core lifecycle, panel management, Rebuild (1,371 lines)
-│   ├── OverlayManager.Advice.cs   # Per-screen advice generation (1,047 lines)
-│   ├── OverlayManager.Builder.cs  # UI element construction (826 lines)
-│   ├── OverlayManager.Stats.cs    # History, deck viz, win rate, run summary (1,170 lines)
-│   ├── OverlayManager.Badges.cs   # In-game card/relic badges (463 lines)
-│   ├── OverlayManager.Settings.cs # Settings menu (395 lines)
+│   ├── OverlayCoordinator.cs    # Central entry point — manages per-screen injectors + input
+│   ├── SharedResources.cs       # Singleton: fonts, icons, caches, style boxes, color aliases
+│   ├── BadgeManager.cs          # In-game card grade badges (injected onto card reward nodes)
+│   ├── SettingsPanel.cs         # Standalone settings menu (attached to utility layer)
+│   ├── Injectors/               # Per-screen UI injectors (direct game node injection)
+│   │   ├── BaseScreenInjector.cs    # Abstract base: panel lifecycle, drag, collapse, fade
+│   │   ├── MapInjector.cs           # Map screen: path advice, boss readiness, run health
+│   │   ├── RestSiteInjector.cs      # Rest site: rest/upgrade recommendation, upgrade priorities
+│   │   ├── EventInjector.cs         # Event: choice recommendations, general event tips
+│   │   ├── CombatInjector.cs        # Combat: enemy tips, deck strategy, pile tracking
+│   │   ├── ShopInjector.cs          # Shop: card/relic scored recommendations
+│   │   ├── CardRewardInjector.cs    # Card reward/upgrade/removal: scored card display
+│   │   ├── RelicRewardInjector.cs   # Relic reward: scored relic display
+│   │   └── RunSummaryInjector.cs    # Post-run analysis: combat stats, card usage, decisions
 │   ├── OverlayTheme.cs         # Centralized design tokens (colors, fonts, spacing, radii)
-│   ├── OverlayStyles.cs        # StyleBoxFlat factory methods + StyleLabel helper
-│   └── OverlayInputHandler.cs  # Input event handling
+│   └── OverlayStyles.cs        # StyleBoxFlat factory methods + StyleLabel helper
 ├── Data/                     # JSON/TSV data files
 │   ├── archetypes.json       # Character archetype definitions
 │   ├── scoring_config.json   # Scoring weights
@@ -108,7 +115,8 @@ cd QuestceSpire && dotnet build -c Release
 ### Service Locator + Constructor Injection
 `Plugin.cs` is the composition root. All services are static properties on `Plugin`:
 - `Plugin.TierEngine`, `Plugin.SynergyScorer`, `Plugin.DeckAnalyzer`, etc.
-- `Plugin.Overlay` (the UI manager)
+- `Plugin.Coordinator` (per-screen UI injectors, settings, run summary)
+- `Plugin.BadgeManager` (in-game card grade badges)
 - `Plugin.RunDatabase`, `Plugin.RunTracker`, `Plugin.LocalStats`
 - `Plugin.PipelineOrchestrator` — runs all 14 data pipelines on background init
 
@@ -120,18 +128,23 @@ Core classes use **optional constructor injection with Plugin fallback**:
 ### Data Flow
 1. `GamePatches` intercepts game events via Harmony
 2. `GamePatches` calls `GameStateReader` to extract state
-3. `GamePatches` notifies `Plugin.Overlay` and `Plugin.RunTracker`
-4. `OverlayManager.Rebuild()` orchestrates UI update using Core scorers
-5. `RunTracker` persists decisions to `RunDatabase`
+3. `GamePatches` notifies `Plugin.Coordinator` (UI), `Plugin.BadgeManager` (badges), and `Plugin.RunTracker` (persistence)
+4. `OverlayCoordinator` activates the appropriate screen injector
+5. Each injector builds its own advice panel injected into the game node
+6. `BadgeManager` injects grade labels onto card reward nodes
+7. `RunTracker` persists decisions to `RunDatabase`
 
-### OverlayManager Partial Classes
-The UI is split by concern into partial classes sharing the same field set:
-- **Main (.cs)**: Lifecycle, panel management, signals, `Rebuild()` orchestration
-- **Advice**: `ShowCardAdvice()`, `ShowRelicAdvice()`, `ShowCombatAdvice()`, etc.
-- **Builder**: `AddCardEntry()`, `AddRelicEntry()`, `AddSectionHeader()`, etc.
-- **Stats**: `AddDecisionHistory()`, `AddInlineDeckViz()`, `UpdateWinRate()`, etc.
-- **Badges**: `InjectCardGrades()`, `AttachGradeBadge()`, cleanup
-- **Settings**: `BuildSettingsMenu()`, toggle handlers
+### UI Architecture: Per-Screen Injectors
+UI panels are injected directly into game nodes via `AddChild()` with `TopLevel=true`.
+Panels render at viewport coordinates but their lifecycle is tied to the game node parent.
+
+- **OverlayCoordinator**: Central entry point — manages injectors, global hotkeys, visibility
+- **BaseScreenInjector**: Abstract base — panel construction, drag, collapse, auto-fade, layout
+- **Per-screen injectors**: MapInjector, RestSiteInjector, EventInjector, CombatInjector, ShopInjector, CardRewardInjector, RelicRewardInjector, RunSummaryInjector
+- **BadgeManager**: Standalone badge injection onto game card nodes
+- **SettingsPanel**: Standalone settings menu attached to coordinator utility layer
+- **SharedResources**: Singleton — fonts, icons, portrait/relic caches, style boxes, color aliases
+- **OverlayInputHandler**: Godot Node for `_Process` and `_UnhandledKeyInput` (coordinator-only)
 
 ### Key Patterns
 - **Scoring**: `ICardScorer`/`IRelicScorer` interfaces in Core; `SynergyScorer.ScoreCard()` decomposed into 15 focused methods
@@ -177,10 +190,10 @@ PipelineOrchestrator runs 14 pipelines in 4 phases:
 ## Conventions
 
 - **Language**: Korean in README/comments, English in code identifiers
-- **Namespaces**: `QuestceSpire`, `QuestceSpire.Core`, `QuestceSpire.UI`, `QuestceSpire.GameBridge`, `QuestceSpire.Tracking`
+- **Namespaces**: `QuestceSpire`, `QuestceSpire.Core`, `QuestceSpire.UI`, `QuestceSpire.UI.Injectors`, `QuestceSpire.GameBridge`, `QuestceSpire.Tracking`
 - **Naming**: PascalCase for public members, _camelCase for private fields
 - **No tests**: Changes must be verified by code review only
-- **Partial classes**: Use `OverlayManager.<Concern>.cs` naming for new UI partials
+- **Per-screen UI**: New screens go in `UI/Injectors/` as `<Screen>Injector.cs` extending `BaseScreenInjector`
 - **Data files**: JSON for structured data, TSV for tabular card properties
 - **Design tokens**: All colors/fonts/spacing in `OverlayTheme.cs`, styles in `OverlayStyles.cs`
 - **Error handling**: No bare `catch { }` — all catches must log via `Plugin.Log()`
@@ -192,15 +205,10 @@ PipelineOrchestrator runs 14 pipelines in 4 phases:
 
 | File | Lines | Notes |
 |------|-------|-------|
-| `OverlayManager.cs` | 1,371 | Core lifecycle — further split possible |
-| `OverlayManager.Stats.cs` | 1,170 | Statistics display + run summary UI |
-| `OverlayManager.Advice.cs` | 1,047 | Per-screen advice methods |
-| `OverlayManager.Builder.cs` | 826 | UI element builders |
 | `SynergyScorer.cs` | 716 | Card/relic scoring — decomposed into 15 focused methods |
 | `RunDatabase.Pipelines.cs` | 586 | Pipeline DB tables (partial class of RunDatabase) |
+| `BaseScreenInjector.cs` | 569 | Abstract base for all per-screen injectors |
 | `GamePatches.ScreenHooks.cs` | 469 | Screen navigation hooks |
-| `OverlayManager.Badges.cs` | 463 | In-game card/relic badges |
-| `OverlayManager.Settings.cs` | 395 | Settings menu |
 | `GamePatches.CombatHooks.cs` | 311 | Combat damage/block/card play hooks |
 | `GamePatches.CardReward.cs` | 310 | Card reward screen hooks |
 | `RunDatabase.cs` | 262 | Core SQL schema — pipeline tables split to RunDatabase.Pipelines.cs |

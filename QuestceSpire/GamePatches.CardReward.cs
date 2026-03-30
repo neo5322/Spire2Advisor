@@ -51,7 +51,7 @@ public static partial class GamePatches
 		try
 		{
 			// Always clean up existing badges first — prevents stale badges on pile viewers, etc.
-			Plugin.Overlay?.CleanupAllBadges();
+			Plugin.BadgeManager?.CleanupAllBadges();
 			// Draw/discard pile viewers use ShowScreen with 20+ cards — skip those
 			// But multi-pick screens (e.g. "choose 2 from 9") have 6-15 cards — allow those
 			if (options != null && options.Count > 15)
@@ -64,7 +64,7 @@ public static partial class GamePatches
 				Plugin.Log($"ShowScreen with {options.Count} cards — multi-pick card selection detected.");
 			}
 			// Skip screens that have their own handlers and reuse NCardRewardSelectionScreen
-			string curScreen = Plugin.Overlay?.CurrentScreen;
+			string curScreen = Plugin.Coordinator?.ActiveScreenName;
 			if (curScreen == "CARD REMOVAL" || curScreen == "CARD UPGRADE" ||
 			    curScreen == "MERCHANT SHOP" || curScreen == "EVENT CARD OFFER" ||
 			    curScreen == "EVENT" || curScreen == "REST SITE")
@@ -99,7 +99,7 @@ public static partial class GamePatches
 		{
 			if (options != null && options.Count > 15)
 				return;
-			string curScreen2 = Plugin.Overlay?.CurrentScreen;
+			string curScreen2 = Plugin.Coordinator?.ActiveScreenName;
 			if (curScreen2 == "CARD REMOVAL" || curScreen2 == "CARD UPGRADE" ||
 			    curScreen2 == "MERCHANT SHOP" || curScreen2 == "EVENT CARD OFFER" ||
 			    curScreen2 == "EVENT" || curScreen2 == "REST SITE")
@@ -204,8 +204,8 @@ public static partial class GamePatches
 		DeckAnalysis deckAnalysis = Plugin.DeckAnalyzer.Analyze(gameState.Character, gameState.DeckCards, Plugin.TierEngine, gameState.CurrentRelics);
 		Plugin.RunTracker?.RecordArchetypeSnapshot(gameState.Floor, deckAnalysis);
 		List<ScoredCard> cards = Plugin.SynergyScorer.ScoreOfferings(gameState.OfferedCards, deckAnalysis, gameState.Character, gameState.ActNumber, gameState.Floor, Plugin.TierEngine, Plugin.AdaptiveScorer);
-		Plugin.Overlay?.ShowCardAdvice(cards, deckAnalysis, gameState.Character);
-		Plugin.Overlay?.InjectCardGrades(screen, cards);
+		Plugin.Coordinator?.ShowCardAdvice(screen, cards, deckAnalysis, gameState.Character);
+		Plugin.BadgeManager?.InjectCardGrades(screen, cards);
 		// Dedup: only record if this is a new offering (prevents ShowScreen+RefreshOptions double-recording)
 		var offeredIds = gameState.OfferedCards.ConvertAll((CardInfo c) => c.Id);
 		offeredIds.Sort();
@@ -300,7 +300,8 @@ public static partial class GamePatches
 			GameStateReader.SetLastCardOptions(null);
 			GameStateReader.SetLastRelicOptions(null);
 			GameStateReader.SetLastMerchantInventory(null);
-			Plugin.Overlay?.Clear();
+			Plugin.Coordinator?.Clear();
+			Plugin.BadgeManager?.CleanupAllBadges();
 		}
 		catch (Exception value3)
 		{
