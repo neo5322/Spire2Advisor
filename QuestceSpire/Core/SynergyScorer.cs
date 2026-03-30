@@ -506,8 +506,8 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 	{
 		if (cost >= 3 && deck.AverageCost > 2.2f)
 		{
-			antiReasons.Add($"{Cfg.VeryCfg.ExpensiveCardPenalty:F1} too expensive (avg cost {deck.AverageCost:F1})");
-			return Cfg.VeryCfg.ExpensiveCardPenalty;
+			antiReasons.Add($"{Cfg.VeryExpensiveCardPenalty:F1} too expensive (avg cost {deck.AverageCost:F1})");
+			return Cfg.VeryExpensiveCardPenalty;
 		}
 		if (cost >= 3 && deck.AverageCost > 1.8f)
 		{
