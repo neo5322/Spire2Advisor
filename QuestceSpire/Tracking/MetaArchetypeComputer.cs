@@ -68,7 +68,7 @@ public class MetaArchetypeComputer
 
 			List<string> deck;
 			try { deck = JsonConvert.DeserializeObject<List<string>>(deckJson); }
-			catch { continue; }
+			catch (Exception ex) { Plugin.Log($"MetaArchetypeComputer: failed to deserialize deck JSON: {ex.Message}"); continue; }
 			if (deck == null || deck.Count == 0) continue;
 
 			// Count synergy tags in deck

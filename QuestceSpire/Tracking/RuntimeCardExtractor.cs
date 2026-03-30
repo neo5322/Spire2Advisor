@@ -114,7 +114,7 @@ public class RuntimeCardExtractor
 						EntityType = "card"
 					});
 				}
-				catch { }
+				catch (Exception ex) { Plugin.Log($"RuntimeCardExtractor: failed to extract card type '{type?.FullName}': {ex.Message}"); }
 			}
 
 			// Also look for string constants that look like card IDs
@@ -173,7 +173,7 @@ public class RuntimeCardExtractor
 						EntityType = "relic"
 					});
 				}
-				catch { }
+				catch (Exception ex) { Plugin.Log($"RuntimeCardExtractor: failed to extract relic type '{type?.FullName}': {ex.Message}"); }
 			}
 		}
 		catch (Exception ex)
@@ -206,7 +206,7 @@ public class RuntimeCardExtractor
 							}
 						}
 					}
-					catch { }
+					catch (Exception ex) { Plugin.Log($"RuntimeCardExtractor: failed to parse tier file for known IDs: {ex.Message}"); }
 				}
 			}
 

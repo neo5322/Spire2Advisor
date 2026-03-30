@@ -58,7 +58,7 @@ public class CoPickSynergyComputer
 
 			List<string> deck;
 			try { deck = JsonConvert.DeserializeObject<List<string>>(deckJson); }
-			catch { continue; }
+			catch (Exception ex) { Plugin.Log($"CoPickSynergyComputer: failed to deserialize deck JSON: {ex.Message}"); continue; }
 			if (deck == null || deck.Count < 2) continue;
 
 			// Deduplicate deck (same card can appear multiple times)

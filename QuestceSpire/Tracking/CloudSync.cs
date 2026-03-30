@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using QuestceSpire.Core;
@@ -17,6 +18,7 @@ public class CloudSync
 	private readonly HttpClient _http;
 	private readonly string _apiBase;
 
+	private static readonly SemaphoreSlim _uploadLock = new(1, 1);
 	private DateTime _lastDownload = DateTime.MinValue;
 	private static readonly TimeSpan DownloadInterval = TimeSpan.FromMinutes(30);
 
@@ -51,6 +53,11 @@ public class CloudSync
 		if (!OverlaySettings.Load().CloudSyncEnabled)
 			return;
 
+		if (!await _uploadLock.WaitAsync(0))
+		{
+			Plugin.Log("CloudSync: upload already in progress, skipping.");
+			return;
+		}
 		try
 		{
 			var unsynced = _db.GetUnsynced();
@@ -129,6 +136,10 @@ public class CloudSync
 		catch (Exception ex)
 		{
 			Plugin.Log($"CloudSync upload error: {ex.Message}");
+		}
+		finally
+		{
+			_uploadLock.Release();
 		}
 	}
 

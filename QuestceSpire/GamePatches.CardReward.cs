@@ -78,9 +78,9 @@ public static partial class GamePatches
 			Plugin.Log("Card reward screen detected — analyzing...");
 			RecordHook("OnCardRewardOpened");
 			if (options != null)
-				GameStateReader._lastCardOptions = options;
-			GameStateReader._lastRelicOptions = null;
-			GameStateReader._lastMerchantInventory = null;
+				GameStateReader.SetLastCardOptions(options);
+			GameStateReader.SetLastRelicOptions(null);
+			GameStateReader.SetLastMerchantInventory(null);
 			if (!TryShowCardRewardFromScreen(__result))
 			{
 				Plugin.Log("Game state not ready for card reward, scheduling retry...");
@@ -110,9 +110,9 @@ public static partial class GamePatches
 			_isGenuineCardReward = true;
 			Plugin.Log("Card reward RefreshOptions detected — re-analyzing...");
 			if (options != null)
-				GameStateReader._lastCardOptions = options;
-			GameStateReader._lastRelicOptions = null;
-			GameStateReader._lastMerchantInventory = null;
+				GameStateReader.SetLastCardOptions(options);
+			GameStateReader.SetLastRelicOptions(null);
+			GameStateReader.SetLastMerchantInventory(null);
 			if (!TryShowCardRewardFromScreen(__instance))
 			{
 				Plugin.Log("Game state not ready for card refresh, scheduling retry...");
@@ -297,7 +297,7 @@ public static partial class GamePatches
 			Plugin.Log("Card picked: " + (text ?? "(unknown)"));
 			Plugin.RunTracker?.UpdateLastDecisionChoice(text);
 			_isGenuineCardReward = false;
-			GameStateReader._lastCardOptions = null;
+			GameStateReader.SetLastCardOptions(null);
 			GameStateReader._lastRelicOptions = null;
 			GameStateReader._lastMerchantInventory = null;
 			Plugin.Overlay?.Clear();

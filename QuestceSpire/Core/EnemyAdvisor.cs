@@ -56,6 +56,9 @@ public class EnemyAdvisor
 							string titleCase = entry.EnemyId.Replace("_", " ");
 							if (titleCase != entry.EnemyId)
 								_tipsByEnemyId.TryAdd(titleCase, entry);
+							// Normalized key (no underscores, lowercase) for robust matching
+							string normalized = NormalizeEnemyId(entry.EnemyId);
+							_tipsByEnemyId.TryAdd(normalized, entry);
 						}
 					}
 				}
@@ -70,6 +73,17 @@ public class EnemyAdvisor
 		{
 			Plugin.Log($"EnemyAdvisor init error: {ex.Message}");
 		}
+	}
+
+	/// <summary>
+	/// Normalize an enemy ID by removing underscores and lowercasing,
+	/// so that both "ShrinkerBeetleWeak" and "SHRINKER_BEETLE_WEAK" match.
+	/// </summary>
+	private static string NormalizeEnemyId(string id)
+	{
+		if (string.IsNullOrEmpty(id)) return "";
+		// Remove underscores and convert to lowercase for matching
+		return id.Replace("_", "").ToLowerInvariant();
 	}
 
 	/// <summary>PascalCase → UPPER_SNAKE_CASE (e.g., ShrinkerBeetleWeak → SHRINKER_BEETLE_WEAK)</summary>
@@ -119,9 +133,11 @@ public class EnemyAdvisor
 		{
 			if (seen.Contains(id)) continue;
 			seen.Add(id);
-			// Try exact match first, then strip variant suffixes (_WEAK, _ELITE, etc.)
+			// Try exact match first, then normalized match, then strip variant suffixes
 			if (_tipsByEnemyId.TryGetValue(id, out var entry))
 				result.Add(entry);
+			else if (_tipsByEnemyId.TryGetValue(NormalizeEnemyId(id), out var normEntry))
+				result.Add(normEntry);
 			else
 			{
 				string baseId = Regex.Replace(id, @"_(WEAK|ELITE|STRONG|BOSS|HARD|EASY)$", "", RegexOptions.IgnoreCase);
@@ -129,6 +145,16 @@ public class EnemyAdvisor
 				{
 					seen.Add(baseId);
 					result.Add(baseEntry);
+				}
+				else if (baseId != id)
+				{
+					// Try normalized base ID as well
+					string normBase = NormalizeEnemyId(baseId);
+					if (_tipsByEnemyId.TryGetValue(normBase, out var normBaseEntry) && !seen.Contains(normBase))
+					{
+						seen.Add(normBase);
+						result.Add(normBaseEntry);
+					}
 				}
 			}
 		}

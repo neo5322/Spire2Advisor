@@ -64,7 +64,7 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 			if (gs?.DeckCards != null && gs.DeckCards.Count > 0)
 				deckCardIds = gs.DeckCards.ConvertAll(c => c.Id);
 		}
-		catch { }
+		catch (Exception ex) { Plugin.Log($"SynergyScorer: failed to read game state for deck cards: {ex.Message}"); }
 
 		List<ScoredCard> list = new List<ScoredCard>();
 		foreach (CardInfo offering in offerings)
@@ -164,7 +164,7 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 						}
 					}
 				}
-				catch { }
+				catch (Exception ex) { Plugin.Log($"SynergyScorer: failed to compute card usage for removal scoring: {ex.Message}"); }
 
 				// Invert: bad cards get high removal score (5 - score, so F=5→S removal, S=0→F removal)
 				score = Math.Max(0f, 5.0f - cardScore + usageBonus);

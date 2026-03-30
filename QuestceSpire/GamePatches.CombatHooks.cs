@@ -81,7 +81,7 @@ public static partial class GamePatches
 		{
 			_turnDamageDealt += Math.Max(0, amount);
 		}
-		catch { }
+		catch (Exception ex) { Plugin.Log($"OnDamageDealt error: {ex.Message}"); }
 	}
 
 	public static void OnDamageTaken(int amount)
@@ -90,7 +90,7 @@ public static partial class GamePatches
 		{
 			_turnDamageTaken += Math.Max(0, amount);
 		}
-		catch { }
+		catch (Exception ex) { Plugin.Log($"OnDamageTaken error: {ex.Message}"); }
 	}
 
 	public static void OnBlockGenerated(int amount)
@@ -99,7 +99,7 @@ public static partial class GamePatches
 		{
 			_turnBlockGenerated += Math.Max(0, amount);
 		}
-		catch { }
+		catch (Exception ex) { Plugin.Log($"OnBlockGenerated error: {ex.Message}"); }
 	}
 
 	public static void OnCombatStarted(string enemyId)
@@ -182,13 +182,13 @@ public static partial class GamePatches
 			{
 				var def = defProp.GetValue(card);
 				var idProp = def?.GetType().GetProperty("Id");
-				if (idProp != null) return idProp.GetValue(def)?.ToString() ?? "unknown";
+				if (idProp != null) return idProp?.GetValue(def)?.ToString() ?? "unknown";
 			}
 			var directId = card.GetType().GetProperty("Id");
 			if (directId != null) return directId.GetValue(card)?.ToString() ?? "unknown";
 			return card.ToString();
 		}
-		catch { return "unknown"; }
+		catch (Exception ex) { Plugin.Log($"ExtractCardId error: {ex.Message}"); return "unknown"; }
 	}
 
 	private static string ExtractPotionId(object potion)
@@ -209,7 +209,7 @@ public static partial class GamePatches
 			}
 			return potion.ToString();
 		}
-		catch { return potion.ToString(); }
+		catch (Exception ex) { Plugin.Log($"ExtractPotionId error: {ex.Message}"); return potion.ToString(); }
 	}
 
 	// ─── Shop Purchase Tracking (v0.10.3) ───
@@ -250,7 +250,7 @@ public static partial class GamePatches
 				var def = defProp?.GetValue(relic);
 				relicId = def?.GetType().GetProperty("Id")?.GetValue(def)?.ToString() ?? "unknown";
 			}
-			catch { }
+			catch (Exception ex) { Plugin.Log($"OnShopRelicPurchased extract ID error: {ex.Message}"); }
 
 			var gs = GameStateReader.ReadCurrentState();
 			Plugin.RunTracker?.RecordDecision(

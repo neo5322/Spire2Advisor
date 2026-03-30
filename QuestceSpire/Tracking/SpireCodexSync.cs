@@ -98,7 +98,7 @@ public class SpireCodexSync
 			if (File.Exists(path))
 				_lastVersion = File.ReadAllText(path).Trim();
 		}
-		catch { }
+		catch (Exception ex) { Plugin.Log($"SpireCodexSync: failed to load codex version file: {ex.Message}"); }
 	}
 
 	private void SaveLastVersion()

@@ -68,7 +68,7 @@ public static partial class GamePatches
 			{
 				// Use LocalContext.GetMe() for multiplayer safety
 				Player player = null;
-				try { player = LocalContext.GetMe(__result); } catch { }
+				try { player = LocalContext.GetMe(__result); } catch (Exception ex) { Plugin.Log($"OnRunLaunched GetMe error: {ex.Message}"); }
 				player ??= __result.Players?.FirstOrDefault();
 				string text = "unknown";
 				int ascensionLevel = __result.AscensionLevel;
@@ -91,9 +91,9 @@ public static partial class GamePatches
 		try
 		{
 			RecordHook("OnRunEnded");
-			GameStateReader._lastCardOptions = null;
-			GameStateReader._lastRelicOptions = null;
-			GameStateReader._lastMerchantInventory = null;
+			GameStateReader.SetLastCardOptions(null);
+			GameStateReader.SetLastRelicOptions(null);
+			GameStateReader.SetLastMerchantInventory(null);
 			GameState gameState = GameStateReader.ReadCurrentState();
 			int num = gameState?.Floor ?? 0;
 			int num2 = gameState?.ActNumber ?? 0;

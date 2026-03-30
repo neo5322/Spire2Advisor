@@ -1047,7 +1047,7 @@ public partial class OverlayManager
 					if (stats != null && stats.SampleSize >= 5)
 						wrStr = $" {stats.WinRateWhenPicked:P0}";
 				}
-				catch { }
+				catch (Exception ex) { Plugin.Log($"Decision replay win rate lookup failed: {ex.Message}"); }
 				parts.Add($"{marker}{name}[{g}]{wrStr}");
 			}
 			Label offeredLine = new Label();

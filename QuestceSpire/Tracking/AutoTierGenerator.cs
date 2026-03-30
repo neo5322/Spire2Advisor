@@ -133,8 +133,9 @@ public class AutoTierGenerator
 			float avgPairWinRate = sum / count;
 			return NormalizeWinRate(avgPairWinRate);
 		}
-		catch
+		catch (Exception ex)
 		{
+			Plugin.Log($"AutoTierGenerator: failed to compute synergy potential: {ex.Message}");
 			return 0.5f;
 		}
 	}
@@ -155,8 +156,9 @@ public class AutoTierGenerator
 			var result = cmd.ExecuteScalar();
 			return result != null ? Convert.ToSingle(result) : 0.5f;
 		}
-		catch
+		catch (Exception ex)
 		{
+			Plugin.Log($"AutoTierGenerator: failed to query card usage score: {ex.Message}");
 			return 0.5f;
 		}
 	}
@@ -200,7 +202,7 @@ public class AutoTierGenerator
 			if (discrepancies > 0)
 				Plugin.Log($"AutoTier: {discrepancies} tier discrepancies found for {character}.");
 		}
-		catch { }
+		catch (Exception ex) { Plugin.Log($"AutoTierGenerator: failed to compare auto tiers with manual tiers: {ex.Message}"); }
 	}
 
 	private static int TierToRank(string tier) => tier?.ToUpperInvariant() switch
@@ -244,7 +246,7 @@ public class AutoTierGenerator
 								existing.cards.ToString());
 						}
 					}
-					catch { }
+					catch (Exception ex) { Plugin.Log($"AutoTierGenerator: failed to read existing auto-tier file: {ex.Message}"); }
 				}
 
 				var existingIds = new HashSet<string>(
@@ -303,7 +305,7 @@ public class AutoTierGenerator
 		if (string.IsNullOrEmpty(typeName)) return null;
 
 		// Known STS2 character names to look for in the namespace
-		string[] knownCharacters = { "ironclad", "silent", "defect", "watcher" };
+		string[] knownCharacters = { "ironclad", "silent", "defect", "regent", "necrobinder" };
 		string lower = typeName.ToLowerInvariant();
 		foreach (var ch in knownCharacters)
 		{

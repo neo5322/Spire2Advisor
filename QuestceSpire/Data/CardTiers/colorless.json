@@ -1,5 +1,7 @@
 {
   "character": "colorless",
+  "patchVersion": "v0.100.0",
+  "lastUpdated": "2026-03-23",
   "cards": [
     {
       "id": "Alchemize",

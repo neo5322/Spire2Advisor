@@ -58,7 +58,7 @@ public class RunSummary
 					string chosenId = reader.IsDBNull(3) ? null : reader.GetString(3);
 
 					var offered = new List<string>();
-					try { offered = JsonConvert.DeserializeObject<List<string>>(offeredJson) ?? new(); } catch { }
+					try { offered = JsonConvert.DeserializeObject<List<string>>(offeredJson) ?? new(); } catch (Exception ex) { Plugin.Log($"RunSummary: failed to deserialize offered cards JSON: {ex.Message}"); }
 
 					decisions.Add(new DecisionReview
 					{
@@ -143,7 +143,7 @@ public class RunSummary
 						foreach (string c in cards)
 							cardPlays[c] = cardPlays.TryGetValue(c, out int v) ? v + 1 : 1;
 					}
-					catch { }
+					catch (Exception ex) { Plugin.Log($"RunSummary: failed to deserialize combat card plays: {ex.Message}"); }
 				}
 
 				summary.MostPlayedCards = cardPlays.OrderByDescending(kv => kv.Value)
