@@ -22,7 +22,7 @@ public class CombatInjector : BaseScreenInjector
 	private List<(string icon, string text, Color color)> _combatAdvice;
 	private List<(string icon, string text, Color color)> _enemyDetailsTips;
 	private bool _showEnemyDetails = true;
-	private CombatSnapshot _lastCombatSnapshot;
+	private CombatTracker.CombatSnapshot _lastCombatSnapshot;
 
 	public CombatInjector(OverlaySettings settings) : base(settings) { }
 
@@ -99,7 +99,7 @@ public class CombatInjector : BaseScreenInjector
 	}
 
 	/// <summary>Update combat pile snapshot for live draw/discard tracking.</summary>
-	public void UpdatePiles(CombatSnapshot snapshot)
+	public void UpdatePiles(CombatTracker.CombatSnapshot snapshot)
 	{
 		_lastCombatSnapshot = snapshot;
 		// Only rebuild pile section, not entire panel

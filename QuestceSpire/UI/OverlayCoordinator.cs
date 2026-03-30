@@ -146,7 +146,7 @@ public class OverlayCoordinator
 		injector.Show(outcome, finalFloor, finalAct);
 	}
 
-	public void UpdateCombatPiles(CombatSnapshot snapshot)
+	public void UpdateCombatPiles(CombatTracker.CombatSnapshot snapshot)
 	{
 		if (_activeInjector is CombatInjector combat)
 			combat.UpdatePiles(snapshot);
