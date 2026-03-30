@@ -517,7 +517,7 @@ public partial class OverlayManager
 		// Archetype chip panel removed — deck info lives in DECK BREAKDOWN collapsible section
 		// Deck composition visualization container (Feature 2)
 		_deckVizContainer = new VBoxContainer();
-		_deckVizContainer.AddThemeConstantOverride("separation", 4);
+		_deckVizContainer.AddThemeConstantOverride("separation", OverlayTheme.SpaceSM);
 		_deckVizContainer.Visible = false; // hidden — deck info lives in DECK BREAKDOWN section
 		vBoxContainer.AddChild(_deckVizContainer, forceReadableName: false, Node.InternalMode.Disabled);
 		// Content container — no scroll, panel auto-expands to fit

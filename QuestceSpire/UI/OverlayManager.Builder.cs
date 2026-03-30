@@ -108,7 +108,7 @@ public partial class OverlayManager
 		}
 		// Section is expanded — add content container
 		VBoxContainer sectionContent = new VBoxContainer();
-		sectionContent.AddThemeConstantOverride("separation", 4);
+		sectionContent.AddThemeConstantOverride("separation", OverlayTheme.SpaceSM);
 		_content.AddChild(sectionContent, forceReadableName: false, Node.InternalMode.Disabled);
 		// Click to collapse
 		string collapseKey = sectionKey;
