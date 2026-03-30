@@ -299,6 +299,10 @@ public static partial class GamePatches
 			{
 				Plugin.Log($"Enemy ID extraction failed: {ex.Message}");
 			}
+			// Reset combat state for the new encounter
+			string primaryEnemyId = enemyIds?.Count > 0 ? enemyIds[0] : "unknown";
+			OnCombatStarted(primaryEnemyId);
+
 			GameState gameState = GameStateReader.ReadCurrentState();
 			if (gameState != null)
 			{

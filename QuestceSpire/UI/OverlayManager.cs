@@ -429,7 +429,7 @@ public partial class OverlayManager
 			_idleTimer = 0;
 		}));
 		VBoxContainer vBoxContainer = new VBoxContainer();
-		vBoxContainer.AddThemeConstantOverride("separation", 10);
+		vBoxContainer.AddThemeConstantOverride("separation", OverlayTheme.SpaceLG);
 		_panel.AddChild(vBoxContainer, forceReadableName: false, Node.InternalMode.Disabled);
 
 		// Title bar area (draggable) — Pass so child buttons still receive clicks
@@ -451,7 +451,7 @@ public partial class OverlayManager
 		label.AddThemeColorOverride("font_outline_color", ClrOutline);
 		label.AddThemeConstantOverride("shadow_offset_x", 2);
 		label.AddThemeConstantOverride("shadow_offset_y", 2);
-		label.AddThemeColorOverride("font_shadow_color", new Color(0f, 0f, 0f, 0.6f));
+		label.AddThemeColorOverride("font_shadow_color", OverlayTheme.Shadow);
 		label.MouseFilter = Control.MouseFilterEnum.Ignore;
 		label.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
 		titleRow.AddChild(label, forceReadableName: false, Node.InternalMode.Disabled);
@@ -517,7 +517,7 @@ public partial class OverlayManager
 		// Archetype chip panel removed — deck info lives in DECK BREAKDOWN collapsible section
 		// Deck composition visualization container (Feature 2)
 		_deckVizContainer = new VBoxContainer();
-		_deckVizContainer.AddThemeConstantOverride("separation", 4);
+		_deckVizContainer.AddThemeConstantOverride("separation", OverlayTheme.SpaceSM);
 		_deckVizContainer.Visible = false; // hidden — deck info lives in DECK BREAKDOWN section
 		vBoxContainer.AddChild(_deckVizContainer, forceReadableName: false, Node.InternalMode.Disabled);
 		// Content container — no scroll, panel auto-expands to fit
@@ -554,7 +554,7 @@ public partial class OverlayManager
 		hpStyle.CornerRadiusBottomLeft = 8;
 		hpStyle.CornerRadiusBottomRight = 8;
 		hpStyle.ShadowSize = 8;
-		hpStyle.ShadowColor = new Color(0f, 0f, 0f, 0.6f);
+		hpStyle.ShadowColor = OverlayTheme.Shadow;
 		hpStyle.ContentMarginTop = 4f;
 		hpStyle.ContentMarginBottom = 4f;
 		hpStyle.ContentMarginLeft = 4f;
@@ -1202,7 +1202,7 @@ public partial class OverlayManager
 			int entryIdx = 0;
 			foreach (Node child in _content.GetChildren())
 			{
-				if (child is PanelContainer entry)
+				if (child is PanelContainer entry && GodotObject.IsInstanceValid(entry))
 				{
 					entry.Modulate = new Color(1, 1, 1, 0);
 					var tw = entry.CreateTween();

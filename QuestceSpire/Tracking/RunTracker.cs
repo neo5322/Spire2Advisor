@@ -31,7 +31,13 @@ public class RunTracker : IRunTracker
 
 	public string CurrentRunId => _currentRun?.RunId;
 
-	public IReadOnlyList<DecisionEvent> GetCurrentRunEvents() => _currentEvents.AsReadOnly();
+	public IReadOnlyList<DecisionEvent> GetCurrentRunEvents()
+	{
+		lock (_decisionLock)
+		{
+			return new List<DecisionEvent>(_currentEvents).AsReadOnly();
+		}
+	}
 
 	public IReadOnlyDictionary<int, List<(string archetypeId, float strength)>> GetArchetypeHistory() => _archetypeHistory;
 
@@ -95,7 +101,10 @@ public class RunTracker : IRunTracker
 			AscensionLevel = ascensionLevel,
 			Synced = false
 		};
-		_currentEvents.Clear();
+		lock (_decisionLock)
+		{
+			_currentEvents.Clear();
+		}
 		_relicAcquiredFloor.Clear();
 		_archetypeHistory.Clear();
 		Plugin.Log($"Run started: {(_currentRun.RunId.Length >= 8 ? _currentRun.RunId.Substring(0, 8) : _currentRun.RunId)}... ({character}, A{ascensionLevel})");
@@ -143,7 +152,10 @@ public class RunTracker : IRunTracker
 			Gold = gold,
 			Timestamp = DateTime.UtcNow
 		};
-		_currentEvents.Add(item);
+		lock (_decisionLock)
+		{
+			_currentEvents.Add(item);
+		}
 		UpdateRelicTracking(relicSnapshot ?? new List<string>(), floor);
 		Plugin.Log($"Decision recorded: {eventType} on floor {floor} — chose {chosenId ?? "(skip)"}");
 	}

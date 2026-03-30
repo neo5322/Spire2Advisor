@@ -70,14 +70,14 @@ public partial class OverlayManager
 		arrow.Text = isExpanded ? "\u25BC " : "\u25B6 ";
 		ApplyFont(arrow, _fontBold);
 		arrow.AddThemeColorOverride("font_color", ClrSub);
-		arrow.AddThemeFontSizeOverride("font_size", 14);
+		arrow.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
 		arrow.MouseFilter = Control.MouseFilterEnum.Ignore;
 		headerRow.AddChild(arrow, forceReadableName: false, Node.InternalMode.Disabled);
 		Label headerLabel = new Label();
 		headerLabel.Text = text;
 		ApplyFont(headerLabel, _fontBold);
 		headerLabel.AddThemeColorOverride("font_color", ClrAccent);
-		headerLabel.AddThemeFontSizeOverride("font_size", 16);
+		headerLabel.AddThemeFontSizeOverride("font_size", OverlayTheme.FontH2);
 		headerLabel.AddThemeConstantOverride("outline_size", 3);
 		headerLabel.AddThemeColorOverride("font_outline_color", ClrOutline);
 		headerLabel.MouseFilter = Control.MouseFilterEnum.Ignore;
@@ -108,7 +108,7 @@ public partial class OverlayManager
 		}
 		// Section is expanded — add content container
 		VBoxContainer sectionContent = new VBoxContainer();
-		sectionContent.AddThemeConstantOverride("separation", 4);
+		sectionContent.AddThemeConstantOverride("separation", OverlayTheme.SpaceSM);
 		_content.AddChild(sectionContent, forceReadableName: false, Node.InternalMode.Disabled);
 		// Click to collapse
 		string collapseKey = sectionKey;

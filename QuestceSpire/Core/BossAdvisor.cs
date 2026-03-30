@@ -260,7 +260,9 @@ public static class BossAdvisor
 					cmd.CommandText = @"SELECT AVG(damage_taken), AVG(turn_number)
 						FROM combat_turns WHERE enemy_id LIKE @eid
 						GROUP BY run_id ORDER BY rowid DESC LIMIT 5";
-					cmd.Parameters.AddWithValue("@eid", $"%{boss.Name.Split(' ')[0]}%");
+					string bossNameFirst = boss.Name?.Split(' ').FirstOrDefault();
+					if (string.IsNullOrEmpty(bossNameFirst)) return result;
+					cmd.Parameters.AddWithValue("@eid", $"%{bossNameFirst}%");
 					using var reader = cmd.ExecuteReader();
 					if (reader.Read() && !reader.IsDBNull(0))
 					{

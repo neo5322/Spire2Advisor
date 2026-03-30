@@ -134,12 +134,13 @@ public class DeckAnalyzer : IDeckAnalyzer
 				{
 					num4 += 0.2f;
 				}
-				// Density normalization: scale by how concentrated the archetype is
-				// A "normal" deck is ~20 cards. Larger decks dilute archetypes.
+				// Density normalization: scale by how concentrated the archetype is.
+				// Target deck size is ~20 cards. Smaller decks get density bonus (capped at 1.3x),
+				// larger decks get density penalty (floored at 0.7x).
 				if (deckAnalysis.TotalCards > 0)
 				{
-					float densityFactor = 20f / Math.Max(deckAnalysis.TotalCards, 10f);
-					densityFactor = Math.Max(0.7f, Math.Min(1.3f, densityFactor));
+					float rawDensity = 20f / Math.Max(deckAnalysis.TotalCards, 15f);
+					float densityFactor = Math.Clamp(rawDensity, 0.7f, 1.3f);
 					num4 *= densityFactor;
 				}
 				num4 = Math.Min(num4, 1f);

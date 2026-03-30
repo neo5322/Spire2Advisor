@@ -27,7 +27,7 @@ namespace QuestceSpire;
 public static partial class GamePatches
 {
 	// Debug: track when each hook last fired
-	public static Dictionary<string, DateTime> HookLastFired { get; } = new();
+	public static System.Collections.Concurrent.ConcurrentDictionary<string, DateTime> HookLastFired { get; } = new();
 
 	private static void RecordHook(string hookName)
 	{
