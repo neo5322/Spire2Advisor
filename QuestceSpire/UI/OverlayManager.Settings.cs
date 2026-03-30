@@ -84,7 +84,26 @@ public partial class OverlayManager
 
 		// ── 데이터 (Data) ──
 		AddSettingsGroupHeader(menuVBox, "데이터");
-		AddSettingsToggle(menuVBox, "클라우드 동기화", _settings.CloudSyncEnabled, () => { _settings.CloudSyncEnabled = !_settings.CloudSyncEnabled; _settings.Save(); RefreshSettingsMenu(); });
+		AddSettingsToggle(menuVBox, "클라우드 동기화", _settings.CloudSyncEnabled, () => {
+			if (!_settings.CloudSyncEnabled && !_settings.HasSeenCloudNotice)
+			{
+				// First-time enable: mark notice as seen (privacy info shown below toggle)
+				_settings.HasSeenCloudNotice = true;
+			}
+			_settings.CloudSyncEnabled = !_settings.CloudSyncEnabled;
+			_settings.Save();
+			RefreshSettingsMenu();
+		});
+		if (_settings.CloudSyncEnabled)
+		{
+			Label privacyNote = new Label();
+			privacyNote.Text = "  ℹ 전송 데이터: 런 결과, 카드 선택, 승률 (개인 식별 정보 없음)";
+			ApplyFont(privacyNote, _fontBody);
+			privacyNote.AddThemeFontSizeOverride("font_size", OverlayTheme.FontCaption);
+			privacyNote.AddThemeColorOverride("font_color", ClrSub);
+			privacyNote.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			menuVBox.AddChild(privacyNote, forceReadableName: false, Node.InternalMode.Disabled);
+		}
 		AddSettingsToggle(menuVBox, "데이터 자동 업데이트", _settings.AutoUpdateData, () => { _settings.AutoUpdateData = !_settings.AutoUpdateData; _settings.Save(); RefreshSettingsMenu(); });
 		AddSettingsToggle(menuVBox, "파이프라인 동기화", _settings.EnablePipelineSync, () => { _settings.EnablePipelineSync = !_settings.EnablePipelineSync; _settings.Save(); RefreshSettingsMenu(); });
 
@@ -96,6 +115,7 @@ public partial class OverlayManager
 		AddSettingsToggle(menuVBox, "메타 아키타입", _settings.ShowMetaArchetypes, () => { _settings.ShowMetaArchetypes = !_settings.ShowMetaArchetypes; _settings.Save(); RegenerateAdvice(); RefreshSettingsMenu(); });
 		AddSettingsToggle(menuVBox, "런 건강도", _settings.ShowRunHealth, () => { _settings.ShowRunHealth = !_settings.ShowRunHealth; _settings.Save(); RegenerateAdvice(); RefreshSettingsMenu(); });
 		AddSettingsToggle(menuVBox, "런 요약", _settings.ShowRunSummary, () => { _settings.ShowRunSummary = !_settings.ShowRunSummary; _settings.Save(); RefreshSettingsMenu(); });
+		AddSettingsToggle(menuVBox, "디버그 로깅", _settings.DebugLogging, () => { _settings.DebugLogging = !_settings.DebugLogging; _settings.Save(); RefreshSettingsMenu(); });
 
 		// Opacity section
 		HSeparator sep2 = new HSeparator();
@@ -218,6 +238,28 @@ public partial class OverlayManager
 		};
 		menuVBox.AddChild(importBtn, forceReadableName: false, Node.InternalMode.Disabled);
 
+		Label logBtn = new Label();
+		logBtn.Text = "로그 파일 열기";
+		ApplyFont(logBtn, _fontBody);
+		logBtn.AddThemeFontSizeOverride("font_size", OverlayTheme.FontSmall);
+		logBtn.AddThemeColorOverride("font_color", ClrAqua);
+		logBtn.MouseFilter = Control.MouseFilterEnum.Stop;
+		logBtn.MouseDefaultCursorShape = Control.CursorShape.PointingHand;
+		logBtn.GuiInput += (InputEvent ev2) =>
+		{
+			if (ev2 is InputEventMouseButton mb2 && mb2.Pressed && mb2.ButtonIndex == MouseButton.Left)
+			{
+				try
+				{
+					string logPath = System.IO.Path.Combine(Plugin.PluginFolder ?? "", "spire-advisor.log");
+					if (System.IO.File.Exists(logPath))
+						OS.ShellOpen(logPath);
+				}
+				catch (Exception ex) { Plugin.Log($"Failed to open log file: {ex.Message}"); }
+			}
+		};
+		menuVBox.AddChild(logBtn, forceReadableName: false, Node.InternalMode.Disabled);
+
 		// Hide overlay option
 		HSeparator sep3 = new HSeparator();
 		sep3.AddThemeStyleboxOverride("separator", OverlayStyles.CreateSeparatorStyle());
@@ -239,6 +281,25 @@ public partial class OverlayManager
 			}
 		};
 		menuVBox.AddChild(hideBtn, forceReadableName: false, Node.InternalMode.Disabled);
+
+		// First-run welcome message
+		if (_settings.SettingsVersion <= 7 && !_settings.HasSeenWelcome)
+		{
+			_settings.HasSeenWelcome = true;
+			_settings.Save();
+
+			HSeparator welcomeSep = new HSeparator();
+			welcomeSep.AddThemeStyleboxOverride("separator", OverlayStyles.CreateSeparatorStyle());
+			menuVBox.AddChild(welcomeSep, forceReadableName: false, Node.InternalMode.Disabled);
+
+			Label welcomeLabel = new Label();
+			welcomeLabel.Text = "🎴 Spire Advisor에 오신 것을 환영합니다!\n• 카드/유물 추천이 실시간 표시됩니다\n• ⚙ 버튼으로 설정을 조정하세요\n• 타이틀 바를 드래그하여 이동\n• F10: 디버그 정보";
+			ApplyFont(welcomeLabel, _fontBody);
+			welcomeLabel.AddThemeFontSizeOverride("font_size", OverlayTheme.FontCaption);
+			welcomeLabel.AddThemeColorOverride("font_color", ClrAqua);
+			welcomeLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			menuVBox.AddChild(welcomeLabel, forceReadableName: false, Node.InternalMode.Disabled);
+		}
 
 		_layer.AddChild(_settingsMenu, forceReadableName: false, Node.InternalMode.Disabled);
 	}

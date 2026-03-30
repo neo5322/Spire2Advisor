@@ -22,12 +22,30 @@ public class TierEngine
 
 	private readonly string _dataPath;
 
+	/// <summary>
+	/// The patch version from loaded tier data (e.g., "v0.100.0").
+	/// Returns the most common patchVersion across all loaded tier files, or null if not set.
+	/// </summary>
+	public string TierDataVersion { get; private set; }
+
+	/// <summary>
+	/// The detected STS2 game version from the loaded assembly, or null if not detected.
+	/// </summary>
+	public string GameVersion { get; private set; }
+
+	/// <summary>
+	/// True if tier data patchVersion doesn't match the detected game version.
+	/// </summary>
+	public bool IsTierDataStale => TierDataVersion != null && GameVersion != null &&
+		TierDataVersion.TrimStart('v') != GameVersion.TrimStart('v');
+
 	public TierEngine(string dataPath)
 	{
 		_dataPath = dataPath;
 		LoadCardTiers(Path.Combine(dataPath, "CardTiers"));
 		LoadRelicTiers(Path.Combine(dataPath, "RelicTiers"));
 		LoadAutoTiers(Path.Combine(dataPath, "auto_tiers"));
+		DetectVersions();
 	}
 
 	/// <summary>
@@ -43,6 +61,7 @@ public class TierEngine
 		LoadCardTiers(Path.Combine(_dataPath, "CardTiers"));
 		LoadRelicTiers(Path.Combine(_dataPath, "RelicTiers"));
 		LoadAutoTiers(Path.Combine(_dataPath, "auto_tiers"));
+		DetectVersions();
 		Plugin.Log("TierEngine: reloaded all tier data.");
 	}
 
@@ -156,6 +175,86 @@ public class TierEngine
 		}
 		if (total > 0)
 			Plugin.Log($"Loaded {total} auto-tier entries as fallback.");
+	}
+
+	private void DetectVersions()
+	{
+		// Extract tier data version from loaded files
+		var versions = _cardTiers.Values
+			.Where(t => !string.IsNullOrEmpty(t.PatchVersion))
+			.Select(t => t.PatchVersion)
+			.GroupBy(v => v)
+			.OrderByDescending(g => g.Count())
+			.FirstOrDefault();
+		TierDataVersion = versions?.Key;
+
+		// Detect game version from sts2 assembly
+		try
+		{
+			var gameAssembly = AppDomain.CurrentDomain.GetAssemblies()
+				.FirstOrDefault(a => a.GetName().Name == "sts2" ||
+				                     (a.GetName().Name?.Contains("MegaCrit") == true));
+			if (gameAssembly != null)
+			{
+				var ver = gameAssembly.GetName().Version;
+				if (ver != null)
+					GameVersion = $"{ver.Major}.{ver.Minor}.{ver.Build}";
+			}
+		}
+		catch (Exception ex)
+		{
+			Plugin.Log($"TierEngine: failed to detect game version: {ex.Message}");
+		}
+
+		if (TierDataVersion != null)
+			Plugin.Log($"TierEngine: tier data version={TierDataVersion}, game version={GameVersion ?? "unknown"}");
+		if (IsTierDataStale)
+			Plugin.Log($"WARNING: Tier data ({TierDataVersion}) may be outdated for game version {GameVersion}");
+
+		ValidateSynergyTags();
+	}
+
+	private void ValidateSynergyTags()
+	{
+		// Collect all known archetype/synergy tags
+		var knownTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		// Add common gameplay tags that aren't archetypes
+		knownTags.UnionWith(new[] {
+			"draw", "scaling", "damage", "defense", "aoe", "block",
+			"energy", "exhaust", "flexible", "upgraded", "healing",
+			"gold", "card_manipulation", "status", "debuff", "buff",
+			"multi_hit", "retain", "innate", "ethereal"
+		});
+
+		// Add archetype tags (core + support) from all characters
+		foreach (var (_, archetypes) in ArchetypeDefinitions.ByCharacter)
+		{
+			foreach (var arch in archetypes)
+			{
+				knownTags.Add(arch.Id);
+				if (arch.CoreTags != null) knownTags.UnionWith(arch.CoreTags);
+				if (arch.SupportTags != null) knownTags.UnionWith(arch.SupportTags);
+			}
+		}
+
+		int unknownCount = 0;
+		var unknownTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (var (character, tiers) in _cardTiers)
+		{
+			if (tiers.Cards == null) continue;
+			foreach (var card in tiers.Cards)
+			{
+				if (card.Synergies == null) continue;
+				foreach (var tag in card.Synergies)
+				{
+					if (!knownTags.Contains(tag) && unknownTags.Add(tag))
+						unknownCount++;
+				}
+			}
+		}
+
+		if (unknownCount > 0)
+			Plugin.Log($"TierEngine: {unknownCount} unrecognized synergy tags found: {string.Join(", ", unknownTags.Take(10))}");
 	}
 
 	private class AutoTierFile

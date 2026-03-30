@@ -272,7 +272,7 @@ public static class BossAdvisor
 				}
 			}
 		}
-		catch { }
+		catch (Exception ex) { Plugin.Log($"BossAdvisor: failed to query past combat stats: {ex.Message}"); }
 
 		// Clamp
 		score = Math.Clamp(score, 0, 100);

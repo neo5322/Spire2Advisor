@@ -987,7 +987,7 @@ public partial class OverlayManager
 				}
 			}
 		}
-		catch { }
+		catch (Exception ex) { Plugin.Log($"OverlayAdvice: failed to build meta archetype advice: {ex.Message}"); }
 
 		// ─── Run Health Gauge ───
 		if (Plugin.RunHealthComputer != null)
@@ -1027,7 +1027,7 @@ public partial class OverlayManager
 				return $"\u26a1 {latest.Property}: {latest.OldValue}\u2192{latest.NewValue}";
 			return $"\u26a1 최근 변경: {latest.Property}";
 		}
-		catch { return null; }
+		catch (Exception ex) { Plugin.Log($"OverlayAdvice: failed to get balance change info: {ex.Message}"); return null; }
 	}
 
 	/// <summary>
@@ -1042,6 +1042,6 @@ public partial class OverlayManager
 			if (stat == null || stat.SampleSize < 3) return null;
 			return $"Act {act} 승률 {stat.WinRate:P0} ({stat.SampleSize}게임)";
 		}
-		catch { return null; }
+		catch (Exception ex) { Plugin.Log($"OverlayAdvice: failed to get floor tier info: {ex.Message}"); return null; }
 	}
 }

@@ -105,6 +105,9 @@ public class AutoTierGenerator
 		}
 
 		Plugin.Log($"AutoTierGenerator: generated tiers for {totalCards} cards across {byCharacter.Count} characters.");
+
+		// Integrate new cards detected by RuntimeCardExtractor
+		IntegrateNewCards(autoTierDir);
 	}
 
 	private float NormalizeWinRate(float winRate)
@@ -130,8 +133,9 @@ public class AutoTierGenerator
 			float avgPairWinRate = sum / count;
 			return NormalizeWinRate(avgPairWinRate);
 		}
-		catch
+		catch (Exception ex)
 		{
+			Plugin.Log($"AutoTierGenerator: failed to compute synergy potential: {ex.Message}");
 			return 0.5f;
 		}
 	}
@@ -152,8 +156,9 @@ public class AutoTierGenerator
 			var result = cmd.ExecuteScalar();
 			return result != null ? Convert.ToSingle(result) : 0.5f;
 		}
-		catch
+		catch (Exception ex)
 		{
+			Plugin.Log($"AutoTierGenerator: failed to query card usage score: {ex.Message}");
 			return 0.5f;
 		}
 	}
@@ -197,13 +202,134 @@ public class AutoTierGenerator
 			if (discrepancies > 0)
 				Plugin.Log($"AutoTier: {discrepancies} tier discrepancies found for {character}.");
 		}
-		catch { }
+		catch (Exception ex) { Plugin.Log($"AutoTierGenerator: failed to compare auto tiers with manual tiers: {ex.Message}"); }
 	}
 
 	private static int TierToRank(string tier) => tier?.ToUpperInvariant() switch
 	{
 		"S" => 5, "A" => 4, "B" => 3, "C" => 2, "D" => 1, "F" => 0, _ => -1
 	};
+
+	private void IntegrateNewCards(string autoTierDir)
+	{
+		string newCardsPath = Path.Combine(_dataFolder, "new_cards.json");
+		if (!File.Exists(newCardsPath)) return;
+
+		try
+		{
+			var newCards = JsonConvert.DeserializeObject<List<NewCardEntry>>(File.ReadAllText(newCardsPath));
+			if (newCards == null || newCards.Count == 0) return;
+
+			var tierEngine = Plugin.TierEngine;
+			int integrated = 0;
+
+			// Group new cards by character (inferred from TypeName namespace)
+			var byCharacter = newCards
+				.Where(c => !string.IsNullOrEmpty(InferCharacter(c.TypeName)))
+				.GroupBy(c => InferCharacter(c.TypeName).ToLowerInvariant());
+
+			foreach (var group in byCharacter)
+			{
+				string character = group.Key;
+				string autoPath = Path.Combine(autoTierDir, $"{character}.json");
+
+				// Load existing auto-tiers if any
+				List<AutoTierEntry> existingEntries = new();
+				if (File.Exists(autoPath))
+				{
+					try
+					{
+						var existing = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(autoPath));
+						if (existing?.cards != null)
+						{
+							existingEntries = JsonConvert.DeserializeObject<List<AutoTierEntry>>(
+								existing.cards.ToString());
+						}
+					}
+					catch (Exception ex) { Plugin.Log($"AutoTierGenerator: failed to read existing auto-tier file: {ex.Message}"); }
+				}
+
+				var existingIds = new HashSet<string>(
+					existingEntries.Select(e => e.Id),
+					StringComparer.OrdinalIgnoreCase);
+
+				foreach (var card in group)
+				{
+					// Skip if already has a manual tier or auto-tier
+					if (tierEngine?.GetCardTier(character, card.Id) != null) continue;
+					if (existingIds.Contains(card.Id)) continue;
+
+					// Add as default C-tier
+					existingEntries.Add(new AutoTierEntry
+					{
+						Id = card.Id,
+						BaseTier = "C",
+						Score = 0.5f,
+						WinRate = 0f,
+						PickRate = 0f,
+						SampleSize = 0,
+						Signals = new Dictionary<string, float>
+						{
+							["win_rate"] = 0f,
+							["pick_rate"] = 0f,
+							["synergy"] = 0f,
+							["usage"] = 0f
+						}
+					});
+					integrated++;
+				}
+
+				if (integrated > 0)
+				{
+					existingEntries.Sort((a, b) => b.Score.CompareTo(a.Score));
+					var output = new { character, generated = DateTime.UtcNow.ToString("o"), cards = existingEntries };
+					File.WriteAllText(autoPath, JsonConvert.SerializeObject(output, Formatting.Indented));
+				}
+			}
+
+			if (integrated > 0)
+				Plugin.Log($"AutoTierGenerator: integrated {integrated} new cards with default C-tier.");
+		}
+		catch (Exception ex)
+		{
+			Plugin.Log($"AutoTierGenerator: failed to integrate new cards: {ex.Message}");
+		}
+	}
+
+	/// <summary>
+	/// Attempts to infer the character name from the fully qualified type name.
+	/// E.g. "STS2.Cards.Ironclad.Bash" → "ironclad"
+	/// </summary>
+	private static string InferCharacter(string typeName)
+	{
+		if (string.IsNullOrEmpty(typeName)) return null;
+
+		// Known STS2 character names to look for in the namespace
+		string[] knownCharacters = { "ironclad", "silent", "defect", "regent", "necrobinder" };
+		string lower = typeName.ToLowerInvariant();
+		foreach (var ch in knownCharacters)
+		{
+			if (lower.Contains(ch))
+				return ch;
+		}
+
+		// Fallback: try extracting from namespace segments (e.g. "Namespace.Cards.CharName.CardName")
+		var parts = typeName.Split('.');
+		if (parts.Length >= 3)
+			return parts[^2].ToLowerInvariant();
+
+		return null;
+	}
+
+	/// <summary>
+	/// Matches the ExtractedEntity JSON format from RuntimeCardExtractor (new_cards.json).
+	/// </summary>
+	private class NewCardEntry
+	{
+		[JsonProperty("Id")] public string Id { get; set; }
+		[JsonProperty("TypeName")] public string TypeName { get; set; }
+		[JsonProperty("EntityType")] public string EntityType { get; set; }
+	}
 }
 
 public class AutoTierEntry

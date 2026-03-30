@@ -134,7 +134,7 @@ public class OfflineDataManager
 		if (File.Exists(mainPath))
 		{
 			try { return File.ReadAllText(mainPath); }
-			catch { }
+			catch (Exception ex) { Plugin.Log($"OfflineDataManager: failed to read cached file '{filename}': {ex.Message}"); }
 		}
 
 		// 2. Try cache

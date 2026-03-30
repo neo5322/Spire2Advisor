@@ -81,6 +81,8 @@ public class RuntimeCardExtractor
 	{
 		try
 		{
+			var seenCardIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 			// Look for card definition types — STS2 uses a base card class
 			var baseCardType = asm.GetTypes().FirstOrDefault(t =>
 				t.FullName?.Contains("CardModel") == true && !t.IsAbstract && t.IsPublic);
@@ -107,6 +109,7 @@ public class RuntimeCardExtractor
 					else if (idProp != null && idProp.GetGetMethod()?.IsStatic == true)
 						id = idProp.GetValue(null)?.ToString() ?? type.Name;
 
+					if (!seenCardIds.Add(id)) continue; // Skip duplicate
 					result.AllCards.Add(new ExtractedEntity
 					{
 						Id = id,
@@ -114,7 +117,7 @@ public class RuntimeCardExtractor
 						EntityType = "card"
 					});
 				}
-				catch { }
+				catch (Exception ex) { Plugin.Log($"RuntimeCardExtractor: failed to extract card type '{type?.FullName}': {ex.Message}"); }
 			}
 
 			// Also look for string constants that look like card IDs
@@ -127,7 +130,7 @@ public class RuntimeCardExtractor
 					if (field.FieldType == typeof(string))
 					{
 						string val = field.GetValue(null) as string;
-						if (!string.IsNullOrEmpty(val) && !result.AllCards.Any(c => c.Id == val))
+						if (!string.IsNullOrEmpty(val) && seenCardIds.Add(val))
 						{
 							result.AllCards.Add(new ExtractedEntity
 							{
@@ -150,6 +153,8 @@ public class RuntimeCardExtractor
 	{
 		try
 		{
+			var seenRelicIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 			var relicTypes = asm.GetTypes().Where(t =>
 				t.Namespace?.Contains("Relic") == true &&
 				!t.IsAbstract &&
@@ -166,6 +171,7 @@ public class RuntimeCardExtractor
 					if (idField != null && idField.IsStatic)
 						id = idField.GetValue(null)?.ToString() ?? type.Name;
 
+					if (!seenRelicIds.Add(id)) continue; // Skip duplicate
 					result.AllRelics.Add(new ExtractedEntity
 					{
 						Id = id,
@@ -173,7 +179,7 @@ public class RuntimeCardExtractor
 						EntityType = "relic"
 					});
 				}
-				catch { }
+				catch (Exception ex) { Plugin.Log($"RuntimeCardExtractor: failed to extract relic type '{type?.FullName}': {ex.Message}"); }
 			}
 		}
 		catch (Exception ex)
@@ -206,7 +212,7 @@ public class RuntimeCardExtractor
 							}
 						}
 					}
-					catch { }
+					catch (Exception ex) { Plugin.Log($"RuntimeCardExtractor: failed to parse tier file for known IDs: {ex.Message}"); }
 				}
 			}
 

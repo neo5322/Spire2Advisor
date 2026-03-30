@@ -32,9 +32,9 @@ public static partial class GamePatches
 			EnsureOverlay();
 			Plugin.Log("Relic reward screen detected — analyzing...");
 			RecordHook("OnRelicRewardOpened");
-			GameStateReader._lastCardOptions = null;
-			GameStateReader._lastRelicOptions = relics;
-			GameStateReader._lastMerchantInventory = null;
+			GameStateReader.SetLastCardOptions(null);
+			GameStateReader.SetLastRelicOptions(relics);
+			GameStateReader.SetLastMerchantInventory(null);
 			GameState gameState = GameStateReader.ReadCurrentState();
 			if (gameState != null)
 			{
@@ -63,9 +63,9 @@ public static partial class GamePatches
 			Plugin.Log("Shop screen detected — analyzing...");
 			RecordHook("OnShopOpened");
 			MerchantInventory? inventory = __instance.Inventory;
-			GameStateReader._lastCardOptions = null;
-			GameStateReader._lastRelicOptions = null;
-			GameStateReader._lastMerchantInventory = inventory;
+			GameStateReader.SetLastCardOptions(null);
+			GameStateReader.SetLastRelicOptions(null);
+			GameStateReader.SetLastMerchantInventory(inventory);
 			GameState gameState = GameStateReader.ReadCurrentState();
 			if (gameState != null)
 			{
@@ -389,9 +389,9 @@ public static partial class GamePatches
 			EnsureOverlay();
 			Plugin.Log("Map screen detected — generating path advice...");
 			RecordHook("OnMapScreenEntered");
-			GameStateReader._lastCardOptions = null;
-			GameStateReader._lastRelicOptions = null;
-			GameStateReader._lastMerchantInventory = null;
+			GameStateReader.SetLastCardOptions(null);
+			GameStateReader.SetLastRelicOptions(null);
+			GameStateReader.SetLastMerchantInventory(null);
 			GameState gameState = GameStateReader.ReadCurrentState();
 			if (gameState != null)
 			{
@@ -412,9 +412,9 @@ public static partial class GamePatches
 		{
 			EnsureOverlay();
 			Plugin.Log("Card removal screen detected — analyzing deck for removal...");
-			GameStateReader._lastCardOptions = null;
-			GameStateReader._lastRelicOptions = null;
-			GameStateReader._lastMerchantInventory = null;
+			GameStateReader.SetLastCardOptions(null);
+			GameStateReader.SetLastRelicOptions(null);
+			GameStateReader.SetLastMerchantInventory(null);
 			GameState gameState = GameStateReader.ReadCurrentState();
 			if (gameState != null)
 			{
@@ -456,9 +456,9 @@ public static partial class GamePatches
 			Plugin.Log("Relic picked: " + (text ?? "(unknown)"));
 			Plugin.RunTracker?.UpdateLastDecisionChoice(text);
 			_isGenuineCardReward = false;
-			GameStateReader._lastCardOptions = null;
-			GameStateReader._lastRelicOptions = null;
-			GameStateReader._lastMerchantInventory = null;
+			GameStateReader.SetLastCardOptions(null);
+			GameStateReader.SetLastRelicOptions(null);
+			GameStateReader.SetLastMerchantInventory(null);
 			Plugin.Overlay?.Clear();
 		}
 		catch (Exception value2)

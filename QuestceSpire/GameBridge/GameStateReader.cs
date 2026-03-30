@@ -30,22 +30,44 @@ public static class GameStateReader
 	private static IReadOnlyList<RelicModel> _lastRelicOptionsField;
 	private static MerchantInventory _lastMerchantInventoryField;
 
-	internal static IReadOnlyList<CardCreationResult> _lastCardOptions
+	private static IReadOnlyList<CardCreationResult> _lastCardOptions
 	{
 		get { lock (_stateLock) return _lastCardOptionsField; }
 		set { lock (_stateLock) _lastCardOptionsField = value; }
 	}
 
-	internal static IReadOnlyList<RelicModel> _lastRelicOptions
+	private static IReadOnlyList<RelicModel> _lastRelicOptions
 	{
 		get { lock (_stateLock) return _lastRelicOptionsField; }
 		set { lock (_stateLock) _lastRelicOptionsField = value; }
 	}
 
-	internal static MerchantInventory _lastMerchantInventory
+	private static MerchantInventory _lastMerchantInventory
 	{
 		get { lock (_stateLock) return _lastMerchantInventoryField; }
 		set { lock (_stateLock) _lastMerchantInventoryField = value; }
+	}
+
+	// ─── Thread-safe public accessors for GamePatches ───
+
+	public static void SetLastCardOptions(IReadOnlyList<CardCreationResult> options)
+	{
+		lock (_stateLock) { _lastCardOptionsField = options; }
+	}
+
+	public static IReadOnlyList<CardCreationResult> GetLastCardOptions()
+	{
+		lock (_stateLock) { return _lastCardOptionsField; }
+	}
+
+	public static void SetLastRelicOptions(IReadOnlyList<RelicModel> options)
+	{
+		lock (_stateLock) { _lastRelicOptionsField = options; }
+	}
+
+	public static void SetLastMerchantInventory(MerchantInventory inventory)
+	{
+		lock (_stateLock) { _lastMerchantInventoryField = inventory; }
 	}
 
 	public static GameState ReadCurrentState()
@@ -66,7 +88,7 @@ public static class GameStateReader
 			}
 			// Use LocalContext.GetMe() for multiplayer safety — always returns the local player
 			Player player = null;
-			try { player = LocalContext.GetMe(runState); } catch { }
+			try { player = LocalContext.GetMe(runState); } catch (Exception ex) { Plugin.Log($"LocalContext.GetMe error: {ex.Message}"); }
 			player ??= runState.Players?.FirstOrDefault();
 			if (player == null)
 			{

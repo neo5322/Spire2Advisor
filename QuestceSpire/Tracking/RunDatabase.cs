@@ -107,7 +107,7 @@ public partial class RunDatabase : IRunDatabase
 		}
 		catch (Exception ex)
 		{
-			try { sqliteTransaction.Rollback(); } catch { }
+			try { sqliteTransaction.Rollback(); } catch (Exception rbEx) { Plugin.Log($"Transaction rollback failed: {rbEx.Message}"); }
 			Plugin.Log($"SaveRun error: {ex.Message}");
 		}
 	}

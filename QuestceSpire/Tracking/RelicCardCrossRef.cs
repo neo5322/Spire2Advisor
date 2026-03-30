@@ -82,7 +82,7 @@ public class RelicCardCrossRef
 
 				List<string> deckCards;
 				try { deckCards = JsonConvert.DeserializeObject<List<string>>(deckJson); }
-				catch { continue; }
+				catch (Exception ex) { Plugin.Log($"RelicCardCrossRef: failed to deserialize deck JSON: {ex.Message}"); continue; }
 				if (deckCards == null || deckCards.Count == 0) continue;
 
 				// Get relics for this run from relic decisions

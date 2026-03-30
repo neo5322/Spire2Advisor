@@ -38,7 +38,7 @@ public partial class RunDatabase
 		}
 		catch (Exception ex)
 		{
-			try { sqliteTransaction.Rollback(); } catch { }
+			try { sqliteTransaction.Rollback(); } catch (Exception rbEx) { Plugin.Log($"Transaction rollback failed: {rbEx.Message}"); }
 			Plugin.Log($"SaveCommunityCardStats error: {ex.Message}");
 		}
 	}
@@ -72,7 +72,7 @@ public partial class RunDatabase
 		}
 		catch (Exception ex)
 		{
-			try { sqliteTransaction.Rollback(); } catch { }
+			try { sqliteTransaction.Rollback(); } catch (Exception rbEx) { Plugin.Log($"Transaction rollback failed: {rbEx.Message}"); }
 			Plugin.Log($"SaveCommunityRelicStats error: {ex.Message}");
 		}
 	}

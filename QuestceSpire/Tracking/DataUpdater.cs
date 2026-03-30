@@ -66,7 +66,12 @@ public class DataUpdater
 			var manifest = JsonConvert.DeserializeObject<DataManifest>(manifestJson);
 			if (manifest?.Files == null || manifest.Files.Count == 0)
 			{
-				Plugin.Log("DataUpdater: empty manifest, skipping update.");
+				Plugin.Log("DataUpdater: empty or invalid manifest received.");
+				return false;
+			}
+			if (manifest.Files.Count > 100) // Sanity limit
+			{
+				Plugin.Log($"DataUpdater: manifest has {manifest.Files.Count} files — suspiciously large, skipping.");
 				return false;
 			}
 
@@ -112,6 +117,14 @@ public class DataUpdater
 
 	private async Task DownloadDataFile(string key, ManifestEntry entry)
 	{
+		// Validate key to prevent path traversal
+		if (key.Contains("..") || Path.IsPathRooted(key) ||
+		    key.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+		{
+			Plugin.Log($"DataUpdater: skipping suspicious key: {key}");
+			return;
+		}
+
 		string url = entry.Url;
 		if (string.IsNullOrEmpty(url))
 			url = $"{_apiBase}/{key}";
@@ -139,6 +152,14 @@ public class DataUpdater
 				Directory.CreateDirectory(dir);
 				foreach (var (fileName, fileContent) in files)
 				{
+					// Validate filename to prevent path traversal
+					if (fileName.Contains("..") || Path.IsPathRooted(fileName) ||
+					    fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+					{
+						Plugin.Log($"DataUpdater: skipping suspicious filename: {fileName}");
+						continue;
+					}
+
 					string filePath = Path.Combine(dir, fileName.EndsWith(".json") ? fileName : fileName + ".json");
 					string serialized = fileContent is string s ? s : JsonConvert.SerializeObject(fileContent, Formatting.Indented);
 					File.WriteAllText(filePath, serialized);

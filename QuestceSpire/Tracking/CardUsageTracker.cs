@@ -64,7 +64,7 @@ public class CardUsageTracker
 
 			List<string> cards;
 			try { cards = JsonConvert.DeserializeObject<List<string>>(cardsJson); }
-			catch { continue; }
+			catch (Exception ex) { Plugin.Log($"CardUsageTracker: failed to deserialize combat cards JSON: {ex.Message}"); continue; }
 			if (cards == null) continue;
 
 			string combatKey = $"{runId}|{floor}";

@@ -78,9 +78,9 @@ public static partial class GamePatches
 			Plugin.Log("Card reward screen detected — analyzing...");
 			RecordHook("OnCardRewardOpened");
 			if (options != null)
-				GameStateReader._lastCardOptions = options;
-			GameStateReader._lastRelicOptions = null;
-			GameStateReader._lastMerchantInventory = null;
+				GameStateReader.SetLastCardOptions(options);
+			GameStateReader.SetLastRelicOptions(null);
+			GameStateReader.SetLastMerchantInventory(null);
 			if (!TryShowCardRewardFromScreen(__result))
 			{
 				Plugin.Log("Game state not ready for card reward, scheduling retry...");
@@ -110,9 +110,9 @@ public static partial class GamePatches
 			_isGenuineCardReward = true;
 			Plugin.Log("Card reward RefreshOptions detected — re-analyzing...");
 			if (options != null)
-				GameStateReader._lastCardOptions = options;
-			GameStateReader._lastRelicOptions = null;
-			GameStateReader._lastMerchantInventory = null;
+				GameStateReader.SetLastCardOptions(options);
+			GameStateReader.SetLastRelicOptions(null);
+			GameStateReader.SetLastMerchantInventory(null);
 			if (!TryShowCardRewardFromScreen(__instance))
 			{
 				Plugin.Log("Game state not ready for card refresh, scheduling retry...");
@@ -141,7 +141,7 @@ public static partial class GamePatches
 		}
 		// Try reading card options from the screen instance via reflection
 		// This works even when Harmony parameter injection fails
-		if (GameStateReader._lastCardOptions == null || GameStateReader._lastCardOptions.Count == 0)
+		if (GameStateReader.GetLastCardOptions() == null || GameStateReader.GetLastCardOptions().Count == 0)
 		{
 			try
 			{
@@ -153,7 +153,7 @@ public static partial class GamePatches
 				if (cardsObj is IReadOnlyList<CardCreationResult> screenCards && screenCards.Count > 0)
 				{
 					Plugin.Log($"Read {screenCards.Count} cards from screen instance");
-					GameStateReader._lastCardOptions = screenCards;
+					GameStateReader.SetLastCardOptions(screenCards);
 				}
 				else
 				{
@@ -176,7 +176,7 @@ public static partial class GamePatches
 							if (results.Count > 0)
 							{
 								Plugin.Log($"Read {results.Count} cards from card holders");
-								GameStateReader._lastCardOptions = results;
+								GameStateReader.SetLastCardOptions(results);
 							}
 						}
 					}
@@ -297,9 +297,9 @@ public static partial class GamePatches
 			Plugin.Log("Card picked: " + (text ?? "(unknown)"));
 			Plugin.RunTracker?.UpdateLastDecisionChoice(text);
 			_isGenuineCardReward = false;
-			GameStateReader._lastCardOptions = null;
-			GameStateReader._lastRelicOptions = null;
-			GameStateReader._lastMerchantInventory = null;
+			GameStateReader.SetLastCardOptions(null);
+			GameStateReader.SetLastRelicOptions(null);
+			GameStateReader.SetLastMerchantInventory(null);
 			Plugin.Overlay?.Clear();
 		}
 		catch (Exception value3)

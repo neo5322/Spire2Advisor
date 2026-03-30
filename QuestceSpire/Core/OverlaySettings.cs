@@ -36,6 +36,16 @@ public class OverlaySettings
 	public bool ShowCoPickSynergy { get; set; } = true;
 	public bool ShowRunSummary { get; set; } = true;
 
+	// v0.16: Welcome & debug
+	[JsonProperty("hasSeenWelcome")]
+	public bool HasSeenWelcome { get; set; }
+
+	[JsonProperty("debugLogging")]
+	public bool DebugLogging { get; set; }
+
+	[JsonProperty("hasSeenCloudNotice")]
+	public bool HasSeenCloudNotice { get; set; }
+
 	// v0.15: Auto-fade — panel fades to idle opacity when mouse leaves
 	public bool AutoFadeEnabled { get; set; } = true;
 	public float IdleOpacity { get; set; } = 0.35f;

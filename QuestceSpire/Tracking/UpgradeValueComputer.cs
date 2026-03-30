@@ -76,7 +76,7 @@ public class UpgradeValueComputer
 
 			List<string> deck;
 			try { deck = JsonConvert.DeserializeObject<List<string>>(deckJson); }
-			catch { continue; }
+			catch (Exception ex) { Plugin.Log($"UpgradeValueComputer: failed to deserialize deck JSON: {ex.Message}"); continue; }
 			if (deck == null) continue;
 
 			// Detect upgrades: cards that appear with "+" suffix that didn't have it before

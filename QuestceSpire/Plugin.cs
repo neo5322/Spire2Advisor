@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using HarmonyLib;
@@ -99,6 +100,12 @@ public static class Plugin
 
 	public static OfflineDataManager OfflineDataManager { get; private set; }
 
+	/// <summary>
+	/// Number of compatibility issues detected at startup. Non-zero means some
+	/// features may not work with the current game version.
+	/// </summary>
+	public static int CompatibilityIssues { get; private set; }
+
 	public static OverlayManager Overlay { get; set; }
 
 	public static void Init()
@@ -123,6 +130,7 @@ public static class Plugin
 		};
 		Log($"{ModName} v{ModVersion} initializing...");
 		Log($"PluginFolder: {PluginFolder}");
+		ValidateGameCompatibility();
 		try
 		{
 		var dataPath = Path.Combine(PluginFolder, "Data");
@@ -196,7 +204,8 @@ public static class Plugin
 			_harmony.Patch(methodInfo, null, new HarmonyMethod(method));
 			Log("Patched IsRunningModded to false — using main profile.");
 		}
-		Log("Harmony patches applied.");
+		var patchCount = _harmony.GetPatchedMethods().Count();
+		Log($"Harmony: {patchCount} patches applied successfully.");
 		// Fire-and-forget version check
 		Task.Run(async () =>
 		{
@@ -232,6 +241,61 @@ public static class Plugin
 			Log($"FATAL init error: {ex}");
 			Godot.GD.PrintErr($"[SpireAdvisor] FATAL: {ex}");
 		}
+	}
+
+	/// <summary>
+	/// Validates that critical game types and members exist for this mod version.
+	/// Logs warnings for each missing target so users can report compatibility issues.
+	/// </summary>
+	private static void ValidateGameCompatibility()
+	{
+		int missing = 0;
+
+		void Check(string description, bool exists)
+		{
+			if (!exists)
+			{
+				Log($"COMPAT WARNING: {description} — some features may not work");
+				missing++;
+			}
+		}
+
+		try
+		{
+			var allTypes = AppDomain.CurrentDomain.GetAssemblies()
+				.SelectMany(a => { try { return a.GetTypes(); } catch { return Array.Empty<Type>(); } })
+				.ToArray();
+
+			// Check critical types
+			var runManagerType = allTypes.FirstOrDefault(t => t.Name == "RunManager");
+			Check("RunManager type", runManagerType != null);
+			if (runManagerType != null)
+			{
+				Check("RunManager.State property",
+					runManagerType.GetProperty("State",
+						BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic) != null);
+			}
+
+			var cardModelType = allTypes.FirstOrDefault(t => t.Name == "CardModel");
+			Check("CardModel type", cardModelType != null);
+
+			var relicModelType = allTypes.FirstOrDefault(t => t.Name == "RelicModel");
+			Check("RelicModel type", relicModelType != null);
+
+			var combatManagerType = allTypes.FirstOrDefault(t => t.Name == "CombatManager");
+			Check("CombatManager type", combatManagerType != null);
+		}
+		catch (Exception ex)
+		{
+			Log($"COMPAT: Validation failed with error: {ex.Message}");
+			missing++;
+		}
+
+		CompatibilityIssues = missing;
+		if (missing > 0)
+			Log($"COMPAT: {missing} compatibility issue(s) detected. Mod may not function correctly with this game version.");
+		else
+			Log("COMPAT: All critical game types verified.");
 	}
 
 	/// <summary>

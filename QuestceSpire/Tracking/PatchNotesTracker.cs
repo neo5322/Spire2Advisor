@@ -50,6 +50,12 @@ public class PatchNotesTracker
 			var json = await PipelineHttp.RetryAsync(
 				() => PipelineHttp.GetAsync(SteamNewsUrl));
 
+			if (json.Length > 1_000_000) // 1MB limit for patch notes
+			{
+				Plugin.Log("PatchNotesTracker: response too large, skipping.");
+				return;
+			}
+
 			var root = JObject.Parse(json);
 			var newsItems = root["appnews"]?["newsitems"] as JArray;
 			if (newsItems == null || newsItems.Count == 0)
