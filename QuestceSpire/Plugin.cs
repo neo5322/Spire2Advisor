@@ -138,8 +138,8 @@ public static class Plugin
 		TierEngine = new TierEngine(dataPath);
 		Log("Tier data loaded.");
 		CardPropertyScorer = new CardPropertyScorer(Path.Combine(dataPath, "CardProperties"));
-		DeckAnalyzer = new DeckAnalyzer();
-		SynergyScorer = new SynergyScorer();
+		DeckAnalyzer = new DeckAnalyzer(CardPropertyScorer);
+		SynergyScorer = new SynergyScorer(CardPropertyScorer);
 		RunDatabase = new RunDatabase(PluginFolder);
 		RunTracker = new RunTracker(RunDatabase);
 		RunTracker.Initialize(PluginFolder);

@@ -436,7 +436,7 @@ public partial class OverlayManager
 		VBoxContainer titleBar = new VBoxContainer();
 		titleBar.MouseFilter = Control.MouseFilterEnum.Pass;
 		titleBar.MouseDefaultCursorShape = Control.CursorShape.Drag;
-		titleBar.GuiInput += (InputEvent ev) => OnTitleBarInput(ev);
+		titleBar.Connect("gui_input", Callable.From((InputEvent ev) => OnTitleBarInput(ev)));
 		vBoxContainer.AddChild(titleBar, forceReadableName: false, Node.InternalMode.Disabled);
 
 		HBoxContainer titleRow = new HBoxContainer();
@@ -483,11 +483,11 @@ public partial class OverlayManager
 		_compactToggle.AddThemeColorOverride("font_color", ClrSub);
 		_compactToggle.MouseFilter = Control.MouseFilterEnum.Stop;
 		_compactToggle.MouseDefaultCursorShape = Control.CursorShape.PointingHand;
-		_compactToggle.GuiInput += (InputEvent ev) =>
+		_compactToggle.Connect("gui_input", Callable.From((InputEvent ev) =>
 		{
 			if (ev is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left)
 				ToggleCollapsed();
-		};
+		}));
 		titleRow.AddChild(_compactToggle, forceReadableName: false, Node.InternalMode.Disabled);
 
 		// Decorative separator under title (V1: color-coded)

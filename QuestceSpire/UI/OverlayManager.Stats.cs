@@ -56,14 +56,14 @@ public partial class OverlayManager
 		if (!isExpanded)
 		{
 			string localKey = sectionKey;
-			headerRow.GuiInput += (InputEvent ev) =>
+			headerRow.Connect("gui_input", Callable.From((InputEvent ev) =>
 			{
 				if (ev is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left)
 				{
 					SetRunSummarySectionState(localKey, true);
 					Rebuild();
 				}
-			};
+			}));
 			return null;
 		}
 		// Section is expanded — add content container
@@ -72,14 +72,14 @@ public partial class OverlayManager
 		_content.AddChild(sectionContent, forceReadableName: false, Node.InternalMode.Disabled);
 		// Click to collapse
 		string collapseKey = sectionKey;
-		headerRow.GuiInput += (InputEvent ev) =>
+		headerRow.Connect("gui_input", Callable.From((InputEvent ev) =>
 		{
 			if (ev is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left)
 			{
 				SetRunSummarySectionState(collapseKey, false);
 				Rebuild();
 			}
-		};
+		}));
 		return sectionContent;
 	}
 

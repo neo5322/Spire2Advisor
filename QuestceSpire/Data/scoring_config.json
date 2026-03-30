@@ -20,5 +20,54 @@
   "LargeDeckSize": 25,
   "SmallDeckSize": 15,
   "ThinDeckByCharacter": {},
-  "BloatedDeckByCharacter": {}
+  "BloatedDeckByCharacter": {},
+
+  "HighAvgCostThreshold": 2.2,
+  "MedAvgCostThreshold": 1.8,
+  "LowAvgCostThreshold": 1.5,
+
+  "ExpensiveCardPenalty": -0.3,
+  "VeryExpensiveCardPenalty": -0.5,
+  "CheapCardBonus": 0.15,
+
+  "PowerGapBonus": 0.2,
+  "PowerGlutPenalty": -0.2,
+  "AoEGapBonus": 0.3,
+  "PowerGlutThreshold": 4,
+
+  "ThinDeckPenalty": -0.2,
+  "BloatedDeckPenalty": -0.4,
+
+  "AntiSynergyPenalty": 0.6,
+  "AntiSynergyCap": -1.2,
+  "SaturationSoftMult": 0.7,
+  "SaturationHardMult": 0.4,
+  "CoPickBonusCap": 0.4,
+
+  "UpgradeBonus": 0.4,
+
+  "MaxScore": 6.0,
+  "MinScore": 0.0,
+
+  "SynergyBaseMin": 0.3,
+  "SynergyBaseScale": 0.5,
+
+  "EarlyFloorMax": 6,
+  "MidFloorMax": 18,
+
+  "RarelyPlayedThreshold": 0.5,
+  "LowEffectivenessThreshold": 0.3,
+
+  "DensityTargetDeckSize": 20.0,
+  "DensityMinFactor": 0.7,
+  "DensityMaxFactor": 1.3,
+
+  "BossBaseReadiness": 50.0,
+
+  "ActLengthFloors": 17,
+  "NearBossFloorThreshold": 15,
+
+  "AdaptiveBlendContext": 0.6,
+  "AdaptiveBlendWinRate": 0.4,
+  "AdaptivePickRateMaxBonus": 0.3
 }

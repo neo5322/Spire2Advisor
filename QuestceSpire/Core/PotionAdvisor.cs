@@ -69,15 +69,11 @@ public class PotionAdvisor
 		}
 
 		// Historical usage data
-		var tracker = Plugin.PotionTracker;
-		if (tracker != null)
+		var summary = GetPotionUsageSummary(potionId);
+		if (summary != null && summary.TimesObtained >= 3)
 		{
-			var summary = tracker.GetUsageSummary(potionId);
-			if (summary != null && summary.TimesObtained >= 3)
-			{
-				advice.UseRate = summary.UseRate;
-				advice.AvgFloorUsed = summary.AvgFloorUsed;
-			}
+			advice.UseRate = summary.UseRate;
+			advice.AvgFloorUsed = summary.AvgFloorUsed;
 		}
 
 		// Decision: use now or save?
@@ -108,8 +104,9 @@ public class PotionAdvisor
 		{
 			// Check if we're near a boss: last 3 floors of each ~17-floor act
 			// Boss floors are approximately: Act 1 = 17, Act 2 = 34, Act 3 = 51
-			int floorInAct = ((floor - 1) % 17) + 1;
-			bool nearBoss = floorInAct >= 15;
+			var cfg = ScoringConfig.Instance;
+			int floorInAct = ((floor - 1) % cfg.ActLengthFloors) + 1;
+			bool nearBoss = floorInAct >= cfg.NearBossFloorThreshold;
 			if (nearBoss)
 			{
 				advice.Recommendation = "보스 임박 — 아끼세요";
@@ -134,6 +131,12 @@ public class PotionAdvisor
 
 		return advice;
 	}
+
+	/// <summary>
+	/// Centralizes cross-layer dependency on PotionTracker for usage summary access.
+	/// </summary>
+	private PotionUsageSummary GetPotionUsageSummary(string potionId)
+		=> Plugin.PotionTracker?.GetUsageSummary(potionId);
 
 	/// <summary>
 	/// Generate potion advice lines for combat overlay.

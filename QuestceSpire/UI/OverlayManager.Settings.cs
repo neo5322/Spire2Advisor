@@ -53,11 +53,11 @@ public partial class OverlayManager
 		closeBtn.AddThemeColorOverride("font_color", ClrSub);
 		closeBtn.MouseFilter = Control.MouseFilterEnum.Stop;
 		closeBtn.MouseDefaultCursorShape = Control.CursorShape.PointingHand;
-		closeBtn.GuiInput += (InputEvent ev2) =>
+		closeBtn.Connect("gui_input", Callable.From((InputEvent ev2) =>
 		{
 			if (ev2 is InputEventMouseButton mb2 && mb2.Pressed && mb2.ButtonIndex == MouseButton.Left)
 				_settingsMenu.Visible = false;
-		};
+		}));
 		headerRow.AddChild(closeBtn, forceReadableName: false, Node.InternalMode.Disabled);
 		menuVBox.AddChild(headerRow, forceReadableName: false, Node.InternalMode.Disabled);
 
@@ -145,7 +145,7 @@ public partial class OverlayManager
 			stepBtn.MouseFilter = Control.MouseFilterEnum.Stop;
 			stepBtn.MouseDefaultCursorShape = Control.CursorShape.PointingHand;
 			float capturedStep = step;
-			stepBtn.GuiInput += (InputEvent ev2) =>
+			stepBtn.Connect("gui_input", Callable.From((InputEvent ev2) =>
 			{
 				if (ev2 is InputEventMouseButton mb2 && mb2.Pressed && mb2.ButtonIndex == MouseButton.Left)
 				{
@@ -156,7 +156,7 @@ public partial class OverlayManager
 					_settings.Save();
 					RefreshSettingsMenu();
 				}
-			};
+			}));
 			opacityRow.AddChild(stepBtn, forceReadableName: false, Node.InternalMode.Disabled);
 		}
 		menuVBox.AddChild(opacityRow, forceReadableName: false, Node.InternalMode.Disabled);
@@ -173,7 +173,7 @@ public partial class OverlayManager
 		exportBtn.AddThemeColorOverride("font_color", ClrAqua);
 		exportBtn.MouseFilter = Control.MouseFilterEnum.Stop;
 		exportBtn.MouseDefaultCursorShape = Control.CursorShape.PointingHand;
-		exportBtn.GuiInput += (InputEvent ev2) =>
+		exportBtn.Connect("gui_input", Callable.From((InputEvent ev2) =>
 		{
 			if (ev2 is InputEventMouseButton mb2 && mb2.Pressed && mb2.ButtonIndex == MouseButton.Left)
 			{
@@ -191,7 +191,7 @@ public partial class OverlayManager
 					exportBtn.AddThemeColorOverride("font_color", ClrNegative);
 				}
 			}
-		};
+		}));
 		menuVBox.AddChild(exportBtn, forceReadableName: false, Node.InternalMode.Disabled);
 
 		Label importBtn = new Label();
@@ -201,7 +201,7 @@ public partial class OverlayManager
 		importBtn.AddThemeColorOverride("font_color", ClrAqua);
 		importBtn.MouseFilter = Control.MouseFilterEnum.Stop;
 		importBtn.MouseDefaultCursorShape = Control.CursorShape.PointingHand;
-		importBtn.GuiInput += (InputEvent ev2) =>
+		importBtn.Connect("gui_input", Callable.From((InputEvent ev2) =>
 		{
 			if (ev2 is InputEventMouseButton mb2 && mb2.Pressed && mb2.ButtonIndex == MouseButton.Left)
 			{
@@ -235,7 +235,7 @@ public partial class OverlayManager
 					importBtn.AddThemeColorOverride("font_color", ClrNegative);
 				}
 			}
-		};
+		}));
 		menuVBox.AddChild(importBtn, forceReadableName: false, Node.InternalMode.Disabled);
 
 		Label logBtn = new Label();
@@ -245,7 +245,7 @@ public partial class OverlayManager
 		logBtn.AddThemeColorOverride("font_color", ClrAqua);
 		logBtn.MouseFilter = Control.MouseFilterEnum.Stop;
 		logBtn.MouseDefaultCursorShape = Control.CursorShape.PointingHand;
-		logBtn.GuiInput += (InputEvent ev2) =>
+		logBtn.Connect("gui_input", Callable.From((InputEvent ev2) =>
 		{
 			if (ev2 is InputEventMouseButton mb2 && mb2.Pressed && mb2.ButtonIndex == MouseButton.Left)
 			{
@@ -257,7 +257,7 @@ public partial class OverlayManager
 				}
 				catch (Exception ex) { Plugin.Log($"Failed to open log file: {ex.Message}"); }
 			}
-		};
+		}));
 		menuVBox.AddChild(logBtn, forceReadableName: false, Node.InternalMode.Disabled);
 
 		// Hide overlay option
@@ -272,14 +272,14 @@ public partial class OverlayManager
 		hideBtn.AddThemeColorOverride("font_color", ClrSub);
 		hideBtn.MouseFilter = Control.MouseFilterEnum.Stop;
 		hideBtn.MouseDefaultCursorShape = Control.CursorShape.PointingHand;
-		hideBtn.GuiInput += (InputEvent ev2) =>
+		hideBtn.Connect("gui_input", Callable.From((InputEvent ev2) =>
 		{
 			if (ev2 is InputEventMouseButton mb2 && mb2.Pressed && mb2.ButtonIndex == MouseButton.Left)
 			{
 				_settingsMenu.Visible = false;
 				if (!_collapsed) ToggleCollapsed();
 			}
-		};
+		}));
 		menuVBox.AddChild(hideBtn, forceReadableName: false, Node.InternalMode.Disabled);
 
 		// First-run welcome message
@@ -327,13 +327,13 @@ public partial class OverlayManager
 		text.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
 		row.AddChild(text, forceReadableName: false, Node.InternalMode.Disabled);
 
-		row.GuiInput += (InputEvent ev) =>
+		row.Connect("gui_input", Callable.From((InputEvent ev) =>
 		{
 			if (ev is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left)
 			{
 				onToggle();
 			}
-		};
+		}));
 
 		parent.AddChild(row, forceReadableName: false, Node.InternalMode.Disabled);
 	}

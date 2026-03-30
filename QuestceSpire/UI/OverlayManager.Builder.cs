@@ -89,7 +89,7 @@ public partial class OverlayManager
 			bool localExpanded = isExpanded;
 			string localKey = sectionKey;
 			Label toggleLabel = arrow;
-			headerRow.GuiInput += (InputEvent ev) =>
+			headerRow.Connect("gui_input", Callable.From((InputEvent ev) =>
 			{
 				if (ev is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left)
 				{
@@ -103,7 +103,7 @@ public partial class OverlayManager
 					ToggleSectionSetting(localKey, true);
 					Rebuild();
 				}
-			};
+			}));
 			return null;
 		}
 		// Section is expanded — add content container
@@ -113,7 +113,7 @@ public partial class OverlayManager
 		// Click to collapse
 		string collapseKey = sectionKey;
 		Label collapseToggleLabel = arrow;
-		headerRow.GuiInput += (InputEvent ev) =>
+		headerRow.Connect("gui_input", Callable.From((InputEvent ev) =>
 		{
 			if (ev is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left)
 			{
@@ -127,7 +127,7 @@ public partial class OverlayManager
 				ToggleSectionSetting(collapseKey, false);
 				Rebuild();
 			}
-		};
+		}));
 		return sectionContent;
 	}
 

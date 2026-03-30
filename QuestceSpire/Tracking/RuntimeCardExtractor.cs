@@ -245,7 +245,7 @@ public class RuntimeCardExtractor
 		{
 			string path = Path.Combine(_dataPath, filename);
 			string json = JsonConvert.SerializeObject(entities, Formatting.Indented);
-			File.WriteAllText(path, json);
+			OfflineDataManager.AtomicWriteAllText(path, json);
 		}
 		catch (Exception ex)
 		{

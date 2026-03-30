@@ -105,12 +105,17 @@ cd QuestceSpire && dotnet build -c Release
 
 ## Architecture Notes
 
-### Service Locator Pattern
+### Service Locator + Constructor Injection
 `Plugin.cs` is the composition root. All services are static properties on `Plugin`:
 - `Plugin.TierEngine`, `Plugin.SynergyScorer`, `Plugin.DeckAnalyzer`, etc.
 - `Plugin.Overlay` (the UI manager)
 - `Plugin.RunDatabase`, `Plugin.RunTracker`, `Plugin.LocalStats`
 - `Plugin.PipelineOrchestrator` — runs all 14 data pipelines on background init
+
+Core classes use **optional constructor injection with Plugin fallback**:
+- `SynergyScorer(CardPropertyScorer)`, `DeckAnalyzer(CardPropertyScorer)`
+- Cross-layer dependencies isolated to helper methods (`GetDbConnectionString()`, etc.)
+- `Plugin.Log()` remains static (cross-cutting concern)
 
 ### Data Flow
 1. `GamePatches` intercepts game events via Harmony
@@ -129,11 +134,15 @@ The UI is split by concern into partial classes sharing the same field set:
 - **Settings**: `BuildSettingsMenu()`, toggle handlers
 
 ### Key Patterns
-- **Scoring**: `ICardScorer`/`IRelicScorer` interfaces in Core
+- **Scoring**: `ICardScorer`/`IRelicScorer` interfaces in Core; `SynergyScorer.ScoreCard()` decomposed into 15 focused methods
+- **Scoring config**: 37 tunable parameters in `scoring_config.json` via `ScoringConfig.Instance`
 - **Harmony patching**: `[HarmonyPatch]` attributes + manual patches in `GamePatches`
+- **UI signals**: All `gui_input` handlers use `.Connect()` (not C# `+=`) for proper lifecycle
 - **UI**: Godot Control tree built programmatically (no .tscn scenes)
 - **Settings**: `OverlaySettings` (JSON file in plugin folder)
 - **Logging**: `Plugin.Log()` → `spire-advisor.log`
+- **File I/O**: `OfflineDataManager.AtomicWriteAllText()` for crash-safe data writes
+- **HTTP**: Per-host rate limiting via `ConcurrentDictionary<SemaphoreSlim>` in `PipelineHttp`
 
 ### Design Token System
 `OverlayTheme.cs` centralizes all visual constants:
@@ -187,7 +196,7 @@ PipelineOrchestrator runs 14 pipelines in 4 phases:
 | `OverlayManager.Stats.cs` | 1,170 | Statistics display + run summary UI |
 | `OverlayManager.Advice.cs` | 1,047 | Per-screen advice methods |
 | `OverlayManager.Builder.cs` | 826 | UI element builders |
-| `SynergyScorer.cs` | 693 | Complex scoring logic |
+| `SynergyScorer.cs` | 716 | Card/relic scoring — decomposed into 15 focused methods |
 | `RunDatabase.Pipelines.cs` | 586 | Pipeline DB tables (partial class of RunDatabase) |
 | `GamePatches.ScreenHooks.cs` | 469 | Screen navigation hooks |
 | `OverlayManager.Badges.cs` | 463 | In-game card/relic badges |

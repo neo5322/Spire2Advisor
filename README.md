@@ -68,6 +68,9 @@ In-game overlay mod for Slay the Spire 2 — real-time card/relic recommendation
 - 🎬 카드 추천 진입 애니메이션 (stagger fade)
 - 📂 설정 메뉴 4그룹 분류 (표시/조언/데이터/고급)
 - 🔍 디버그 로깅 모드 및 로그 파일 열기
+- 🧩 스코어링 알고리즘 37개 파라미터 외부 설정 가능 (scoring_config.json)
+- 🔧 원자적 파일 쓰기로 크래시 시 데이터 손실 방지
+- ⚡ 호스트별 HTTP 병렬 요청으로 시작 속도 개선
 
 #### 설정
 - 20개 이상의 기능별 ON/OFF 토글 (4개 그룹: 표시/조언/데이터/고급)
@@ -197,6 +200,9 @@ Slay the Spire 2/mods/SpireAdvisor/
 - 🎬 Card recommendation entry animation (stagger fade)
 - 📂 Settings menu organized into 4 groups (Display/Advice/Data/Advanced)
 - 🔍 Debug logging mode and log file quick-open
+- 🧩 37 configurable scoring parameters via scoring_config.json
+- 🔧 Atomic file writes prevent data corruption on crash
+- ⚡ Per-host HTTP parallelism for faster startup
 
 #### Settings
 - 20+ per-feature ON/OFF toggles (4 groups: Display/Advice/Data/Advanced)
@@ -276,6 +282,8 @@ Launch the game. The overlay panel should appear at the top-left. A `spire-advis
 - **Game integration**: Thread-safe game state access, game version detection with stale data warnings
 - **Security**: Path traversal prevention, API response size limits, input validation
 - **Pipelines**: 14-pipeline data processing with dependency-ordered execution (PipelineOrchestrator)
+- **Scoring**: Decomposed scorer (15 focused methods), 37 tunable parameters in scoring_config.json
+- **Architecture**: Constructor injection for Core classes, atomic file writes, per-host HTTP parallelism
 
 ## Build (Developers)
 
