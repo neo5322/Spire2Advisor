@@ -182,7 +182,7 @@ public static partial class GamePatches
 			{
 				var def = defProp.GetValue(card);
 				var idProp = def?.GetType().GetProperty("Id");
-				if (idProp != null) return idProp?.GetValue(def)?.ToString() ?? "unknown";
+				if (idProp != null) return idProp.GetValue(def)?.ToString() ?? "unknown";
 			}
 			var directId = card.GetType().GetProperty("Id");
 			if (directId != null) return directId.GetValue(card)?.ToString() ?? "unknown";

@@ -141,7 +141,7 @@ public static partial class GamePatches
 		}
 		// Try reading card options from the screen instance via reflection
 		// This works even when Harmony parameter injection fails
-		if (GameStateReader._lastCardOptions == null || GameStateReader._lastCardOptions.Count == 0)
+		if (GameStateReader.GetLastCardOptions() == null || GameStateReader.GetLastCardOptions().Count == 0)
 		{
 			try
 			{
@@ -153,7 +153,7 @@ public static partial class GamePatches
 				if (cardsObj is IReadOnlyList<CardCreationResult> screenCards && screenCards.Count > 0)
 				{
 					Plugin.Log($"Read {screenCards.Count} cards from screen instance");
-					GameStateReader._lastCardOptions = screenCards;
+					GameStateReader.SetLastCardOptions(screenCards);
 				}
 				else
 				{
@@ -176,7 +176,7 @@ public static partial class GamePatches
 							if (results.Count > 0)
 							{
 								Plugin.Log($"Read {results.Count} cards from card holders");
-								GameStateReader._lastCardOptions = results;
+								GameStateReader.SetLastCardOptions(results);
 							}
 						}
 					}
@@ -298,8 +298,8 @@ public static partial class GamePatches
 			Plugin.RunTracker?.UpdateLastDecisionChoice(text);
 			_isGenuineCardReward = false;
 			GameStateReader.SetLastCardOptions(null);
-			GameStateReader._lastRelicOptions = null;
-			GameStateReader._lastMerchantInventory = null;
+			GameStateReader.SetLastRelicOptions(null);
+			GameStateReader.SetLastMerchantInventory(null);
 			Plugin.Overlay?.Clear();
 		}
 		catch (Exception value3)
