@@ -204,6 +204,7 @@ public static partial class GamePatches
 		DeckAnalysis deckAnalysis = Plugin.DeckAnalyzer.Analyze(gameState.Character, gameState.DeckCards, Plugin.TierEngine, gameState.CurrentRelics);
 		Plugin.RunTracker?.RecordArchetypeSnapshot(gameState.Floor, deckAnalysis);
 		List<ScoredCard> cards = Plugin.SynergyScorer.ScoreOfferings(gameState.OfferedCards, deckAnalysis, gameState.Character, gameState.ActNumber, gameState.Floor, Plugin.TierEngine, Plugin.AdaptiveScorer);
+		Plugin.Coordinator?.ShowCardAdvice(screen, cards, deckAnalysis, gameState.Character);
 		Plugin.Overlay?.ShowCardAdvice(cards, deckAnalysis, gameState.Character, gameNode: screen);
 		Plugin.Overlay?.InjectCardGrades(screen, cards);
 		// Dedup: only record if this is a new offering (prevents ShowScreen+RefreshOptions double-recording)
@@ -300,6 +301,7 @@ public static partial class GamePatches
 			GameStateReader.SetLastCardOptions(null);
 			GameStateReader.SetLastRelicOptions(null);
 			GameStateReader.SetLastMerchantInventory(null);
+			Plugin.Coordinator?.Clear();
 			Plugin.Overlay?.Clear();
 		}
 		catch (Exception value3)

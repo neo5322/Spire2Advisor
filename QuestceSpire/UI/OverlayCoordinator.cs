@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using QuestceSpire.Core;
+using QuestceSpire.GameBridge;
 using QuestceSpire.UI.Injectors;
 
 namespace QuestceSpire.UI;
@@ -86,13 +87,66 @@ public class OverlayCoordinator
 		}
 	}
 
-	// === Map screen (first migrated screen) ===
+	// === Screen methods ===
 
 	public void ShowMapAdvice(Node gameNode, DeckAnalysis deckAnalysis, int currentHP, int maxHP, int gold, int actNumber, int floor)
 	{
 		var injector = GetInjector<MapInjector>();
 		Activate(injector);
 		injector.Show(gameNode, deckAnalysis, currentHP, maxHP, gold, actNumber, floor);
+	}
+
+	public void ShowRestSiteAdvice(Node gameNode, DeckAnalysis deckAnalysis, int currentHP, int maxHP, int actNumber, int floor, GameState gameState)
+	{
+		var injector = GetInjector<RestSiteInjector>();
+		Activate(injector);
+		injector.Show(gameNode, deckAnalysis, currentHP, maxHP, actNumber, floor, gameState);
+	}
+
+	public void ShowEventAdvice(Node gameNode, DeckAnalysis deckAnalysis, int currentHP, int maxHP, int gold, int actNumber, int floor, string eventId)
+	{
+		var injector = GetInjector<EventInjector>();
+		Activate(injector);
+		injector.Show(gameNode, deckAnalysis, currentHP, maxHP, gold, actNumber, floor, eventId);
+	}
+
+	public void ShowCombatAdvice(Node gameNode, DeckAnalysis deckAnalysis, int currentHP, int maxHP, int actNumber, int floor, GameState gameState, List<string> enemyIds)
+	{
+		var injector = GetInjector<CombatInjector>();
+		Activate(injector);
+		injector.Show(gameNode, deckAnalysis, currentHP, maxHP, actNumber, floor, gameState, enemyIds);
+	}
+
+	public void ShowCardAdvice(Node gameNode, List<ScoredCard> cards, DeckAnalysis deckAnalysis, string character, string screenLabel = "CARD REWARD")
+	{
+		var injector = GetInjector<CardRewardInjector>();
+		Activate(injector);
+		injector.Show(gameNode, cards, deckAnalysis, character, screenLabel);
+	}
+
+	public void ShowRelicAdvice(Node gameNode, List<ScoredRelic> relics, DeckAnalysis deckAnalysis, string character)
+	{
+		var injector = GetInjector<RelicRewardInjector>();
+		Activate(injector);
+		injector.Show(gameNode, relics, deckAnalysis, character);
+	}
+
+	public void ShowShopAdvice(Node gameNode, List<ScoredCard> cards, List<ScoredRelic> relics, DeckAnalysis deckAnalysis, string character)
+	{
+		var injector = GetInjector<ShopInjector>();
+		Activate(injector);
+		injector.Show(gameNode, cards, relics, deckAnalysis, character);
+	}
+
+	public void UpdateCombatPiles(CombatSnapshot snapshot)
+	{
+		if (_activeInjector is CombatInjector combat)
+			combat.UpdatePiles(snapshot);
+	}
+
+	public void Clear()
+	{
+		DeactivateCurrent();
 	}
 
 	// === Global controls ===
