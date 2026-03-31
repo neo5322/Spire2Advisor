@@ -171,6 +171,121 @@ public static class OverlayStyles
         return sb;
     }
 
+    // ── Compact Entry (new UI) ──────────────────────────────────
+
+    /// <summary>
+    /// Compact card/relic entry — tight padding for the mini-widget view.
+    /// </summary>
+    public static StyleBoxFlat CreateCompactEntryStyle(bool isBest, TierGrade grade = TierGrade.C)
+    {
+        var sb = new StyleBoxFlat();
+        sb.BgColor = isBest ? OverlayTheme.BgEntryBest : OverlayTheme.BgEntry;
+        SetAllCornerRadius(sb, OverlayTheme.RadiusSM);
+        sb.ContentMarginLeft = 8f;
+        sb.ContentMarginRight = 6f;
+        sb.ContentMarginTop = sb.ContentMarginBottom = 3f;
+        if (isBest)
+        {
+            sb.BorderWidthLeft = 3;
+            sb.BorderColor = OverlayTheme.GetTierColor(grade);
+        }
+        return sb;
+    }
+
+    /// <summary>
+    /// Compact entry hover variant.
+    /// </summary>
+    public static StyleBoxFlat CreateCompactEntryHoverStyle(bool isBest, TierGrade grade = TierGrade.C)
+    {
+        var sb = CreateCompactEntryStyle(isBest, grade);
+        sb.BgColor = isBest ? OverlayTheme.BgEntryBestHover : OverlayTheme.BgEntryHover;
+        if (!isBest)
+        {
+            sb.BorderWidthLeft = 2;
+            sb.BorderColor = new Color(OverlayTheme.TextAccent, 0.5f);
+        }
+        return sb;
+    }
+
+    /// <summary>
+    /// Skip/pass entry — greyed-out style for skip recommendations.
+    /// </summary>
+    public static StyleBoxFlat CreateSkipEntryStyle()
+    {
+        var sb = new StyleBoxFlat();
+        sb.BgColor = OverlayTheme.BgSkipZone;
+        SetAllCornerRadius(sb, OverlayTheme.RadiusSM);
+        sb.ContentMarginLeft = 8f;
+        sb.ContentMarginRight = 6f;
+        sb.ContentMarginTop = sb.ContentMarginBottom = 3f;
+        sb.BorderWidthLeft = 2;
+        sb.BorderColor = new Color(OverlayTheme.Skip, 0.4f);
+        return sb;
+    }
+
+    // ── Score Bar ────────────────────────────────────────────────
+
+    /// <summary>
+    /// Background container for a horizontal score comparison bar.
+    /// </summary>
+    public static StyleBoxFlat CreateScoreBarBgStyle()
+    {
+        var sb = new StyleBoxFlat();
+        sb.BgColor = OverlayTheme.BgScoreBarEmpty;
+        SetAllCornerRadius(sb, 2);
+        return sb;
+    }
+
+    /// <summary>
+    /// Fill portion of a score bar, colored by grade.
+    /// </summary>
+    public static StyleBoxFlat CreateScoreBarFillStyle(TierGrade grade)
+    {
+        var sb = new StyleBoxFlat();
+        sb.BgColor = OverlayTheme.GetScoreBarColor(grade);
+        SetAllCornerRadius(sb, 2);
+        return sb;
+    }
+
+    // ── HP Bar ───────────────────────────────────────────────────
+
+    /// <summary>
+    /// HP bar background.
+    /// </summary>
+    public static StyleBoxFlat CreateHpBarBgStyle()
+    {
+        var sb = new StyleBoxFlat();
+        sb.BgColor = OverlayTheme.BgHpBar;
+        SetAllCornerRadius(sb, 3);
+        return sb;
+    }
+
+    /// <summary>
+    /// HP bar fill, colored by health ratio.
+    /// </summary>
+    public static StyleBoxFlat CreateHpBarFillStyle(float hpRatio)
+    {
+        var sb = new StyleBoxFlat();
+        sb.BgColor = OverlayTheme.GetHpColor(hpRatio);
+        SetAllCornerRadius(sb, 3);
+        return sb;
+    }
+
+    // ── Grade Badge (inline) ─────────────────────────────────────
+
+    /// <summary>
+    /// Small inline grade badge for compact view (not the in-game card badge).
+    /// </summary>
+    public static StyleBoxFlat CreateInlineGradeBadgeStyle(TierGrade grade)
+    {
+        Color badgeColor = OverlayTheme.GetTierColor(grade);
+        var sb = new StyleBoxFlat { BgColor = badgeColor };
+        SetAllCornerRadius(sb, 3);
+        sb.ContentMarginLeft = sb.ContentMarginRight = 4f;
+        sb.ContentMarginTop = sb.ContentMarginBottom = 1f;
+        return sb;
+    }
+
     // ── Separator ────────────────────────────────────────────────
 
     public static StyleBoxLine CreateSeparatorStyle(float opacity = -1f)

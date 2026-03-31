@@ -109,6 +109,12 @@ public class CombatInjector : BaseScreenInjector
 
 	protected override void BuildContent()
 	{
+		// HP bar at top for combat awareness
+		if (_maxHP > 0)
+		{
+			Content.AddChild(CreateHpBar(_currentHP, _maxHP), forceReadableName: false, Node.InternalMode.Disabled);
+		}
+
 		// Combat advice tips
 		if (_combatAdvice != null && _combatAdvice.Count > 0)
 		{
@@ -123,8 +129,8 @@ public class CombatInjector : BaseScreenInjector
 			}
 		}
 
-		// Enemy details section
-		if (_enemyDetailsTips != null && _enemyDetailsTips.Count > 0)
+		// Enemy details section (expanded or when no pile data)
+		if (_enemyDetailsTips != null && _enemyDetailsTips.Count > 0 && (IsExpanded || _lastCombatSnapshot == null))
 		{
 			AddSectionHeader("적 상세 정보");
 			foreach (var (icon, text, color) in _enemyDetailsTips)

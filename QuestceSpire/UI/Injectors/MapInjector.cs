@@ -91,12 +91,17 @@ public class MapInjector : BaseScreenInjector
 			catch (Exception ex) { Plugin.Log($"MapInjector stats error: {ex.Message}"); }
 		}
 
-		// Deck breakdown
-		if (Settings.ShowDeckBreakdown && _deckAnalysis != null)
+		// Deck breakdown (expanded only)
+		if (IsExpanded && Settings.ShowDeckBreakdown && _deckAnalysis != null)
 		{
 			AddSectionHeader("덱 구성");
-			// Simplified inline deck viz
 			AddDeckSummary(_deckAnalysis);
+		}
+
+		// HP bar at bottom
+		if (_maxHP > 0)
+		{
+			Content.AddChild(CreateHpBar(_currentHP, _maxHP), forceReadableName: false, Node.InternalMode.Disabled);
 		}
 	}
 

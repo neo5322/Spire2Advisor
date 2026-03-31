@@ -24,6 +24,10 @@ public abstract class BaseScreenInjector
 	private Label _compactToggle;
 	private Label _winRateLabel;
 
+	// Compact/Expanded toggle
+	private bool _expanded;
+	private Label _expandToggle;
+
 	// Signal cleanup
 	private readonly List<Control> _connectedHoverNodes = new();
 	private static readonly string[] TrackedSignals = { "mouse_entered", "mouse_exited", "gui_input", "pressed" };
@@ -162,6 +166,7 @@ public abstract class BaseScreenInjector
 		Panel.OffsetTop = Settings.OffsetTop;
 		Panel.OffsetBottom = Settings.OffsetTop + 40;
 		Panel.GrowVertical = Control.GrowDirection.End;
+		Panel.CustomMinimumSize = new Vector2(CurrentPanelWidth, 0);
 		Panel.AddThemeStyleboxOverride("panel", Res.SbPanel);
 		Panel.MouseFilter = Control.MouseFilterEnum.Stop;
 
@@ -240,6 +245,22 @@ public abstract class BaseScreenInjector
 				Plugin.Coordinator?.ToggleSettings();
 		}));
 		titleRow.AddChild(gearBtn, forceReadableName: false, Node.InternalMode.Disabled);
+
+		// Expand/Compact toggle
+		_expandToggle = new Label();
+		_expandToggle.Text = _expanded ? "\u25C0" : "\u25B6"; // ◀ / ▶
+		Res.ApplyFont(_expandToggle, Res.FontBold);
+		_expandToggle.AddThemeFontSizeOverride("font_size", OverlayTheme.FontCaption);
+		_expandToggle.AddThemeColorOverride("font_color", SharedResources.ClrSub);
+		_expandToggle.MouseFilter = Control.MouseFilterEnum.Stop;
+		_expandToggle.MouseDefaultCursorShape = Control.CursorShape.PointingHand;
+		_expandToggle.TooltipText = _expanded ? "축소" : "확장";
+		_expandToggle.Connect("gui_input", Callable.From((InputEvent ev) =>
+		{
+			if (ev is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left)
+				ToggleExpanded();
+		}));
+		titleRow.AddChild(_expandToggle, forceReadableName: false, Node.InternalMode.Disabled);
 
 		// Collapse toggle
 		_compactToggle = new Label();
@@ -537,7 +558,7 @@ public abstract class BaseScreenInjector
 	private void FitPanelHeight()
 	{
 		if (Panel == null || !GodotObject.IsInstanceValid(Panel)) return;
-		Panel.CustomMinimumSize = Vector2.Zero;
+		Panel.CustomMinimumSize = new Vector2(CurrentPanelWidth, 0);
 		Panel.ResetSize();
 		Callable.From(FitPanelHeightFinalize).CallDeferred();
 	}
@@ -579,5 +600,309 @@ public abstract class BaseScreenInjector
 		if (_titleSep == null || !GodotObject.IsInstanceValid(_titleSep)) return;
 		Color c = SharedResources.GetScreenColor(ScreenName);
 		_titleSep.AddThemeStyleboxOverride("separator", new StyleBoxLine { Color = new Color(c, 0.6f), Thickness = 2 });
+	}
+
+	// === Compact / Expanded ===
+
+	/// <summary>Whether the panel is in expanded (wide) mode.</summary>
+	protected bool IsExpanded => _expanded;
+
+	/// <summary>Current panel width based on compact/expanded state.</summary>
+	protected float CurrentPanelWidth => _expanded ? OverlayTheme.PanelWidthExpanded : OverlayTheme.PanelWidthCompact;
+
+	/// <summary>Font size for body text, adjusted for compact/expanded.</summary>
+	protected int CurrentFontBody => _expanded ? OverlayTheme.FontExpandedBody : OverlayTheme.FontBody;
+
+	/// <summary>Font size for H2 headers, adjusted for compact/expanded.</summary>
+	protected int CurrentFontH2 => _expanded ? OverlayTheme.FontExpandedH2 : OverlayTheme.FontH2;
+
+	public void ToggleExpanded()
+	{
+		_expanded = !_expanded;
+		if (_expandToggle != null && GodotObject.IsInstanceValid(_expandToggle))
+		{
+			_expandToggle.Text = _expanded ? "\u25C0" : "\u25B6";
+			_expandToggle.TooltipText = _expanded ? "축소" : "확장";
+		}
+		if (Panel != null && GodotObject.IsInstanceValid(Panel))
+			Panel.CustomMinimumSize = new Vector2(CurrentPanelWidth, 0);
+		Rebuild();
+	}
+
+	// === Score Bar Builder ===
+
+	/// <summary>
+	/// Creates a horizontal score bar showing relative score as a filled bar.
+	/// fillRatio: 0.0–1.0, grade determines fill color.
+	/// </summary>
+	protected PanelContainer CreateScoreBar(float fillRatio, TierGrade grade, float height = -1f)
+	{
+		float barH = height > 0 ? height : OverlayTheme.ScoreBarHeight;
+		fillRatio = Math.Clamp(fillRatio, 0f, 1f);
+
+		var bgPanel = new PanelContainer();
+		bgPanel.AddThemeStyleboxOverride("panel", OverlayStyles.CreateScoreBarBgStyle());
+		bgPanel.CustomMinimumSize = new Vector2(0, barH);
+		bgPanel.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+
+		var fill = new PanelContainer();
+		fill.AddThemeStyleboxOverride("panel", OverlayStyles.CreateScoreBarFillStyle(grade));
+		fill.CustomMinimumSize = new Vector2(0, barH);
+		fill.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+		fill.SizeFlagsStretchRatio = fillRatio;
+
+		var spacer = new Control();
+		spacer.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+		spacer.SizeFlagsStretchRatio = 1f - fillRatio;
+
+		var hbox = new HBoxContainer();
+		hbox.AddThemeConstantOverride("separation", 0);
+		hbox.AddChild(fill, forceReadableName: false, Node.InternalMode.Disabled);
+		if (fillRatio < 1f)
+			hbox.AddChild(spacer, forceReadableName: false, Node.InternalMode.Disabled);
+
+		bgPanel.AddChild(hbox, forceReadableName: false, Node.InternalMode.Disabled);
+		return bgPanel;
+	}
+
+	// === HP Bar Builder ===
+
+	/// <summary>
+	/// Creates an HP bar with text label showing current/max HP.
+	/// </summary>
+	protected VBoxContainer CreateHpBar(int currentHP, int maxHP)
+	{
+		float ratio = maxHP > 0 ? (float)currentHP / maxHP : 0f;
+		var vbox = new VBoxContainer();
+		vbox.AddThemeConstantOverride("separation", OverlayTheme.SpaceXS);
+
+		// Bar
+		var bgPanel = new PanelContainer();
+		bgPanel.AddThemeStyleboxOverride("panel", OverlayStyles.CreateHpBarBgStyle());
+		bgPanel.CustomMinimumSize = new Vector2(0, OverlayTheme.HpBarHeight);
+		bgPanel.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+
+		var fillBox = new HBoxContainer();
+		fillBox.AddThemeConstantOverride("separation", 0);
+
+		var fill = new PanelContainer();
+		fill.AddThemeStyleboxOverride("panel", OverlayStyles.CreateHpBarFillStyle(ratio));
+		fill.CustomMinimumSize = new Vector2(0, OverlayTheme.HpBarHeight);
+		fill.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+		fill.SizeFlagsStretchRatio = ratio;
+		fillBox.AddChild(fill, forceReadableName: false, Node.InternalMode.Disabled);
+
+		if (ratio < 1f)
+		{
+			var spacer = new Control();
+			spacer.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+			spacer.SizeFlagsStretchRatio = 1f - ratio;
+			fillBox.AddChild(spacer, forceReadableName: false, Node.InternalMode.Disabled);
+		}
+
+		bgPanel.AddChild(fillBox, forceReadableName: false, Node.InternalMode.Disabled);
+		vbox.AddChild(bgPanel, forceReadableName: false, Node.InternalMode.Disabled);
+
+		// Label
+		var hpLabel = new Label();
+		hpLabel.Text = $"\u2764 {currentHP}/{maxHP}";
+		OverlayStyles.StyleLabel(hpLabel, Res.FontBody, OverlayTheme.FontCaption, OverlayTheme.GetHpColor(ratio));
+		hpLabel.HorizontalAlignment = HorizontalAlignment.Center;
+		vbox.AddChild(hpLabel, forceReadableName: false, Node.InternalMode.Disabled);
+
+		return vbox;
+	}
+
+	// === Inline Grade Badge Builder ===
+
+	/// <summary>
+	/// Creates a compact inline grade badge (colored background + letter).
+	/// </summary>
+	protected PanelContainer CreateInlineGradeBadge(TierGrade grade, float score)
+	{
+		string subGrade = TierEngine.ScoreToSubGrade(score);
+		var badge = new PanelContainer();
+		badge.AddThemeStyleboxOverride("panel", OverlayStyles.CreateInlineGradeBadgeStyle(grade));
+		badge.CustomMinimumSize = new Vector2(OverlayTheme.GradeBadgeWidth, 0);
+
+		var lbl = new Label();
+		lbl.Text = subGrade;
+		lbl.HorizontalAlignment = HorizontalAlignment.Center;
+		OverlayStyles.StyleLabel(lbl, Res.FontBold,
+			subGrade.Length > 1 ? OverlayTheme.FontBadgeSmall : OverlayTheme.FontBadgeLarge,
+			OverlayTheme.GetTierTextColor(grade));
+		badge.AddChild(lbl, forceReadableName: false, Node.InternalMode.Disabled);
+		return badge;
+	}
+
+	// === Compact Card Entry Builder ===
+
+	/// <summary>
+	/// Builds a compact card entry row: [grade badge] [type icon] name [cost]
+	/// In expanded mode, adds a score bar below.
+	/// </summary>
+	protected PanelContainer CreateCompactCardEntry(ScoredCard card, bool isBest)
+	{
+		var entry = new PanelContainer();
+		var style = OverlayStyles.CreateCompactEntryStyle(isBest, card.FinalGrade);
+		var hoverStyle = OverlayStyles.CreateCompactEntryHoverStyle(isBest, card.FinalGrade);
+		entry.AddThemeStyleboxOverride("panel", style);
+
+		ConnectHoverSignals(entry,
+			() => entry.AddThemeStyleboxOverride("panel", hoverStyle),
+			() => entry.AddThemeStyleboxOverride("panel", style));
+
+		var vbox = new VBoxContainer();
+		vbox.AddThemeConstantOverride("separation", OverlayTheme.SpaceXS);
+
+		// Main row
+		var hbox = new HBoxContainer();
+		hbox.AddThemeConstantOverride("separation", OverlayTheme.SpaceSM);
+
+		// Grade badge
+		hbox.AddChild(CreateInlineGradeBadge(card.FinalGrade, card.FinalScore), forceReadableName: false, Node.InternalMode.Disabled);
+
+		// Type icon
+		string typeIcon = OverlayTheme.GetCardTypeIcon(card.Type);
+		var iconLbl = new Label();
+		iconLbl.Text = typeIcon;
+		OverlayStyles.StyleLabel(iconLbl, Res.FontBody, OverlayTheme.FontCaption, OverlayTheme.GetCardTypeColor(card.Type));
+		hbox.AddChild(iconLbl, forceReadableName: false, Node.InternalMode.Disabled);
+
+		// Name
+		var nameLbl = new Label();
+		nameLbl.Text = card.Name ?? card.Id;
+		OverlayStyles.StyleLabel(nameLbl, Res.FontBody, CurrentFontBody,
+			isBest ? OverlayTheme.TextAccent : OverlayTheme.TextBody);
+		nameLbl.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+		nameLbl.ClipText = !_expanded;
+		hbox.AddChild(nameLbl, forceReadableName: false, Node.InternalMode.Disabled);
+
+		// Cost
+		if (card.Cost >= 0)
+		{
+			var costLbl = new Label();
+			costLbl.Text = $"{card.Cost}";
+			OverlayStyles.StyleLabel(costLbl, Res.FontBody, OverlayTheme.FontCaption, SharedResources.ClrSub);
+			hbox.AddChild(costLbl, forceReadableName: false, Node.InternalMode.Disabled);
+		}
+
+		vbox.AddChild(hbox, forceReadableName: false, Node.InternalMode.Disabled);
+
+		// Score bar (expanded mode only)
+		if (_expanded)
+		{
+			float maxScore = 6f;
+			float fillRatio = card.FinalScore / maxScore;
+			vbox.AddChild(CreateScoreBar(fillRatio, card.FinalGrade), forceReadableName: false, Node.InternalMode.Disabled);
+
+			// Synergy reasons
+			if (card.SynergyReasons?.Count > 0)
+			{
+				var reasonLbl = new Label();
+				reasonLbl.Text = string.Join(", ", card.SynergyReasons.Take(2));
+				OverlayStyles.StyleLabel(reasonLbl, Res.FontBody, OverlayTheme.FontCaption, SharedResources.ClrNotes);
+				reasonLbl.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+				vbox.AddChild(reasonLbl, forceReadableName: false, Node.InternalMode.Disabled);
+			}
+		}
+
+		entry.AddChild(vbox, forceReadableName: false, Node.InternalMode.Disabled);
+		return entry;
+	}
+
+	// === Compact Relic Entry Builder ===
+
+	/// <summary>
+	/// Builds a compact relic entry row: [grade badge] name
+	/// In expanded mode, adds a score bar below.
+	/// </summary>
+	protected PanelContainer CreateCompactRelicEntry(ScoredRelic relic, bool isBest)
+	{
+		var entry = new PanelContainer();
+		var style = OverlayStyles.CreateCompactEntryStyle(isBest, relic.FinalGrade);
+		var hoverStyle = OverlayStyles.CreateCompactEntryHoverStyle(isBest, relic.FinalGrade);
+		entry.AddThemeStyleboxOverride("panel", style);
+
+		ConnectHoverSignals(entry,
+			() => entry.AddThemeStyleboxOverride("panel", hoverStyle),
+			() => entry.AddThemeStyleboxOverride("panel", style));
+
+		var vbox = new VBoxContainer();
+		vbox.AddThemeConstantOverride("separation", OverlayTheme.SpaceXS);
+
+		var hbox = new HBoxContainer();
+		hbox.AddThemeConstantOverride("separation", OverlayTheme.SpaceSM);
+
+		// Grade badge
+		hbox.AddChild(CreateInlineGradeBadge(relic.FinalGrade, relic.FinalScore), forceReadableName: false, Node.InternalMode.Disabled);
+
+		// Name
+		var nameLbl = new Label();
+		nameLbl.Text = relic.Name ?? relic.Id;
+		OverlayStyles.StyleLabel(nameLbl, Res.FontBody, CurrentFontBody,
+			isBest ? OverlayTheme.TextAccent : OverlayTheme.TextBody);
+		nameLbl.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+		nameLbl.ClipText = !_expanded;
+		hbox.AddChild(nameLbl, forceReadableName: false, Node.InternalMode.Disabled);
+
+		// Price (if shop)
+		if (relic.Price > 0)
+		{
+			var priceLbl = new Label();
+			priceLbl.Text = $"{relic.Price}g";
+			OverlayStyles.StyleLabel(priceLbl, Res.FontBody, OverlayTheme.FontCaption, SharedResources.ClrExpensive);
+			hbox.AddChild(priceLbl, forceReadableName: false, Node.InternalMode.Disabled);
+		}
+
+		vbox.AddChild(hbox, forceReadableName: false, Node.InternalMode.Disabled);
+
+		// Score bar (expanded mode only)
+		if (_expanded)
+		{
+			float maxScore = 6f;
+			float fillRatio = relic.FinalScore / maxScore;
+			vbox.AddChild(CreateScoreBar(fillRatio, relic.FinalGrade), forceReadableName: false, Node.InternalMode.Disabled);
+
+			if (relic.SynergyReasons?.Count > 0)
+			{
+				var reasonLbl = new Label();
+				reasonLbl.Text = string.Join(", ", relic.SynergyReasons.Take(2));
+				OverlayStyles.StyleLabel(reasonLbl, Res.FontBody, OverlayTheme.FontCaption, SharedResources.ClrNotes);
+				reasonLbl.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+				vbox.AddChild(reasonLbl, forceReadableName: false, Node.InternalMode.Disabled);
+			}
+		}
+
+		entry.AddChild(vbox, forceReadableName: false, Node.InternalMode.Disabled);
+		return entry;
+	}
+
+	// === Skip Entry Builder ===
+
+	/// <summary>
+	/// Creates a greyed-out "skip" recommendation entry.
+	/// </summary>
+	protected PanelContainer CreateSkipEntry(string reason = null)
+	{
+		var entry = new PanelContainer();
+		entry.AddThemeStyleboxOverride("panel", OverlayStyles.CreateSkipEntryStyle());
+
+		var hbox = new HBoxContainer();
+		hbox.AddThemeConstantOverride("separation", OverlayTheme.SpaceSM);
+
+		var dashLbl = new Label();
+		dashLbl.Text = "\u2014"; // em-dash
+		OverlayStyles.StyleLabel(dashLbl, Res.FontBold, OverlayTheme.FontSkipBadge, OverlayTheme.TextSkip);
+		hbox.AddChild(dashLbl, forceReadableName: false, Node.InternalMode.Disabled);
+
+		var skipLbl = new Label();
+		skipLbl.Text = reason ?? "스킵 추천";
+		OverlayStyles.StyleLabel(skipLbl, Res.FontBody, CurrentFontBody, OverlayTheme.TextSkip);
+		skipLbl.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+		hbox.AddChild(skipLbl, forceReadableName: false, Node.InternalMode.Disabled);
+
+		entry.AddChild(hbox, forceReadableName: false, Node.InternalMode.Disabled);
+		return entry;
 	}
 }

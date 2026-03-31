@@ -49,6 +49,12 @@ public class EventInjector : BaseScreenInjector
 			}
 			AddAdviceTip(icon, text, color);
 		}
+
+		// HP bar at bottom
+		if (_maxHP > 0)
+		{
+			Content.AddChild(CreateHpBar(_currentHP, _maxHP), forceReadableName: false, Node.InternalMode.Disabled);
+		}
 	}
 
 	private List<(string icon, string text, Color color)> GenerateEventScreenAdvice(DeckAnalysis deck, int hp, int maxHP, int gold, int act, int floor, string eventId)
