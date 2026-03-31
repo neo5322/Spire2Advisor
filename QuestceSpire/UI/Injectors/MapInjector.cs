@@ -4,6 +4,7 @@ using System.Linq;
 using Godot;
 using QuestceSpire.Core;
 using QuestceSpire.GameBridge;
+using QuestceSpire.Tracking;
 
 namespace QuestceSpire.UI.Injectors;
 
@@ -90,12 +91,17 @@ public class MapInjector : BaseScreenInjector
 			catch (Exception ex) { Plugin.Log($"MapInjector stats error: {ex.Message}"); }
 		}
 
-		// Deck breakdown
-		if (Settings.ShowDeckBreakdown && _deckAnalysis != null)
+		// Deck breakdown (expanded only)
+		if (IsExpanded && Settings.ShowDeckBreakdown && _deckAnalysis != null)
 		{
 			AddSectionHeader("덱 구성");
-			// Simplified inline deck viz
 			AddDeckSummary(_deckAnalysis);
+		}
+
+		// HP bar at bottom
+		if (_maxHP > 0)
+		{
+			Content.AddChild(CreateHpBar(_currentHP, _maxHP), forceReadableName: false, Node.InternalMode.Disabled);
 		}
 	}
 
@@ -111,13 +117,13 @@ public class MapInjector : BaseScreenInjector
 		Content.AddChild(summaryLbl, forceReadableName: false, Node.InternalMode.Disabled);
 
 		// Type distribution
-		if (analysis.TypeCounts != null && analysis.TypeCounts.Count > 0)
+		if (analysis.AttackCount + analysis.SkillCount + analysis.PowerCount > 0)
 		{
 			var typeLbl = new Label();
-			var parts = analysis.TypeCounts
-				.Where(kv => kv.Value > 0)
-				.OrderByDescending(kv => kv.Value)
-				.Select(kv => $"{kv.Key}: {kv.Value}");
+			var parts = new List<string>();
+			if (analysis.AttackCount > 0) parts.Add($"Attack: {analysis.AttackCount}");
+			if (analysis.SkillCount > 0) parts.Add($"Skill: {analysis.SkillCount}");
+			if (analysis.PowerCount > 0) parts.Add($"Power: {analysis.PowerCount}");
 			typeLbl.Text = string.Join("  ", parts);
 			Res.ApplyFont(typeLbl, Res.FontBody);
 			typeLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontCaption);

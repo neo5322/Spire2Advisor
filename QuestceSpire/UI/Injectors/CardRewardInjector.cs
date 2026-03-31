@@ -9,6 +9,8 @@ namespace QuestceSpire.UI.Injectors;
 /// <summary>
 /// Card reward/upgrade/removal screen injector — shows scored card recommendations.
 /// Handles: CARD REWARD, CARD UPGRADE, CARD REMOVAL, EVENT CARD OFFER screens.
+/// Compact: grade badge + type icon + name per line, skip greyed out.
+/// Expanded: score bars, synergy details, upgrade deltas.
 /// </summary>
 public class CardRewardInjector : BaseScreenInjector
 {
@@ -18,15 +20,19 @@ public class CardRewardInjector : BaseScreenInjector
 	private List<ScoredCard> _cards;
 	private DeckAnalysis _deckAnalysis;
 	private string _character;
+	private int _currentHP, _maxHP;
 
 	public CardRewardInjector(OverlaySettings settings) : base(settings) { }
 
-	public void Show(Node gameNode, List<ScoredCard> cards, DeckAnalysis deckAnalysis, string character, string screenLabel = "CARD REWARD")
+	public void Show(Node gameNode, List<ScoredCard> cards, DeckAnalysis deckAnalysis, string character,
+		string screenLabel = "CARD REWARD", int currentHP = 0, int maxHP = 0)
 	{
 		_cards = cards;
 		_deckAnalysis = deckAnalysis;
 		_character = character;
 		_screenName = screenLabel;
+		_currentHP = currentHP;
+		_maxHP = maxHP;
 
 		Inject(gameNode);
 		Rebuild();
@@ -42,9 +48,9 @@ public class CardRewardInjector : BaseScreenInjector
 
 		string headerText = _screenName switch
 		{
-			"CARD UPGRADE" => "업그레이드 추천",
-			"CARD REMOVAL" => "제거 추천",
-			"EVENT CARD OFFER" => "이벤트 카드 추천",
+			"CARD UPGRADE" => "업그레이드",
+			"CARD REMOVAL" => "제거",
+			"EVENT CARD OFFER" => "이벤트 카드",
 			_ => "카드 추천"
 		};
 		AddSectionHeader(headerText);
@@ -52,106 +58,82 @@ public class CardRewardInjector : BaseScreenInjector
 		bool isFirst = true;
 		foreach (var card in _cards)
 		{
-			string subGrade = TierEngine.ScoreToSubGrade(card.FinalScore);
-			Color gradeColor = GetGradeColor(card.FinalGrade);
-			string name = card.Name ?? card.Id;
-			string costStr = card.Cost >= 0 ? $"[{card.Cost}]" : "";
 			bool isBest = isFirst && card.FinalGrade >= TierGrade.B;
+			var entry = CreateCompactCardEntry(card, isBest);
 
-			AddCardEntry(name, subGrade, gradeColor, costStr, isBest, card);
+			// Upgrade delta info (expanded, for upgrade screens)
+			if (IsExpanded && card.UpgradeDelta > 0.5f)
+			{
+				AddUpgradeDeltaToEntry(entry, card.UpgradeDelta);
+			}
+
+			Content.AddChild(entry, forceReadableName: false, Node.InternalMode.Disabled);
 			isFirst = false;
 		}
 
-		// Skip recommendation for card rewards
-		if (_screenName == "CARD REWARD" && _cards.Count > 0)
+		// Skip recommendation
+		if (_screenName == "CARD REWARD" && _cards.Count > 0 && _cards[0].FinalGrade <= TierGrade.C)
 		{
-			var best = _cards[0];
-			if (best.FinalGrade <= TierGrade.C)
-			{
-				AddAdviceTip("\u26a0", "낮은 등급 — 스킵을 고려하세요", SharedResources.ClrSkip);
-			}
+			Content.AddChild(CreateSkipEntry("낮은 등급 — 스킵 고려"), forceReadableName: false, Node.InternalMode.Disabled);
 		}
 
-		// Deck summary
-		if (Settings.ShowDeckBreakdown && _deckAnalysis != null)
+		// Deck summary (expanded only)
+		if (IsExpanded && Settings.ShowDeckBreakdown && _deckAnalysis != null)
 		{
 			AddSectionHeader("덱 구성");
 			var summaryLbl = new Label();
 			summaryLbl.Text = $"카드 {_deckAnalysis.TotalCards}장";
 			if (_deckAnalysis.DetectedArchetypes?.Count > 0)
 				summaryLbl.Text += $" — {_deckAnalysis.DetectedArchetypes[0].Archetype.DisplayName} ({_deckAnalysis.DetectedArchetypes[0].Strength:P0})";
-			Res.ApplyFont(summaryLbl, Res.FontBody);
-			summaryLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
-			summaryLbl.AddThemeColorOverride("font_color", SharedResources.ClrCream);
+			OverlayStyles.StyleLabel(summaryLbl, Res.FontBody, OverlayTheme.FontBody, SharedResources.ClrCream);
 			Content.AddChild(summaryLbl, forceReadableName: false, Node.InternalMode.Disabled);
+
+			// Type distribution
+			if (_deckAnalysis.AttackCount + _deckAnalysis.SkillCount + _deckAnalysis.PowerCount > 0)
+			{
+				var typeRow = new HBoxContainer();
+				typeRow.AddThemeConstantOverride("separation", OverlayTheme.SpaceMD);
+
+				AddTypeChip(typeRow, "\u2694", "Attack", _deckAnalysis.AttackCount, OverlayTheme.CardAttack);
+				AddTypeChip(typeRow, "\u26E8", "Skill", _deckAnalysis.SkillCount, OverlayTheme.CardSkill);
+				AddTypeChip(typeRow, "\u2726", "Power", _deckAnalysis.PowerCount, OverlayTheme.CardPower);
+
+				Content.AddChild(typeRow, forceReadableName: false, Node.InternalMode.Disabled);
+			}
+		}
+
+		// HP bar at bottom
+		if (_maxHP > 0)
+		{
+			Content.AddChild(CreateHpBar(_currentHP, _maxHP), forceReadableName: false, Node.InternalMode.Disabled);
 		}
 	}
 
-	private void AddCardEntry(string name, string grade, Color gradeColor, string costStr, bool isBest, ScoredCard card)
+	private void AddUpgradeDeltaToEntry(PanelContainer entry, float delta)
 	{
-		var entry = new PanelContainer();
-		entry.AddThemeStyleboxOverride("panel", isBest ? Res.SbBest : Res.SbEntry);
-
-		var vbox = new VBoxContainer();
-		vbox.AddThemeConstantOverride("separation", OverlayTheme.SpaceXS);
-
-		// Main row: grade + cost + name
-		var hbox = new HBoxContainer();
-		hbox.AddThemeConstantOverride("separation", OverlayTheme.SpaceMD);
-
-		var gradeLbl = new Label();
-		gradeLbl.Text = grade;
-		Res.ApplyFont(gradeLbl, Res.FontBold);
-		gradeLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
-		gradeLbl.AddThemeColorOverride("font_color", gradeColor);
-		gradeLbl.CustomMinimumSize = new Vector2(40, 0);
-		hbox.AddChild(gradeLbl, forceReadableName: false, Node.InternalMode.Disabled);
-
-		if (!string.IsNullOrEmpty(costStr))
+		try
 		{
-			var costLbl = new Label();
-			costLbl.Text = costStr;
-			Res.ApplyFont(costLbl, Res.FontBody);
-			costLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontCaption);
-			costLbl.AddThemeColorOverride("font_color", SharedResources.ClrSub);
-			hbox.AddChild(costLbl, forceReadableName: false, Node.InternalMode.Disabled);
+			var vbox = entry.GetChild(0);
+			if (vbox is VBoxContainer vb)
+			{
+				var deltaLbl = new Label();
+				deltaLbl.Text = $"\u2B06 업그레이드 +{delta:F1}";
+				OverlayStyles.StyleLabel(deltaLbl, Res.FontBody, OverlayTheme.FontCaption, SharedResources.ClrPositive);
+				vb.AddChild(deltaLbl, forceReadableName: false, Node.InternalMode.Disabled);
+			}
 		}
-
-		var nameLbl = new Label();
-		nameLbl.Text = name;
-		Res.ApplyFont(nameLbl, Res.FontBody);
-		nameLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontBody);
-		nameLbl.AddThemeColorOverride("font_color", SharedResources.ClrCream);
-		nameLbl.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
-		hbox.AddChild(nameLbl, forceReadableName: false, Node.InternalMode.Disabled);
-
-		vbox.AddChild(hbox, forceReadableName: false, Node.InternalMode.Disabled);
-
-		// Synergy/reason sub-line
-		if (card.SynergyDelta > 0.3f || card.UpgradeDelta > 0.5f)
+		catch (Exception ex)
 		{
-			var reasonLbl = new Label();
-			var reasons = new List<string>();
-			if (card.SynergyDelta > 0.3f) reasons.Add($"시너지 +{card.SynergyDelta:F1}");
-			if (card.UpgradeDelta > 0.5f) reasons.Add($"업그레이드 +{card.UpgradeDelta:F1}");
-			reasonLbl.Text = string.Join("  ", reasons);
-			Res.ApplyFont(reasonLbl, Res.FontBody);
-			reasonLbl.AddThemeFontSizeOverride("font_size", OverlayTheme.FontCaption);
-			reasonLbl.AddThemeColorOverride("font_color", SharedResources.ClrSub);
-			vbox.AddChild(reasonLbl, forceReadableName: false, Node.InternalMode.Disabled);
+			Plugin.Log($"CardRewardInjector.AddUpgradeDeltaToEntry error: {ex.Message}");
 		}
-
-		entry.AddChild(vbox, forceReadableName: false, Node.InternalMode.Disabled);
-		Content.AddChild(entry, forceReadableName: false, Node.InternalMode.Disabled);
 	}
 
-	private static Color GetGradeColor(TierGrade grade) => grade switch
+	private void AddTypeChip(HBoxContainer parent, string icon, string label, int count, Color color)
 	{
-		TierGrade.S => SharedResources.ClrAccent,
-		TierGrade.A => SharedResources.ClrPositive,
-		TierGrade.B => SharedResources.ClrAqua,
-		TierGrade.C => SharedResources.ClrCream,
-		TierGrade.D => SharedResources.ClrSub,
-		_ => SharedResources.ClrSkip
-	};
+		if (count <= 0) return;
+		var chip = new Label();
+		chip.Text = $"{icon} {count}";
+		OverlayStyles.StyleLabel(chip, Res.FontBody, OverlayTheme.FontCaption, color);
+		parent.AddChild(chip, forceReadableName: false, Node.InternalMode.Disabled);
+	}
 }

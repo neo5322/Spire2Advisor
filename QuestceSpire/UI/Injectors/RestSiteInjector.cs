@@ -49,6 +49,12 @@ public class RestSiteInjector : BaseScreenInjector
 			}
 			AddAdviceTip(icon, text, color);
 		}
+
+		// HP bar at bottom
+		if (_maxHP > 0)
+		{
+			Content.AddChild(CreateHpBar(_currentHP, _maxHP), forceReadableName: false, Node.InternalMode.Disabled);
+		}
 	}
 
 	private List<(string icon, string text, Color color)> GenerateRestSiteAdvice(DeckAnalysis deck, int hp, int maxHP, int act, int floor, GameState gameState)
