@@ -55,6 +55,9 @@ public class MapInjector : BaseScreenInjector
 			AddAdviceTip(icon, text, color);
 		}
 
+		// Build completion from community data
+		BuildCompletionSection(_deckAnalysis);
+
 		// Stats comparison
 		string statsCharacter = _deckAnalysis?.Character;
 		if (statsCharacter != null)
@@ -102,6 +105,96 @@ public class MapInjector : BaseScreenInjector
 		if (_maxHP > 0)
 		{
 			Content.AddChild(CreateHpBar(_currentHP, _maxHP), forceReadableName: false, Node.InternalMode.Disabled);
+		}
+	}
+
+	private void BuildCompletionSection(DeckAnalysis analysis)
+	{
+		try
+		{
+			if (analysis == null || Plugin.CommunityData == null || !Plugin.CommunityData.IsLoaded)
+				return;
+
+			// Get deck Korean names for community lookup
+			var deckKoreanNames = new List<string>();
+			var gs = GameStateReader.ReadCurrentState();
+			if (gs?.DeckCards != null)
+			{
+				foreach (var card in gs.DeckCards)
+				{
+					var koreanName = GameStateReader.GetLocalizedName("card", card.Id);
+					if (koreanName != null) deckKoreanNames.Add(koreanName);
+				}
+			}
+
+			if (deckKoreanNames.Count == 0) return;
+
+			dynamic completion = Plugin.CommunityData.GetBuildCompletion(
+				analysis.Character, null, deckKoreanNames);
+			if (completion == null) return;
+			float pct = (float)completion.Percentage;
+			int level = (int)completion.Level;
+			if (pct <= 0) return;
+
+			AddSectionHeader("빌드 진행");
+
+			// Build name + percentage
+			string archName = (string)completion.ArchetypeName ?? "빌드";
+			var headerLbl = new Label();
+			headerLbl.Text = $"{archName} {pct:F0}%";
+			OverlayStyles.StyleLabel(headerLbl, Res.FontBold, OverlayTheme.FontH2,
+				level >= 4 ? OverlayTheme.Positive : OverlayTheme.TextAccent);
+			Content.AddChild(headerLbl, forceReadableName: false, Node.InternalMode.Disabled);
+
+			// Progress bar
+			var barBg = new PanelContainer();
+			var barBgStyle = new StyleBoxFlat();
+			barBgStyle.BgColor = OverlayTheme.BgScoreBarEmpty;
+			OverlayStyles.SetAllCornerRadius(barBgStyle, 3);
+			barBg.AddThemeStyleboxOverride("panel", barBgStyle);
+			barBg.CustomMinimumSize = new Vector2(0, 8);
+
+			var barFill = new ColorRect();
+			float fillRatio = Math.Clamp(pct / 100f, 0f, 1f);
+			Color barColor = level switch
+			{
+				1 => OverlayTheme.ScoreBarC,
+				2 => OverlayTheme.ScoreBarB,
+				3 => OverlayTheme.ScoreBarA,
+				4 => OverlayTheme.ScoreBarS,
+				5 => new Color(1f, 0.84f, 0f),
+				_ => OverlayTheme.ScoreBarC
+			};
+			barFill.Color = barColor;
+			barFill.CustomMinimumSize = new Vector2(CurrentPanelWidth * fillRatio * 0.75f, 8);
+			barBg.AddChild(barFill, forceReadableName: false, Node.InternalMode.Disabled);
+			Content.AddChild(barBg, forceReadableName: false, Node.InternalMode.Disabled);
+
+			// Missing must cards — from DeckAnalysis (populated by scoring agent)
+			var missingMust = analysis.MissingMustCards;
+			if (missingMust?.Count > 0)
+			{
+				var mustLbl = new Label();
+				mustLbl.Text = $"필수: {string.Join(", ", missingMust)}";
+				OverlayStyles.StyleLabel(mustLbl, Res.FontBody, OverlayTheme.FontCaption, OverlayTheme.Negative);
+				mustLbl.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+				Content.AddChild(mustLbl, forceReadableName: false, Node.InternalMode.Disabled);
+			}
+
+			// Missing rec cards — from DeckAnalysis (populated by scoring agent)
+			var missingRec = analysis.MissingRecCards;
+			if (missingRec?.Count > 0)
+			{
+				var recLbl = new Label();
+				recLbl.Text = $"권장: {string.Join(", ", missingRec)}";
+				OverlayStyles.StyleLabel(recLbl, Res.FontBody, OverlayTheme.FontCaption, SharedResources.ClrSub);
+				recLbl.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+				Content.AddChild(recLbl, forceReadableName: false, Node.InternalMode.Disabled);
+			}
+		}
+		catch (Exception ex)
+		{
+			Plugin.Log($"MapInjector.BuildCompletionSection error: {ex.Message}");
 		}
 	}
 

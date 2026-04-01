@@ -44,4 +44,13 @@ public class ScoredCard
 	public int Price { get; set; }
 
 	public string ScoreSource { get; set; } = "static";
+
+	/// <summary>Korean community tip for this card.</summary>
+	public string CommunityTip { get; set; }
+
+	/// <summary>Build alignment chips: tag ("good"/"bad"/"mid") + Korean label.</summary>
+	public List<(string tag, string label)> Chips { get; set; } = new List<(string, string)>();
+
+	/// <summary>Build alignment label: "필수"/"시너지"/"오프빌드"/null.</summary>
+	public string BuildAlignment { get; set; }
 }

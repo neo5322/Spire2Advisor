@@ -115,6 +115,9 @@ public class CombatInjector : BaseScreenInjector
 			Content.AddChild(CreateHpBar(_currentHP, _maxHP), forceReadableName: false, Node.InternalMode.Disabled);
 		}
 
+		// Combo highlight — show at top when combos detected in hand
+		BuildComboHighlightSection();
+
 		// Combat advice tips
 		if (_combatAdvice != null && _combatAdvice.Count > 0)
 		{
@@ -142,6 +145,94 @@ public class CombatInjector : BaseScreenInjector
 		// Combat pile tracking
 		if (_lastCombatSnapshot != null)
 			BuildCombatPileSection();
+	}
+
+	private void BuildComboHighlightSection()
+	{
+		try
+		{
+			if (Plugin.CommunityData == null || !Plugin.CommunityData.IsLoaded) return;
+			if (_lastCombatSnapshot == null || _lastCombatSnapshot.Hand.Count == 0) return;
+
+			string character = _deckAnalysis?.Character;
+			if (string.IsNullOrEmpty(character)) return;
+
+			// Build deck Korean names from current game state
+			var deckKoreanNames = new List<string>();
+			var gs = GameStateReader.ReadCurrentState();
+			if (gs?.DeckCards != null)
+			{
+				foreach (var card in gs.DeckCards)
+				{
+					var kn = GameStateReader.GetLocalizedName("card", card.Id);
+					if (kn != null) deckKoreanNames.Add(kn);
+				}
+			}
+			if (deckKoreanNames.Count == 0) return;
+
+			// Check each hand card for combos
+			var detectedCombos = new List<(string name, string why)>();
+			var seenComboNames = new HashSet<string>();
+
+			foreach (var handCard in _lastCombatSnapshot.Hand)
+			{
+				var koreanName = GameStateReader.GetLocalizedName("card", handCard.Name);
+				if (koreanName == null) continue;
+
+				dynamic result = Plugin.CommunityData.GetMatchingCombos(character, koreanName, deckKoreanNames);
+				var full = result.Item1;
+				if (full == null) continue;
+
+				foreach (dynamic combo in full)
+				{
+					string comboName = combo.Name;
+					if (seenComboNames.Add(comboName))
+						detectedCombos.Add((comboName, (string)combo.Why));
+				}
+			}
+
+			if (detectedCombos.Count == 0) return;
+
+			// Show combo section
+			var comboPanel = new PanelContainer();
+			var comboStyle = new StyleBoxFlat();
+			comboStyle.BgColor = new Color(OverlayTheme.Info, 0.10f);
+			OverlayStyles.SetAllCornerRadius(comboStyle, OverlayTheme.RadiusSM);
+			comboStyle.BorderWidthLeft = 3;
+			comboStyle.BorderColor = new Color(OverlayTheme.Info, 0.6f);
+			comboStyle.ContentMarginLeft = 12f;
+			comboStyle.ContentMarginRight = 10f;
+			comboStyle.ContentMarginTop = 6f;
+			comboStyle.ContentMarginBottom = 6f;
+			comboPanel.AddThemeStyleboxOverride("panel", comboStyle);
+
+			var comboVbox = new VBoxContainer();
+			comboVbox.AddThemeConstantOverride("separation", OverlayTheme.SpaceXS);
+
+			var headerLbl = new Label();
+			headerLbl.Text = "\U0001F525 콤보 기회";
+			OverlayStyles.StyleLabel(headerLbl, Res.FontBold, OverlayTheme.FontBody, OverlayTheme.Info);
+			comboVbox.AddChild(headerLbl, forceReadableName: false, Node.InternalMode.Disabled);
+
+			int shown = 0;
+			foreach (var (name, why) in detectedCombos)
+			{
+				if (shown >= 3) break;
+				var comboLbl = new Label();
+				comboLbl.Text = $"{name}: {why}";
+				OverlayStyles.StyleLabel(comboLbl, Res.FontBody, OverlayTheme.FontCaption, SharedResources.ClrCream);
+				comboLbl.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+				comboVbox.AddChild(comboLbl, forceReadableName: false, Node.InternalMode.Disabled);
+				shown++;
+			}
+
+			comboPanel.AddChild(comboVbox, forceReadableName: false, Node.InternalMode.Disabled);
+			Content.AddChild(comboPanel, forceReadableName: false, Node.InternalMode.Disabled);
+		}
+		catch (Exception ex)
+		{
+			Plugin.Log($"CombatInjector.BuildComboHighlightSection error: {ex.Message}");
+		}
 	}
 
 	private void BuildCombatPileSection()
