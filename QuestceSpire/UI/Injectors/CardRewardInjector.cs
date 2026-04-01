@@ -216,14 +216,13 @@ public class CardRewardInjector : BaseScreenInjector
 			}
 			if (deckKoreanNames.Count == 0) return;
 
-			dynamic result = Plugin.CommunityData.GetMatchingCombos(_character, koreanName, deckKoreanNames);
-			var full = result.Item1;
+			var (full, _) = Plugin.CommunityData.GetMatchingCombos(_character, koreanName, deckKoreanNames);
 			if (full == null || full.Count == 0) return;
 
 			var vbox = entry.GetChild(0) as VBoxContainer;
 			if (vbox == null) return;
 
-			dynamic combo = full[0];
+			var combo = full[0];
 			var comboLbl = new Label();
 			comboLbl.Text = $"\u26A1 콤보: {combo.Name} — {combo.Why}";
 			OverlayStyles.StyleLabel(comboLbl, Res.FontBody, OverlayTheme.FontCaption, OverlayTheme.Info);

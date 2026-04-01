@@ -179,15 +179,14 @@ public class CombatInjector : BaseScreenInjector
 				var koreanName = GameStateReader.GetLocalizedName("card", handCard.Name);
 				if (koreanName == null) continue;
 
-				dynamic result = Plugin.CommunityData.GetMatchingCombos(character, koreanName, deckKoreanNames);
-				var full = result.Item1;
+				var (full, _) = Plugin.CommunityData.GetMatchingCombos(character, koreanName, deckKoreanNames);
 				if (full == null) continue;
 
-				foreach (dynamic combo in full)
+				foreach (var combo in full)
 				{
 					string comboName = combo.Name;
 					if (seenComboNames.Add(comboName))
-						detectedCombos.Add((comboName, (string)combo.Why));
+						detectedCombos.Add((comboName, combo.Why));
 				}
 			}
 
@@ -210,7 +209,7 @@ public class CombatInjector : BaseScreenInjector
 			comboVbox.AddThemeConstantOverride("separation", OverlayTheme.SpaceXS);
 
 			var headerLbl = new Label();
-			headerLbl.Text = "\U0001F525 콤보 기회";
+			headerLbl.Text = "\u26A1 콤보 기회";
 			OverlayStyles.StyleLabel(headerLbl, Res.FontBold, OverlayTheme.FontBody, OverlayTheme.Info);
 			comboVbox.AddChild(headerLbl, forceReadableName: false, Node.InternalMode.Disabled);
 

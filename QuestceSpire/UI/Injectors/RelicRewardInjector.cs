@@ -51,8 +51,7 @@ public class RelicRewardInjector : BaseScreenInjector
 		{
 			if (Plugin.CommunityData != null && Plugin.CommunityData.IsLoaded && _deckAnalysis?.CommunityArchetype != null)
 			{
-				// CommunityArchetype is typed as object in DeckAnalysis; use dynamic to access Id
-				dynamic archetype = _deckAnalysis.CommunityArchetype;
+				var archetype = _deckAnalysis.CommunityArchetype;
 				string archetypeId = archetype?.Id;
 				if (!string.IsNullOrEmpty(archetypeId))
 					buildRelics = Plugin.CommunityData.GetBuildRelics(archetypeId);
@@ -78,7 +77,7 @@ public class RelicRewardInjector : BaseScreenInjector
 		{
 			try
 			{
-				dynamic archetype = _deckAnalysis.CommunityArchetype;
+				var archetype = _deckAnalysis.CommunityArchetype;
 				string archName = archetype?.Name;
 				if (!string.IsNullOrEmpty(archName))
 				{

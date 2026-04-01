@@ -45,12 +45,12 @@ public class ScoredCard
 
 	public string ScoreSource { get; set; } = "static";
 
-	/// <summary>Korean community tip for this card.</summary>
+	/// <summary>Korean community tip text for display in UI.</summary>
 	public string CommunityTip { get; set; }
 
-	/// <summary>Build alignment chips: tag ("good"/"bad"/"mid") + Korean label.</summary>
+	/// <summary>UI chip tags: ("good"/"bad"/"mid", Korean label) for badge-style display.</summary>
 	public List<(string tag, string label)> Chips { get; set; } = new List<(string, string)>();
 
-	/// <summary>Build alignment label: "필수"/"시너지"/"오프빌드"/null.</summary>
+	/// <summary>Build alignment status: "필수"/"시너지"/"오프빌드"/null.</summary>
 	public string BuildAlignment { get; set; }
 }

@@ -72,4 +72,16 @@ public class DeckAnalysis
 			return Math.Max(0f, 1f - coverage);
 		return 1f;
 	}
+
+	/// <summary>Best community archetype detected for the current deck. Null if community data unavailable.</summary>
+	public CommunityArchetype CommunityArchetype { get; set; }
+
+	/// <summary>Build completion state from community data. Null if unavailable.</summary>
+	public BuildCompletionState BuildCompletion { get; set; }
+
+	/// <summary>Must-have cards missing from the detected community build.</summary>
+	public List<string> MissingMustCards { get; set; } = new List<string>();
+
+	/// <summary>Recommended cards missing from the detected community build.</summary>
+	public List<string> MissingRecCards { get; set; } = new List<string>();
 }

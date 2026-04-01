@@ -129,17 +129,17 @@ public class MapInjector : BaseScreenInjector
 
 			if (deckKoreanNames.Count == 0) return;
 
-			dynamic completion = Plugin.CommunityData.GetBuildCompletion(
+			var completion = Plugin.CommunityData.GetBuildCompletion(
 				analysis.Character, null, deckKoreanNames);
 			if (completion == null) return;
-			float pct = (float)completion.Percentage;
-			int level = (int)completion.Level;
+			float pct = completion.Percentage;
+			int level = completion.Level;
 			if (pct <= 0) return;
 
 			AddSectionHeader("빌드 진행");
 
 			// Build name + percentage
-			string archName = (string)completion.ArchetypeName ?? "빌드";
+			string archName = completion.ArchetypeName ?? "빌드";
 			var headerLbl = new Label();
 			headerLbl.Text = $"{archName} {pct:F0}%";
 			OverlayStyles.StyleLabel(headerLbl, Res.FontBold, OverlayTheme.FontH2,

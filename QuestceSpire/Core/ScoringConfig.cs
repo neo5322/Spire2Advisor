@@ -102,6 +102,17 @@ namespace QuestceSpire.Core
         public float AdaptiveBlendWinRate { get; set; } = 0.4f;
         public float AdaptivePickRateMaxBonus { get; set; } = 0.3f;
 
+        // Community data bonuses
+        public float CommunityComboFullBonus { get; set; } = 0.5f;
+        public float CommunityComboPartialBonus { get; set; } = 0.2f;
+        public float CommunityBuildMustBonus { get; set; } = 0.6f;
+        public float CommunityBuildRecBonus { get; set; } = 0.3f;
+        public float CommunityOffBuildPenalty { get; set; } = -0.2f;
+        public float CommunityAnchorScale { get; set; } = 0.003f;
+        public float CommunityUniversalBonus { get; set; } = 0.3f;
+        public float CommunityDuplicateOverride { get; set; } = 0.3f;
+        public float CommunityBonusCap { get; set; } = 0.8f;
+
         // Per-character deck size thresholds (optional override)
         public Dictionary<string, int> ThinDeckByCharacter { get; set; } = new();
         public Dictionary<string, int> BloatedDeckByCharacter { get; set; } = new();

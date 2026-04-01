@@ -100,6 +100,8 @@ public static class Plugin
 
 	public static OfflineDataManager OfflineDataManager { get; private set; }
 
+	public static CommunityData CommunityData { get; private set; }
+
 	/// <summary>
 	/// Number of compatibility issues detected at startup. Non-zero means some
 	/// features may not work with the current game version.
@@ -151,6 +153,7 @@ public static class Plugin
 		ArchetypeDefinitions.LoadFromJson(Path.Combine(dataPath, "archetypes.json"));
 		BossAdvisor.LoadFromJson(Path.Combine(dataPath, "BossData", "bosses.json"));
 		BossAdvisor.LoadMonsterCodex(dataPath);
+		CommunityData = CommunityData.Load(dataPath);
 		EventAdvisor = new EventAdvisor(dataPath);
 		EnemyAdvisor = new EnemyAdvisor(dataPath);
 		CloudSync = new CloudSync(RunDatabase, RunTracker.PlayerId);
@@ -312,6 +315,7 @@ public static class Plugin
 			EnemyAdvisor?.Reload();
 			ArchetypeDefinitions.LoadFromJson(Path.Combine(dataPath, "archetypes.json"));
 			BossAdvisor.LoadFromJson(Path.Combine(dataPath, "BossData", "bosses.json"));
+			CommunityData = CommunityData.Load(dataPath);
 			Log("All data reloaded after update.");
 		}
 		catch (Exception ex)
