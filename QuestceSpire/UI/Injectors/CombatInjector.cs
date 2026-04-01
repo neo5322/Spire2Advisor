@@ -209,7 +209,7 @@ public class CombatInjector : BaseScreenInjector
 			comboVbox.AddThemeConstantOverride("separation", OverlayTheme.SpaceXS);
 
 			var headerLbl = new Label();
-			headerLbl.Text = "\U0001F525 콤보 기회";
+			headerLbl.Text = "\u26A1 콤보 기회";
 			OverlayStyles.StyleLabel(headerLbl, Res.FontBold, OverlayTheme.FontBody, OverlayTheme.Info);
 			comboVbox.AddChild(headerLbl, forceReadableName: false, Node.InternalMode.Disabled);
 
