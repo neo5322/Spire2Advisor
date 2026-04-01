@@ -465,7 +465,7 @@ public static class GameStateReader
 	private static RelicInfo RelicModelToInfo(RelicModel relic)
 	{
 		string relicId = relic.Id?.Entry ?? "unknown";
-		string relicName = (string)relic.Title ?? relicId;
+		string relicName = relic.Title?.ToString() ?? relicId;
 		if (relicName != relicId)
 			CacheLocalizedName("relic", relicId, relicName);
 		return new RelicInfo

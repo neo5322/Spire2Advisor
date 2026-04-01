@@ -125,7 +125,7 @@ public static class Plugin
 			PluginFolder = Path.Combine(AppContext.BaseDirectory, "mods", "SpireAdvisor");
 		}
 		LogPath = Path.Combine(PluginFolder, "spire-advisor.log");
-		AppDomain.CurrentDomain.AssemblyResolve += delegate(object? sender, ResolveEventArgs args)
+		AppDomain.CurrentDomain.AssemblyResolve += delegate(object sender, ResolveEventArgs args)
 		{
 			AssemblyName assemblyName = new AssemblyName(args.Name);
 			string text = Path.Combine(PluginFolder, assemblyName.Name + ".dll");

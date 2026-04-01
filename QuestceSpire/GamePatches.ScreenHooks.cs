@@ -62,7 +62,7 @@ public static partial class GamePatches
 			EnsureOverlay();
 			Plugin.Log("Shop screen detected — analyzing...");
 			RecordHook("OnShopOpened");
-			MerchantInventory? inventory = __instance.Inventory;
+			MerchantInventory inventory = __instance.Inventory;
 			GameStateReader.SetLastCardOptions(null);
 			GameStateReader.SetLastRelicOptions(null);
 			GameStateReader.SetLastMerchantInventory(inventory);

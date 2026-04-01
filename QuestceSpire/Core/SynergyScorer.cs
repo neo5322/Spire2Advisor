@@ -746,10 +746,7 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 		if (deckKoreanNames == null || deckKoreanNames.Count == 0) return 0f;
 		try
 		{
-			var combos = cd.GetMatchingCombos(character, koreanName, deckKoreanNames);
-			if (combos == null) return 0f;
-
-			var (full, partial) = combos;
+			var (full, partial) = cd.GetMatchingCombos(character, koreanName, deckKoreanNames);
 			float bonus = 0f;
 			if (full != null && full.Count > 0)
 			{
