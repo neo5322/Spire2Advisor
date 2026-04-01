@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using QuestceSpire.Core;
+using QuestceSpire.GameBridge;
 
 namespace QuestceSpire.UI.Injectors;
 
@@ -61,6 +62,15 @@ public class CardRewardInjector : BaseScreenInjector
 			bool isBest = isFirst && card.FinalGrade >= TierGrade.B;
 			var entry = CreateCompactCardEntry(card, isBest);
 
+			// Community chips (build alignment tags)
+			AddCommunityChips(entry, card);
+
+			// Community tip
+			AddCommunityTip(entry, card);
+
+			// Combo detection
+			AddComboInfo(entry, card);
+
 			// Upgrade delta info (expanded, for upgrade screens)
 			if (IsExpanded && card.UpgradeDelta > 0.5f)
 			{
@@ -106,6 +116,123 @@ public class CardRewardInjector : BaseScreenInjector
 		if (_maxHP > 0)
 		{
 			Content.AddChild(CreateHpBar(_currentHP, _maxHP), forceReadableName: false, Node.InternalMode.Disabled);
+		}
+	}
+
+	private void AddCommunityChips(PanelContainer entry, ScoredCard card)
+	{
+		try
+		{
+			if (card.Chips == null || card.Chips.Count == 0) return;
+			var vbox = entry.GetChild(0) as VBoxContainer;
+			if (vbox == null) return;
+
+			var chipRow = new HBoxContainer();
+			chipRow.AddThemeConstantOverride("separation", OverlayTheme.SpaceSM);
+
+			foreach (var (tag, label) in card.Chips)
+			{
+				Color chipColor = tag switch
+				{
+					"good" => OverlayTheme.Positive,
+					"bad" => OverlayTheme.Negative,
+					"mid" => OverlayTheme.Warning,
+					_ => SharedResources.ClrSub
+				};
+
+				var chipPanel = new PanelContainer();
+				var chipStyle = new StyleBoxFlat();
+				chipStyle.BgColor = new Color(chipColor, 0.15f);
+				OverlayStyles.SetAllCornerRadius(chipStyle, OverlayTheme.RadiusSM);
+				chipStyle.ContentMarginLeft = chipStyle.ContentMarginRight = 6f;
+				chipStyle.ContentMarginTop = chipStyle.ContentMarginBottom = 1f;
+				OverlayStyles.SetAllBorderWidth(chipStyle, 1);
+				chipStyle.BorderColor = new Color(chipColor, 0.3f);
+				chipPanel.AddThemeStyleboxOverride("panel", chipStyle);
+
+				var chipLbl = new Label();
+				chipLbl.Text = label;
+				OverlayStyles.StyleLabel(chipLbl, Res.FontBody, OverlayTheme.FontCaption, chipColor);
+				chipPanel.AddChild(chipLbl, forceReadableName: false, Node.InternalMode.Disabled);
+				chipRow.AddChild(chipPanel, forceReadableName: false, Node.InternalMode.Disabled);
+			}
+
+			vbox.AddChild(chipRow, forceReadableName: false, Node.InternalMode.Disabled);
+		}
+		catch (Exception ex)
+		{
+			Plugin.Log($"CardRewardInjector.AddCommunityChips error: {ex.Message}");
+		}
+	}
+
+	private void AddCommunityTip(PanelContainer entry, ScoredCard card)
+	{
+		try
+		{
+			string tip = card.CommunityTip;
+			if (string.IsNullOrEmpty(tip))
+			{
+				var koreanName = GameStateReader.GetLocalizedName("card", card.Id);
+				if (koreanName != null)
+					tip = Plugin.CommunityData?.GetTip(koreanName);
+			}
+			if (string.IsNullOrEmpty(tip)) return;
+
+			var vbox = entry.GetChild(0) as VBoxContainer;
+			if (vbox == null) return;
+
+			var tipLbl = new Label();
+			tipLbl.Text = tip;
+			OverlayStyles.StyleLabel(tipLbl, Res.FontBody, OverlayTheme.FontCaption, SharedResources.ClrNotes);
+			tipLbl.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			vbox.AddChild(tipLbl, forceReadableName: false, Node.InternalMode.Disabled);
+		}
+		catch (Exception ex)
+		{
+			Plugin.Log($"CardRewardInjector.AddCommunityTip error: {ex.Message}");
+		}
+	}
+
+	private void AddComboInfo(PanelContainer entry, ScoredCard card)
+	{
+		try
+		{
+			if (Plugin.CommunityData == null || !Plugin.CommunityData.IsLoaded) return;
+			if (_deckAnalysis == null || string.IsNullOrEmpty(_character)) return;
+
+			var koreanName = GameStateReader.GetLocalizedName("card", card.Id);
+			if (koreanName == null) return;
+
+			// Get deck Korean names
+			var deckKoreanNames = new List<string>();
+			var gs = GameStateReader.ReadCurrentState();
+			if (gs?.DeckCards != null)
+			{
+				foreach (var c in gs.DeckCards)
+				{
+					var kn = GameStateReader.GetLocalizedName("card", c.Id);
+					if (kn != null) deckKoreanNames.Add(kn);
+				}
+			}
+			if (deckKoreanNames.Count == 0) return;
+
+			dynamic result = Plugin.CommunityData.GetMatchingCombos(_character, koreanName, deckKoreanNames);
+			var full = result.Item1;
+			if (full == null || full.Count == 0) return;
+
+			var vbox = entry.GetChild(0) as VBoxContainer;
+			if (vbox == null) return;
+
+			dynamic combo = full[0];
+			var comboLbl = new Label();
+			comboLbl.Text = $"\u26A1 콤보: {combo.Name} — {combo.Why}";
+			OverlayStyles.StyleLabel(comboLbl, Res.FontBody, OverlayTheme.FontCaption, OverlayTheme.Info);
+			comboLbl.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			vbox.AddChild(comboLbl, forceReadableName: false, Node.InternalMode.Disabled);
+		}
+		catch (Exception ex)
+		{
+			Plugin.Log($"CardRewardInjector.AddComboInfo error: {ex.Message}");
 		}
 	}
 
