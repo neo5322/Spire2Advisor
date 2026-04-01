@@ -69,5 +69,15 @@
 
   "AdaptiveBlendContext": 0.6,
   "AdaptiveBlendWinRate": 0.4,
-  "AdaptivePickRateMaxBonus": 0.3
+  "AdaptivePickRateMaxBonus": 0.3,
+
+  "CommunityComboFullBonus": 0.5,
+  "CommunityComboPartialBonus": 0.2,
+  "CommunityBuildMustBonus": 0.6,
+  "CommunityBuildRecBonus": 0.3,
+  "CommunityOffBuildPenalty": -0.2,
+  "CommunityAnchorScale": 0.003,
+  "CommunityUniversalBonus": 0.3,
+  "CommunityDuplicateOverride": 0.3,
+  "CommunityBonusCap": 0.8
 }

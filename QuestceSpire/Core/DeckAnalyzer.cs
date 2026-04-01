@@ -166,6 +166,61 @@ public class DeckAnalyzer : IDeckAnalyzer
 			}
 		}
 		deckAnalysis.DetectedArchetypes.Sort((ArchetypeMatch a, ArchetypeMatch b) => b.Strength.CompareTo(a.Strength));
+
+		// Community archetype detection layer
+		try
+		{
+			var cd = Plugin.CommunityData;
+			if (cd != null && cd.IsLoaded)
+			{
+				// Build Korean name list for all deck cards
+				var deckKoreanNames = new List<string>(deck.Count);
+				foreach (CardInfo card in deck)
+				{
+					string localized = GameStateReader.GetLocalizedName("card", card.Id);
+					deckKoreanNames.Add(localized ?? card.Name ?? card.Id);
+				}
+
+				// Detect community archetype
+				var communityArch = cd.DetectArchetype(character, deckKoreanNames);
+				if (communityArch != null)
+				{
+					deckAnalysis.CommunityArchetype = communityArch;
+
+					// Get build completion state
+					string archId = communityArch.Id?.ToString();
+					if (archId != null)
+					{
+						var completion = cd.GetBuildCompletion(character, archId, deckKoreanNames);
+						if (completion != null)
+						{
+							deckAnalysis.BuildCompletion = completion;
+							// Extract missing must/rec cards
+							if (completion.MissingMust != null)
+							{
+								foreach (var must in completion.MissingMust)
+								{
+									string name = must?.ToString();
+									if (name != null)
+										deckAnalysis.MissingMustCards.Add(name);
+								}
+							}
+							if (completion.MissingRec != null)
+							{
+								foreach (var rec in completion.MissingRec)
+								{
+									string name = rec?.ToString();
+									if (name != null)
+										deckAnalysis.MissingRecCards.Add(name);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (Exception ex) { Plugin.Log($"DeckAnalyzer: community archetype detection error: {ex.Message}"); }
+
 		return deckAnalysis;
 	}
 

@@ -44,4 +44,13 @@ public class ScoredCard
 	public int Price { get; set; }
 
 	public string ScoreSource { get; set; } = "static";
+
+	/// <summary>Korean community tip text for display in UI. Null if no tip available.</summary>
+	public string CommunityTip { get; set; }
+
+	/// <summary>UI chip tags: ("good"/"bad"/"mid", Korean label) for badge-style display.</summary>
+	public List<(string Tag, string Label)> Chips { get; set; } = new List<(string, string)>();
+
+	/// <summary>Build alignment status: "필수"/"시너지"/"오프빌드"/null.</summary>
+	public string BuildAlignment { get; set; }
 }

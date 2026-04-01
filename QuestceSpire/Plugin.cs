@@ -100,6 +100,8 @@ public static class Plugin
 
 	public static OfflineDataManager OfflineDataManager { get; private set; }
 
+	public static CommunityData CommunityData { get; set; }
+
 	/// <summary>
 	/// Number of compatibility issues detected at startup. Non-zero means some
 	/// features may not work with the current game version.

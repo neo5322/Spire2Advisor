@@ -382,11 +382,53 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 
 		float upgradeAdjust = ApplyUpgradeBonus(card.Upgraded, ref score, synReasons);
 
-		// 4. Clamp and build result
+		// 4. Community data scoring (methods 16-21)
+		string communityTip = null;
+		var chips = new List<(string Tag, string Label)>();
+		string buildAlignment = null;
+		float communityTotal = 0f;
+		try
+		{
+			var cd = Plugin.CommunityData;
+			if (cd != null && cd.IsLoaded)
+			{
+				string koreanName = GetKoreanCardName(card);
+				var deckKoreanNames = GetDeckKoreanNames(deckCardIds);
+
+				communityTotal += ApplyCommunityComboBonus(cd, character, koreanName, deckKoreanNames, ref score, synReasons, chips);
+				communityTotal += ApplyCommunityBuildAlignment(cd, character, koreanName, deckKoreanNames, deckAnalysis, ref score, synReasons, antiReasons, chips, ref buildAlignment);
+				communityTotal += ApplyAnchorPowerBonus(cd, koreanName, ref score, synReasons, chips);
+				communityTotal += ApplyUniversalBonus(cd, character, koreanName, deckCardIds, card, ref score, synReasons, chips);
+				communityTotal += ApplyDuplicateExceptionOverride(cd, koreanName, deckCardIds, card, ref score, synReasons, chips);
+				communityTip = ApplyCommunityTipNote(cd, koreanName);
+
+				// Clamp total community adjustments
+				float cap = Cfg.CommunityBonusCap;
+				if (communityTotal > cap)
+				{
+					float excess = communityTotal - cap;
+					score -= excess;
+					communityTotal = cap;
+				}
+				else if (communityTotal < -cap)
+				{
+					float excess = -cap - communityTotal;
+					score += excess;
+					communityTotal = -cap;
+				}
+			}
+		}
+		catch (Exception ex) { Plugin.Log($"SynergyScorer: community scoring error: {ex.Message}"); }
+
+		// 5. Clamp and build result
 		score = Math.Clamp(score, 0f, 6.0f);
-		return BuildScoredCard(card, tierGrade, score, scoreSource, baseScore,
+		var result = BuildScoredCard(card, tierGrade, score, scoreSource, baseScore,
 			synergyDelta, floorAdjust, deckSizeAdjust, upgradeAdjust,
 			synReasons, antiReasons, tierEntry?.Notes ?? "");
+		result.CommunityTip = communityTip;
+		result.Chips = chips;
+		result.BuildAlignment = buildAlignment;
+		return result;
 	}
 
 	// --- Extracted scoring methods for ScoreCard ---
@@ -666,6 +708,222 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 			UpgradeAdjust = upgradeAdjust,
 			ScoreSource = scoreSource
 		};
+	}
+
+	// --- Community data helper methods ---
+
+	/// <summary>Get Korean card name via localization cache, falling back to CardInfo.Name.</summary>
+	private static string GetKoreanCardName(CardInfo card)
+	{
+		string localized = GameStateReader.GetLocalizedName("card", card.Id);
+		return localized ?? card.Name ?? card.Id;
+	}
+
+	/// <summary>Get Korean names for all deck cards by ID list.</summary>
+	private static List<string> GetDeckKoreanNames(List<string> deckCardIds)
+	{
+		if (deckCardIds == null || deckCardIds.Count == 0)
+			return new List<string>();
+		var names = new List<string>(deckCardIds.Count);
+		foreach (string id in deckCardIds)
+		{
+			string localized = GameStateReader.GetLocalizedName("card", id);
+			if (localized != null)
+				names.Add(localized);
+			else
+				names.Add(id); // fallback to ID
+		}
+		return names;
+	}
+
+	// --- Community scoring methods (16-21) ---
+
+	/// <summary>16. Combo bonus: reward cards whose known combos are present in deck.</summary>
+	private float ApplyCommunityComboBonus(dynamic cd, string character, string koreanName,
+		List<string> deckKoreanNames, ref float score, List<string> synReasons,
+		List<(string Tag, string Label)> chips)
+	{
+		if (deckKoreanNames == null || deckKoreanNames.Count == 0) return 0f;
+		try
+		{
+			var combos = cd.GetMatchingCombos(character, koreanName, deckKoreanNames);
+			if (combos == null) return 0f;
+
+			var (full, partial) = combos;
+			float bonus = 0f;
+			if (full != null && full.Count > 0)
+			{
+				bonus += Cfg.CommunityComboFullBonus;
+				foreach (var combo in full)
+				{
+					string comboName = combo?.ToString() ?? "콤보";
+					synReasons.Add($"+{Cfg.CommunityComboFullBonus:F1} 콤보 완성: {comboName}");
+					chips.Add(("good", $"콤보: {comboName}"));
+				}
+			}
+			if (partial != null && partial.Count > 0)
+			{
+				bonus += Cfg.CommunityComboPartialBonus;
+				foreach (var combo in partial)
+				{
+					string comboName = combo?.ToString() ?? "콤보";
+					synReasons.Add($"+{Cfg.CommunityComboPartialBonus:F1} 콤보 부분: {comboName}");
+					chips.Add(("mid", $"콤보 가능: {comboName}"));
+				}
+			}
+			score += bonus;
+			return bonus;
+		}
+		catch (Exception ex) { Plugin.Log($"SynergyScorer: combo bonus error: {ex.Message}"); return 0f; }
+	}
+
+	/// <summary>17. Build alignment: reward cards that match the detected community archetype.</summary>
+	private float ApplyCommunityBuildAlignment(dynamic cd, string character, string koreanName,
+		List<string> deckKoreanNames, DeckAnalysis deckAnalysis, ref float score,
+		List<string> synReasons, List<string> antiReasons,
+		List<(string Tag, string Label)> chips, ref string buildAlignment)
+	{
+		try
+		{
+			var archetype = cd.DetectArchetype(character, deckKoreanNames);
+			if (archetype == null) return 0f;
+
+			var cardArchRefs = cd.GetCardArchetypeRefs(character, koreanName);
+			bool inMust = false;
+			bool inRec = false;
+			bool inAnyBuild = false;
+
+			if (cardArchRefs != null)
+			{
+				foreach (var arch in cardArchRefs)
+				{
+					inAnyBuild = true;
+					// Check if this card's archetype matches the active build
+					if (arch != null && archetype != null)
+					{
+						string archId = arch.Id?.ToString() ?? "";
+						string activeId = archetype.Id?.ToString() ?? "";
+						if (archId == activeId)
+						{
+							// Check must vs rec by looking at build completion
+							var completion = cd.GetBuildCompletion(character, activeId, deckKoreanNames);
+							if (completion != null && completion.MissingMust != null)
+							{
+								foreach (var must in completion.MissingMust)
+								{
+									if (must?.ToString() == koreanName) { inMust = true; break; }
+								}
+							}
+							if (!inMust && completion != null && completion.MissingRec != null)
+							{
+								foreach (var rec in completion.MissingRec)
+								{
+									if (rec?.ToString() == koreanName) { inRec = true; break; }
+								}
+							}
+							// If card is part of the active build but not missing, still count as rec
+							if (!inMust && !inRec) inRec = true;
+						}
+					}
+				}
+			}
+
+			float bonus = 0f;
+			if (inMust)
+			{
+				bonus = Cfg.CommunityBuildMustBonus;
+				score += bonus;
+				synReasons.Add($"+{bonus:F1} 빌드 핵심 카드");
+				chips.Add(("good", "빌드 핵심 카드"));
+				buildAlignment = "필수";
+			}
+			else if (inRec)
+			{
+				bonus = Cfg.CommunityBuildRecBonus;
+				score += bonus;
+				synReasons.Add($"+{bonus:F1} 빌드 시너지");
+				chips.Add(("good", "빌드 시너지"));
+				buildAlignment = "시너지";
+			}
+			else if (!inAnyBuild && deckAnalysis.TotalCards > 15)
+			{
+				bonus = Cfg.CommunityOffBuildPenalty;
+				score += bonus;
+				antiReasons.Add($"{bonus:F1} 빌드 방향과 거리 있음");
+				chips.Add(("bad", "빌드 방향과 거리 있음"));
+				buildAlignment = "오프빌드";
+			}
+			return bonus;
+		}
+		catch (Exception ex) { Plugin.Log($"SynergyScorer: build alignment error: {ex.Message}"); return 0f; }
+	}
+
+	/// <summary>18. Anchor power bonus: high-power anchor cards get a scaled bonus.</summary>
+	private float ApplyAnchorPowerBonus(dynamic cd, string koreanName, ref float score,
+		List<string> synReasons, List<(string Tag, string Label)> chips)
+	{
+		try
+		{
+			float power = cd.GetPowerBonus(koreanName);
+			if (power <= 0f) return 0f;
+			float bonus = power * Cfg.CommunityAnchorScale;
+			score += bonus;
+			synReasons.Add($"+{bonus:F2} 앵커 카드 — 빌드의 심장");
+			chips.Add(("good", "앵커 카드 — 빌드의 심장"));
+			return bonus;
+		}
+		catch (Exception ex) { Plugin.Log($"SynergyScorer: anchor power error: {ex.Message}"); return 0f; }
+	}
+
+	/// <summary>19. Universal bonus: cards that are strong in any deck get a bonus when not yet owned.</summary>
+	private float ApplyUniversalBonus(dynamic cd, string character, string koreanName,
+		List<string> deckCardIds, CardInfo card, ref float score,
+		List<string> synReasons, List<(string Tag, string Label)> chips)
+	{
+		try
+		{
+			bool isUniversal = cd.IsUniversal(character, koreanName);
+			if (!isUniversal) return 0f;
+			// Only bonus if card not already in deck
+			if (deckCardIds != null && deckCardIds.Contains(card.Id)) return 0f;
+			float bonus = Cfg.CommunityUniversalBonus;
+			score += bonus;
+			synReasons.Add($"+{bonus:F1} 범용 — 어떤 덱에든 강함");
+			chips.Add(("good", "범용 — 어떤 덱에든 강함"));
+			return bonus;
+		}
+		catch (Exception ex) { Plugin.Log($"SynergyScorer: universal bonus error: {ex.Message}"); return 0f; }
+	}
+
+	/// <summary>20. Duplicate exception: reduce duplicate penalty for cards worth having 2+ copies.</summary>
+	private float ApplyDuplicateExceptionOverride(dynamic cd, string koreanName,
+		List<string> deckCardIds, CardInfo card, ref float score,
+		List<string> synReasons, List<(string Tag, string Label)> chips)
+	{
+		try
+		{
+			// Only applies if card is already in deck (duplicate)
+			if (deckCardIds == null || !deckCardIds.Contains(card.Id)) return 0f;
+			bool isDupException = cd.IsDuplicateException(koreanName);
+			if (!isDupException) return 0f;
+			float bonus = Cfg.CommunityDuplicateOverride;
+			score += bonus;
+			synReasons.Add($"+{bonus:F1} 2장째도 강함");
+			chips.Add(("good", "2장째도 강함"));
+			return bonus;
+		}
+		catch (Exception ex) { Plugin.Log($"SynergyScorer: duplicate exception error: {ex.Message}"); return 0f; }
+	}
+
+	/// <summary>21. Community tip: get Korean tip text for display (no score impact).</summary>
+	private static string ApplyCommunityTipNote(dynamic cd, string koreanName)
+	{
+		try
+		{
+			string tip = cd.GetTip(koreanName);
+			return tip;
+		}
+		catch (Exception ex) { Plugin.Log($"SynergyScorer: tip note error: {ex.Message}"); return null; }
 	}
 
 	private ScoredRelic ScoreRelic(RelicInfo relic, RelicTierEntry tierEntry, DeckAnalysis deckAnalysis, int actNumber, int floorNumber, string character = null, AdaptiveScorer adaptiveScorer = null)
