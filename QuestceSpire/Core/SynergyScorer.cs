@@ -421,7 +421,7 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 		catch (Exception ex) { Plugin.Log($"SynergyScorer: community scoring error: {ex.Message}"); }
 
 		// 5. Clamp and build result
-		score = Math.Clamp(score, 0f, 6.0f);
+		score = Math.Clamp(score, Cfg.MinScore, Cfg.MaxScore);
 		var result = BuildScoredCard(card, tierGrade, score, scoreSource, baseScore,
 			synergyDelta, floorAdjust, deckSizeAdjust, upgradeAdjust,
 			synReasons, antiReasons, tierEntry?.Notes ?? "");
@@ -785,7 +785,7 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 	{
 		try
 		{
-			var archetype = cd.DetectArchetype(character, deckKoreanNames);
+			var archetype = deckAnalysis?.CommunityArchetype ?? cd.DetectArchetype(character, deckKoreanNames);
 			if (archetype == null) return 0f;
 
 			var cardArchRefs = cd.GetCardArchetypeRefs(character, koreanName);
@@ -798,28 +798,24 @@ public class SynergyScorer : ICardScorer, IRelicScorer
 				foreach (var arch in cardArchRefs)
 				{
 					inAnyBuild = true;
-					// Check if this card's archetype matches the active build
-					if (arch != null && archetype != null)
+					if (arch != null)
 					{
-						string archId = arch.Id?.ToString() ?? "";
-						string activeId = archetype.Id?.ToString() ?? "";
+						string archId = arch.Id ?? "";
+						string activeId = archetype.Id ?? "";
 						if (archId == activeId)
 						{
-							// Check must vs rec by looking at build completion
-							var completion = cd.GetBuildCompletion(character, activeId, deckKoreanNames);
-							if (completion != null && completion.MissingMust != null)
+							// Check must vs rec via build completion
+							var completion = deckAnalysis?.BuildCompletion
+								?? cd.GetBuildCompletion(character, activeId, deckKoreanNames);
+							if (completion?.MissingMust != null)
 							{
-								foreach (var must in completion.MissingMust)
-								{
-									if (must?.ToString() == koreanName) { inMust = true; break; }
-								}
+								if (completion.MissingMust.Contains(koreanName))
+									inMust = true;
 							}
-							if (!inMust && completion != null && completion.MissingRec != null)
+							if (!inMust && completion?.MissingRec != null)
 							{
-								foreach (var rec in completion.MissingRec)
-								{
-									if (rec?.ToString() == koreanName) { inRec = true; break; }
-								}
+								if (completion.MissingRec.Contains(koreanName))
+									inRec = true;
 							}
 							// If card is part of the active build but not missing, still count as rec
 							if (!inMust && !inRec) inRec = true;
