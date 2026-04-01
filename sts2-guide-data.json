@@ -5191,5 +5191,159 @@
     "포집": "디펙트로 승천 1 클리어",
     "나선 관통": "디펙트로 승천 1 클리어"
   },
-  "buildRelics": "ERR: Expected property name or '}' in JSON at position 7 (line 3 column 3)"
+  "buildRelics": "ERR: Expected property name or '}' in JSON at position 7 (line 3 column 3)",
+  "scoringAlgorithm": {
+    "tierBaseScores": {
+      "S": 50,
+      "A": 35,
+      "B": 20,
+      "C": 8,
+      "D": 0
+    },
+    "buildPowerBonus": {
+      "지옥검무": 90,
+      "바리케이드": 48,
+      "창의적인 인공지능": 44,
+      "서브루틴": 34,
+      "카운트다운": 42,
+      "도망칠 수 없다": 42,
+      "서류 폭풍": 38,
+      "장막 관통자": 38,
+      "잿빛 혼령": 34,
+      "장송가": 32,
+      "무덤지기": 32,
+      "냉정함": 26,
+      "조각모음": 26,
+      "제압": 26,
+      "포악함": 24,
+      "파열": 30,
+      "불타는조약": 30,
+      "어둠의포옹": 30
+    },
+    "buildTierBonus": {
+      "S": 36,
+      "A": 18,
+      "B": 8,
+      "C": 0,
+      "D": -8
+    },
+    "buildRarityBonus": {
+      "레어": 22,
+      "고급": 10,
+      "일반": 0,
+      "시작": -28
+    },
+    "runStageThresholds": {
+      "early": "<45",
+      "mid": "45-95",
+      "late": ">95"
+    },
+    "buildCompletionLevels": {
+      "level1": "<40%",
+      "level2": "40-60%",
+      "level3": "60-85%",
+      "level4": "85-100%",
+      "level5": "100%"
+    },
+    "mustCardWeight": {
+      "early": 64,
+      "midLate": 74
+    },
+    "recCardWeight": {
+      "early": 30,
+      "midLate": 40
+    },
+    "offBuildPenalty": -12,
+    "deckPollutionThreshold": 18,
+    "deckPollutionPenalty": -18,
+    "duplicatePenalty": {
+      "first": -26,
+      "second": -55
+    },
+    "duplicateExceptions": [
+      "폼멜타격",
+      "촉진제",
+      "촉매",
+      "계산된 도박",
+      "곡예",
+      "서류 폭풍",
+      "반향"
+    ],
+    "highPowerSingles": [
+      "불사",
+      "지옥검무",
+      "바리케이드",
+      "창의적인 인공지능",
+      "권역"
+    ],
+    "bossRewardBonuses": {
+      "activeInBuild": 24,
+      "offBuildSPenalty": -18,
+      "buildCardBonus": 18
+    }
+  },
+  "startDecks": {
+    "ironclad": [
+      "타격",
+      "타격",
+      "타격",
+      "타격",
+      "타격",
+      "수비",
+      "수비",
+      "수비",
+      "수비",
+      "강타"
+    ],
+    "silent": [
+      "타격",
+      "타격",
+      "타격",
+      "타격",
+      "타격",
+      "수비",
+      "수비",
+      "수비",
+      "수비",
+      "수비",
+      "무력화",
+      "생존자"
+    ],
+    "defect": [
+      "타격",
+      "타격",
+      "타격",
+      "타격",
+      "수비",
+      "수비",
+      "수비",
+      "수비",
+      "파지직",
+      "이중 시전"
+    ],
+    "necro": [
+      "타격",
+      "타격",
+      "타격",
+      "타격",
+      "수비",
+      "수비",
+      "수비",
+      "수비",
+      "호위",
+      "풀어놓기"
+    ],
+    "regent": [
+      "타격",
+      "타격",
+      "타격",
+      "타격",
+      "수비",
+      "수비",
+      "수비",
+      "수비",
+      "별똥별",
+      "추앙"
+    ]
+  }
 }
